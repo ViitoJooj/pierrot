@@ -1,0 +1,5 @@
+pierrot.exe
+tmp/
+dist/
+build/
+node_modules/

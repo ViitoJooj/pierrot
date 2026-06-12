@@ -1,0 +1,125 @@
+{
+    "Página pierrot": {
+        "prefix": "page",
+        "body": [
+            "<script>",
+            "\timport \"./style.css\";",
+            "\timport \"./script.ts\";",
+            "</script>",
+            "",
+            "<h1>${1:Título}</h1>",
+            "$0"
+        ],
+        "description": "Esqueleto de uma página .pierrot"
+    },
+    "Layout main.pierrot": {
+        "prefix": "layout",
+        "body": [
+            "<script>",
+            "\timport \"./globals.css\";",
+            "\timport { ${1:Home} } from \"./pages/${2:home}/index.pierrot\";",
+            "",
+            "\tset.Title(\"${3:título}\");",
+            "\tset.Charset(\"UTF-8\");",
+            "\tset.Default($1)",
+            "</script>",
+            "",
+            "<Slot />",
+            "$0"
+        ],
+        "description": "Esqueleto do layout main.pierrot"
+    },
+    "Import de CSS": {
+        "prefix": "icss",
+        "body": ["import \"./${1:style}.css\";"],
+        "description": "Importa um arquivo css"
+    },
+    "Import de script": {
+        "prefix": "its",
+        "body": ["import \"./${1:script}.ts\";"],
+        "description": "Importa um arquivo .ts no bundle da página"
+    },
+    "Import de componente": {
+        "prefix": "icomp",
+        "body": ["import { ${1:Nome} } from \"./${2:components}/${1}.pierrot\";"],
+        "description": "Importa um componente .pierrot"
+    },
+    "set.Title": {
+        "prefix": "set.Title",
+        "body": ["set.Title(\"${1:título}\");"],
+        "description": "Define o <title> da página"
+    },
+    "set.Description": {
+        "prefix": "set.Description",
+        "body": ["set.Description(\"${1:descrição}\");"],
+        "description": "Define a meta description"
+    },
+    "set.Charset": {
+        "prefix": "set.Charset",
+        "body": ["set.Charset(\"${1:UTF-8}\");"],
+        "description": "Define o charset"
+    },
+    "set.Default": {
+        "prefix": "set.Default",
+        "body": ["set.Default(${1:Home})"],
+        "description": "Define a página da rota /"
+    },
+    "Slot": {
+        "prefix": "slot",
+        "body": ["<Slot />"],
+        "description": "Ponto onde a página entra no layout"
+    },
+    "Binding": {
+        "prefix": "bind",
+        "body": ["${${1:variavel}}"],
+        "description": "Binding reativo de variável no template"
+    },
+    "Evento @click": {
+        "prefix": "@click",
+        "body": ["@click={${1:handler}}"],
+        "description": "Liga um evento de clique a uma função"
+    },
+    "Loop @for": {
+        "prefix": "@for",
+        "body": [
+            "@for ${1:item} in ${2:items}",
+            "\t$0",
+            "@end"
+        ],
+        "description": "Repete o bloco para cada item da lista"
+    },
+    "Loop @for intervalo": {
+        "prefix": "@forr",
+        "body": [
+            "@for ${1:i} in ${2:1}..${3:10}",
+            "\t$0",
+            "@end"
+        ],
+        "description": "Repete o bloco para um intervalo numérico"
+    },
+    "Condicional @if": {
+        "prefix": "@if",
+        "body": [
+            "@if ${1:condição}",
+            "\t$0",
+            "@endif"
+        ],
+        "description": "Renderiza o bloco se a condição for verdadeira"
+    },
+    "Condicional @if/@else": {
+        "prefix": "@ifelse",
+        "body": [
+            "@if ${1:condição}",
+            "\t$2",
+            "@else",
+            "\t$0",
+            "@endif"
+        ],
+        "description": "Renderiza um bloco ou outro conforme a condição"
+    },
+    "Interpolação": {
+        "prefix": "interp",
+        "body": ["{${1:expressão}}"],
+        "description": "Interpola uma expressão no template"
+    }
+}

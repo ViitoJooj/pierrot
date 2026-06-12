@@ -1,0 +1,134 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Pierrot",
+    "scopeName": "source.pierrot",
+    "patterns": [
+        {
+            "comment": "bloco <script> com TypeScript embutido",
+            "begin": "(<)(script)(>)",
+            "beginCaptures": {
+                "1": { "name": "punctuation.definition.tag.begin.html" },
+                "2": { "name": "entity.name.tag.script.html" },
+                "3": { "name": "punctuation.definition.tag.end.html" }
+            },
+            "end": "(</)(script)(>)",
+            "endCaptures": {
+                "1": { "name": "punctuation.definition.tag.begin.html" },
+                "2": { "name": "entity.name.tag.script.html" },
+                "3": { "name": "punctuation.definition.tag.end.html" }
+            },
+            "contentName": "source.ts",
+            "patterns": [
+                {
+                    "comment": "set.X(...) destacado como builtin do framework",
+                    "match": "\\b(set)(\\.)(\\w+)",
+                    "captures": {
+                        "1": { "name": "support.class.pierrot" },
+                        "2": { "name": "punctuation.accessor.ts" },
+                        "3": { "name": "support.function.pierrot" }
+                    }
+                },
+                { "include": "source.ts" }
+            ]
+        },
+        { "include": "#template-comment" },
+        { "include": "#directive" },
+        { "include": "#interpolation" },
+        {
+            "comment": "tag de componente: <Header />, <Slot />",
+            "begin": "(</?)([A-Z][\\w]*)",
+            "beginCaptures": {
+                "1": { "name": "punctuation.definition.tag.begin.html" },
+                "2": { "name": "support.class.component.pierrot" }
+            },
+            "end": "(/?>)",
+            "endCaptures": {
+                "1": { "name": "punctuation.definition.tag.end.html" }
+            },
+            "patterns": [
+                { "include": "#event-attr" },
+                { "include": "#interpolation" },
+                { "include": "text.html.basic#attribute" }
+            ]
+        },
+        {
+            "comment": "tag html comum, com suporte a @evento={fn}",
+            "begin": "(</?)([a-z][\\w-]*)",
+            "beginCaptures": {
+                "1": { "name": "punctuation.definition.tag.begin.html" },
+                "2": { "name": "entity.name.tag.html" }
+            },
+            "end": "(/?>)",
+            "endCaptures": {
+                "1": { "name": "punctuation.definition.tag.end.html" }
+            },
+            "patterns": [
+                { "include": "#event-attr" },
+                { "include": "#interpolation" },
+                { "include": "text.html.basic#attribute" }
+            ]
+        },
+        { "include": "text.html.basic" }
+    ],
+    "repository": {
+        "template-comment": {
+            "comment": "// comentário de linha no template",
+            "match": "^\\s*//.*$",
+            "name": "comment.line.double-slash.pierrot"
+        },
+        "directive": {
+            "patterns": [
+                {
+                    "comment": "@for item in expr",
+                    "match": "^\\s*(@for)\\s+(\\w+)\\s+(in)\\s+(.+?)\\s*$",
+                    "captures": {
+                        "1": { "name": "keyword.control.pierrot" },
+                        "2": { "name": "variable.other.readwrite.pierrot" },
+                        "3": { "name": "keyword.control.pierrot" },
+                        "4": { "patterns": [{ "include": "source.ts" }] }
+                    }
+                },
+                {
+                    "comment": "@if condição",
+                    "match": "^\\s*(@if)\\s+(.+?)\\s*$",
+                    "captures": {
+                        "1": { "name": "keyword.control.pierrot" },
+                        "2": { "patterns": [{ "include": "source.ts" }] }
+                    }
+                },
+                {
+                    "comment": "@else / @endif / @end",
+                    "match": "^\\s*(@else|@endif|@end)\\b",
+                    "captures": {
+                        "1": { "name": "keyword.control.pierrot" }
+                    }
+                }
+            ]
+        },
+        "interpolation": {
+            "comment": "interpolação {expr} ou ${expr} no template",
+            "begin": "\\$?\\{",
+            "beginCaptures": {
+                "0": { "name": "punctuation.section.embedded.begin.pierrot" }
+            },
+            "end": "\\}",
+            "endCaptures": {
+                "0": { "name": "punctuation.section.embedded.end.pierrot" }
+            },
+            "contentName": "meta.embedded.expression.pierrot",
+            "patterns": [{ "include": "source.ts" }]
+        },
+        "event-attr": {
+            "comment": "@click={handler}",
+            "match": "(@)(\\w+)(=)(\\{)(\\w+)(\\})",
+            "captures": {
+                "1": { "name": "keyword.control.pierrot" },
+                "2": { "name": "entity.other.attribute-name.html" },
+                "3": { "name": "punctuation.separator.key-value.html" },
+                "4": { "name": "punctuation.section.embedded.begin.pierrot" },
+                "5": { "name": "entity.name.function.pierrot" },
+                "6": { "name": "punctuation.section.embedded.end.pierrot" }
+            }
+        }
+    }
+}
