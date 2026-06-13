@@ -72,8 +72,8 @@
     ],
     "repository": {
         "template-comment": {
-            "comment": "// comentário de linha no template",
-            "match": "^\\s*//.*$",
+            "comment": "// comentário de linha no template (só no primeiro caractere da linha)",
+            "match": "^//.*$",
             "name": "comment.line.double-slash.pierrot"
         },
         "directive": {
