@@ -1,62 +1,152 @@
-# CLI
+# CLI & configuration
 
-Binário: `pierrot` (compilado de `cmd/main.go`, comandos registrados em `internal/cli/`).
-Todos os comandos rodam a partir do diretório atual — execute-os na raiz do projeto
-(onde está o `settings.pierrot.json`).
+[← back to index](./arquitetura.md)
 
-## `pierrot init <nome>`
+## Commands
 
-Cria um projeto novo na pasta `<nome>` com a estrutura padrão:
-
-```
-<nome>/
-├── settings.pierrot.json
-└── src/
-    ├── main.pierrot          # layout global + set.Default
-    ├── globals.css
-    ├── assets/               # servido como /assets, copiado no build
-    ├── components/
-    └── pages/
-        └── home/
-            ├── index.pierrot
-            └── style.css
+```bash
+pierrot init <name>     # create a project
+pierrot dev             # development server
+pierrot build           # generate the static site
+pierrot vscode install  # install the VS Code extension
 ```
 
-Código: `internal/workers/create_project.go`.
+---
 
-## `pierrot dev`
+### `pierrot init <name>`
 
-Servidor de desenvolvimento em `http://localhost:<porta>` (porta do settings, padrão 3000).
+Creates a `<name>/` folder with the minimal scaffold: `settings.pierrot.json`,
+`src/main.pierrot` (layout), a `home` page (default) and an `errors` page
+(fallback), plus `globals.css` and `assets/` (`robots.txt` + `favicon.ico`).
 
-- **Compila a cada request** — nada de cache; salvar o arquivo e recarregar já mostra a mudança.
-- **Live reload** — o browser mantém uma conexão SSE em `/__pierrot/events`; o servidor
-  compara mtimes dos arquivos (`.pierrot`, `.css`, `.ts`, `.js`, `.html`) a cada 300ms
-  e manda recarregar quando algo muda. `node_modules` e pastas `.x` são ignoradas.
-- **Overlay de erros** — erro de template, import quebrado ou erro de TypeScript não
-  derruba a página: aparece um popup vermelho no canto inferior listando os erros.
-  Corrigir o arquivo recarrega sozinho.
-- **Arquivos estáticos** — qualquer URL com extensão (`/globals.css`, `/assets/x.png`)
-  é servida direto de `src/`.
-- **Rota sem página** — responde 404 com o overlay + live reload.
+```bash
+pierrot init myapp
+```
 
-Código: `internal/workers/dev_server.go`.
+→ Generated layout: [Project structure](./estrutura-do-projeto.md).
 
-## `pierrot build`
+---
 
-Gera o site estático no `outDir` do settings.
+### `pierrot dev`
 
-1. **Apaga o `outDir` inteiro** antes de começar.
-2. Acha toda página (`pages/**/index.pierrot`) e renderiza cada uma em
-   `<outDir>/<rota>/index.html`.
-3. Concatena e minifica os CSS de cada página (globals + página + componentes) em um
-   único `<outDir>/<rota>/bundle.css`.
-4. Copia a página de `set.Default(...)` também para `<outDir>/index.html` (rota `/`).
-5. Copia assets (imagens, fontes, ícones...) preservando a estrutura de pastas.
-   `.pierrot`, `.ts`, `.css` soltos e `settings.pierrot.json` ficam de fora — já foram
-   compilados para dentro do HTML/bundle.
+Starts the development server (default <http://localhost:3000>). Must be run from
+inside the project (where `settings.pierrot.json` lives).
 
-Diferenças em relação ao dev: **qualquer erro é fatal** (a página falha e o build
-termina com erro), JS/CSS são minificados conforme `build.minify`, e sourcemap inline
-é gerado se `build.sourcemap: true`.
+```bash
+cd myapp
+pierrot dev
+```
 
-Código: `internal/workers/build.go`.
+- **Compiles on every request** — no cache, no HMR to go wrong.
+- **Live reload over SSE**: the server watches files (`.pierrot`, `.css`, `.ts`,
+  `.js`, `.html`) and reloads the browser when something changes.
+- **Error overlay**: template or TS transform errors show up in a popup over the
+  page, without taking the server down. Fix it, and it reloads on its own.
+- Files with an extension (CSS, images) are served straight from `src/`;
+  `/robots.txt` comes from the file pointed to by `set.Robots`.
+
+---
+
+### `pierrot build`
+
+Renders every page under `src/pages/` to static HTML in the `outDir`.
+
+```bash
+cd myapp
+pierrot build
+```
+
+What gets generated:
+
+| Output | Source |
+|--------|--------|
+| `<outDir>/<route>/index.html` | each `pages/<route>/index.pierrot` |
+| `<outDir>/<route>/bundle.css` | `globals.css` + page CSS + component CSS, minified |
+| `<outDir>/index.html` | copy of the `set.Default` page (route `/`) |
+| `<outDir>/404.html` | the `set.Fallback` page rendered with status 404 |
+| `<outDir>/robots.txt` | the `set.Robots` file |
+| other assets | copied from `src/` preserving the structure |
+
+- CSS and JS are **minified** (configurable).
+- **Any error aborts the build** (unlike dev, which shows it in the overlay).
+
+---
+
+### `pierrot vscode install`
+
+Installs the bundled VS Code extension (`.pierrot` syntax highlighting, snippets
+and icons) using the `code` CLI.
+
+```bash
+pierrot vscode install
+```
+
+Requires the `code` command on your PATH. If it's not there: open VS Code, run
+**"Shell Command: Install 'code' command in PATH"** and try again.
+
+---
+
+## `settings.pierrot.json`
+
+Lives at the project root. Controls name, entry, port, dotenv and the build.
+
+```json
+{
+    "app": {
+        "name": "myapp",
+        "version": "1.0.0",
+        "entry": "./src/main.pierrot",
+        "port": 3000
+    },
+    "dotenv": {
+        "enabled": false,
+        "path": "./.env"
+    },
+    "build": {
+        "outDir": "../build",
+        "minify": true,
+        "sourcemap": false
+    }
+}
+```
+
+### Fields
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `app.name` | — | project name |
+| `app.version` | — | version (metadata) |
+| `app.entry` | `./src/main.pierrot` | layout / entry point. **Relative to the settings folder.** Its folder becomes the `src`. |
+| `app.port` | `3000` | `pierrot dev` port |
+| `dotenv.enabled` | `false` | enables `get.Dotenv(...)` |
+| `dotenv.path` | — | `.env` path, relative to `src` |
+| `build.outDir` | `./dist` | build output folder, relative to `src` |
+| `build.minify` | `true` | minify CSS and JS |
+| `build.sourcemap` | `false` | inline sourcemap in the build's JS |
+
+> **Path resolution:** `app.entry` is relative to the `settings.pierrot.json`
+> folder. All other paths (`outDir`, `dotenv.path`) are relative to the entry's
+> folder — i.e. to `src`. That's why the scaffold's default `outDir` is
+> `../build`: from `src/`, that points to the project root.
+
+With no `settings.pierrot.json`, Pierrot assumes the default layout
+(`src/main.pierrot`, port 3000, build in `dist/`, minify on).
+
+→ Environment variables: [Script API › `.env`](./script-api.md#environment-variables-env).
+
+---
+
+## Deploy (static site)
+
+`pierrot build` produces pure static HTML — no server, no backend runtime. Upload
+the contents of `outDir` to any static host:
+
+- **GitHub Pages / Cloudflare Pages / Netlify / Vercel** — point the publish
+  directory to your `outDir`.
+- **Any CDN or bucket** (S3, etc).
+
+The `404.html`-at-the-root convention is recognized by most static hosts, so
+non-existent routes fall back to your `set.Fallback` page automatically.
+
+→ See a real build in [`www/build/`](../www/build/) (generated from
+[`www/src/`](../www/src/)).

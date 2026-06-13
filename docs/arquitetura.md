@@ -1,122 +1,120 @@
-# Arquitetura interna
+# Pierrot Documentation
 
-Mapa do código Go e do pipeline de compilação. Útil para mexer no framework.
+> Pierrot is a **single-file component** framework compiled in **Go**.
+> The CLI understands the `.pierrot` language, compiles everything to static HTML
+> and ships the browser a runtime of a few kilobytes — no virtual DOM, no
+> `eval`, no `node_modules`.
 
-## Mapa de arquivos
+This is the full documentation. If you just want to see something running, start
+with the [Hello World in 30s](./getting-started.md).
 
+---
+
+## Table of contents
+
+### Getting started
+- [**Installation & Hello World in 30s**](./getting-started.md) — install the binary, create and run your first project.
+- [**Project structure**](./estrutura-do-projeto.md) — what each folder and file is, and the anatomy of a `.pierrot`.
+
+### The `.pierrot` language
+- [**Template syntax**](./templates.md) — `${}` interpolation, comments, `@for`, `@if/@else`.
+- [**Components & props**](./componentes.md) — single-file components, `import`, `<Slot />`, passing props.
+- [**Reactivity**](./reatividade.md) — `${var}`, `@bind`, `@event`, and `@render html/markdown/pierrot`.
+- [**Script API**](./script-api.md) — the `get`, `client`, `time`, `set` helpers and `.env`.
+
+### Tooling
+- [**CLI & configuration**](./cli.md) — `init`, `dev`, `build`, `vscode` and `settings.pierrot.json`.
+
+### Reference
+- [**Architecture**](#architecture) (this page) — the compilation pipeline, step by step.
+
+---
+
+## What Pierrot is
+
+You write the UI in `.pierrot` files. Each file is a single component that bundles
+three things:
+
+```html
+<script>
+    // imports, metadata (set.X), props (let name: type;) and TypeScript logic
+    let count: number = 0;
+
+    function increment() {
+        count++;
+    }
+</script>
+
+<!-- template: HTML + directives (@for, @if, @event, ${}) -->
+<h1>Clicks: ${count}</h1>
+<button @click={increment}>+1</button>
 ```
-cmd/main.go                        # entrypoint, chama cli.Execute()
-internal/cli/
-├── root.go                        # comando raiz (cobra)
-├── init.go                        # pierrot init  -> workers.CreateProject
-├── dev.go                         # pierrot dev   -> workers.DevServer
-└── build.go                       # pierrot build -> workers.Build
-internal/readers/
-├── settings.go                    # Settings/Project, LoadProject, LoadDotenv
-└── parser.go                      # ParsePierrot: .pierrot -> Component
-internal/workers/
-├── create_project.go              # scaffold do init (templates embutidos)
-├── dev_server.go                  # servidor dev + renderPage (coração do framework)
-├── template.go                    # compileTemplate: @for/@if e ${expr}
-└── build.go                       # build estático + bundleCSS + copyAssets
-```
 
-## Pipeline de renderização de uma página
+The server (`pierrot dev`) or the build (`pierrot build`) reads this file, resolves
+imports and components, turns the TypeScript into JavaScript with
+[esbuild](https://esbuild.github.io/) and assembles a complete HTML document. The
+browser gets ready-made HTML + a small runtime that re-evaluates the dynamic bits
+when an event changes the state.
 
-`renderPage` (`dev_server.go`) é usado tanto pelo dev server (a cada request) quanto
-pelo build (uma vez por página). Etapas, na ordem:
+There's no JS build step in your project, no `package.json`, no virtual DOM. State
+is just the top-level variables of the `<script>`; every `@event` calls
+`__pierrotUpdate()` at the end to repaint the affected spans and blocks.
 
-1. **Parse** — `ParsePierrot` (`parser.go`) separa o `<script>` do HTML e extrai por
-   regex: imports de CSS (`cssRe`), de scripts (`tsRe`), de componentes (`compRe`) e
-   metadados `set.X(...)` (`metaRe`). O que sobra do script é o código da página.
+---
 
-2. **Expansão** — `renderCtx.render` expande recursivamente: parseia o layout
-   (`main.pierrot`), depois a página, depois cada componente importado, substituindo
-   `<Nome />` pelo HTML do filho. No caminho acumula (sem duplicar) CSS, chunks de
-   script (um por arquivo, para o erro apontar a origem) e metadados. A página entra
-   no layout no lugar do `<Slot />` (`slotRe`). Substituições usam
-   `ReplaceAllLiteralString` porque o HTML pode conter `${var}`, que
-   `ReplaceAllString` interpretaria como referência de grupo de captura.
+## Architecture
 
-3. **Validação de tags** — tag capitalizada que sobrou no HTML (`unknownTagRe`) =
-   componente usado sem import; vira erro.
+The whole compiler lives in `internal/`. It's a short pipeline of pure functions
+that runs **per request** under `pierrot dev` and **once per page** under
+`pierrot build`. No giant AST, no worker pool, no cache.
 
-4. **Template** — `compileTemplate` (`template.go`):
-   - remove comentários `//` de linha (`commentLineRe`);
-   - encontra blocos `@for`/`@if` (com contagem de aninhamento), traduz cada um para
-     o corpo de uma função JS (`compileBlock`/`emitText`) e troca o bloco no HTML por
-     `<div data-pierrot-block="N" style="display:contents">`;
-   - dentro dos blocos, `${expr}` (`interpRe`) vira concatenação
-     `"..." + __pierrotEsc(expr) + "..."` e `@evento={fn}` vira `onclick` nativo.
+| # | Step | File | What it does |
+|---|------|------|--------------|
+| 1 | **parse** | `internal/readers/parser.go` | Splits the `<script>` from the template. Extracts CSS/TS/component imports, `set.X` metadata and props (`let name: type;` with no value). |
+| 2 | **expansion** | `internal/workers/dev_server.go` (`render`) | Recursive: layout → page → components. `<Slot />` receives the page; each `<Name />` receives the imported component's HTML, with props applied per instance. |
+| 3 | **template** | `internal/workers/template.go` | `@for`/`@if` blocks become JS functions. `@render` becomes a placeholder. `//` comments are dropped. |
+| 4 | **bindings** | `internal/workers/dev_server.go` (`renderPage`) | Simple `${var}` becomes `<span data-bind>`. `@bind` becomes `oninput`. `@event` becomes `on<event>` + `__pierrotUpdate()`. Composite `${expr}` becomes a re-evaluated span. |
+| 5 | **transform** | esbuild (`build.go` / `renderPage`) | Each `<script>` and each `import "*.ts"` becomes a TS → JS chunk. `get.Dotenv("X")` is replaced by the literal value before transform. |
+| 6 | **assembly** | `dev_server.go` (`renderPage`) | Final HTML: `<head>` with `title`/`meta`/CSS `links`, `<body>` with the markup, and the generated runtime (`preludeJS` + scripts + `runtimeJS`). |
 
-5. **Bindings fora de bloco** — sobre o HTML restante, em ordem:
-   - `${var}` simples (`bindingRe`, só `\w+`) → `<span data-bind="var">`; os nomes
-     viram o objeto `state` do runtime;
-   - `@evento={fn}` (`eventRe`) → `on<evento>="fn(); __pierrotUpdate()"`;
-   - `${expr}` composto que sobrou (`replaceExprs`) → `<span data-pierrot-expr="N">`.
+### The browser runtime
 
-   A ordem importa: `bindingRe` precisa rodar antes de `replaceExprs` para os nomes
-   simples virarem `data-bind` (state) em vez de expressão genérica.
+The runtime uses no `eval`. The server already knows the names used in `${...}`
+and generates a `state` object from them. On every `__pierrotUpdate()`:
 
-6. **TypeScript → JS** — cada chunk passa pelo esbuild (`api.Transform`, loader TS).
-   Chunk com erro fica fora do bundle e o erro vai para o overlay (dev) ou derruba o
-   build. Minificação nunca renomeia identificadores de topo
-   (`MinifyIdentifiers` desligado), senão o `state` dos bindings quebraria.
+- `data-bind` spans get the variable's value;
+- `data-pierrot-block` blocks (`@for`/`@if`) re-run their JS function and
+  re-render;
+- `data-pierrot-expr` spans (composite expressions) are re-evaluated;
+- inputs with `@bind` get the variable's value (skipping the focused element);
+- `@render` placeholders are refilled (html/markdown/preview iframe).
 
-7. **Montagem** — o HTML final é `<!DOCTYPE html>` + `<head>` (charset, title,
-   description, icon, links de CSS) + `<body>` (HTML + overlay + scripts da página +
-   runtime + live reload). Dev linka cada CSS; build linka `/<página>/bundle.css`.
+`time.Sleep(...)` fires a `__pierrotUpdate()` after the code following the `await`
+runs, so state changed after the sleep is already on screen.
 
-## Runtime JS (gerado por `runtimeJS`, sem eval)
+### dev vs build
 
-O servidor conhece todos os nomes/expressões usados no template, então gera código
-estático:
+|  | `pierrot dev` | `pierrot build` |
+|--|---------------|-----------------|
+| When it compiles | every request | once per page |
+| CSS | one `<link>` per file | one minified `bundle.css` per page |
+| Errors | overlay in the browser + live reload | abort the build (non-zero exit) |
+| Live reload | yes (SSE on `/__pierrot/events`) | — |
+| Output | in memory | `outDir/` (static HTML + assets) |
 
-- `preludeJS` — injetado antes dos scripts da página; define os helpers `get`
-  (`get.Path(n)` = n-ésimo segmento do pathname).
-- `__pierrotEsc(v)` — escapa `& < > "`.
-- `__pierrotBlocks` — array de funções, uma por bloco `@for`/`@if`; cada uma retorna
-  o HTML do bloco.
-- `__pierrotExprs` — array de funções `() => (expr)`, uma por `${expr}` fora de bloco.
-- `__pierrotUpdate()` — monta o `state` com os nomes de `${var}` (com guard
-  `typeof x === "undefined"` para variável não declarada virar string vazia) e
-  preenche `[data-bind]`, `[data-pierrot-block]` e `[data-pierrot-expr]`. Roda uma vez
-  no load e depois de cada `@evento`.
+→ Details for each command in [CLI & configuration](./cli.md).
 
-## Dev server (`dev_server.go`)
+---
 
-- Handler `/`: URL com extensão → arquivo estático de `src/`; sem extensão → parseia
-  e renderiza `pages/<rota>/index.pierrot` na hora. Rota vazia → `defaultPage`
-  (resolve `set.Default`).
-- Live reload: `watchFiles` tira um snapshot de mtimes (`.pierrot`, `.css`, `.ts`,
-  `.js`, `.html`) a cada 300ms; mudou → `notifyReload` avisa os browsers conectados
-  via SSE (`/__pierrot/events`) e o `reloadJS` injetado faz `location.reload()`.
-- Erros não fatais (componente faltando, TS inválido, bloco sem `@end`...) acumulam
-  em `renderCtx.errs` e viram o overlay (`overlayHTML`) — a página continua servindo.
+## Quick conventions
 
-## Build (`build.go`)
+- **Routes** = folders in `src/pages/`. `pages/about/index.pierrot` → route `/about`.
+- The **default page** (`/`) and **fallback** (404) are set in the layout with
+  `set.Default(...)` and `set.Fallback(...)`.
+- **Components** start with an **uppercase letter** (`<Header />`); lowercase
+  tags are plain HTML.
+- **Props** are declared in the component as `let name: type;` **with no value**.
+- **Assets** (images, fonts, `robots.txt`, `favicon.ico`) live in `src/assets/`
+  and are copied on build.
 
-- Apaga o `outDir`, varre `pages/**/index.pierrot`, renderiza cada página com
-  `dev=false` (erro = fatal, minify conforme settings).
-- `bundleCSS`: concatena os CSS na ordem de descoberta e minifica via esbuild — um
-  arquivo por página.
-- Copia a página default para `outDir/index.html`.
-- `copyAssets`: copia tudo que a página referencia por URL (imagens, fontes...),
-  pulando fontes do framework (`.pierrot`, `.ts`, `.css` soltos, settings).
-
-## Regexes centrais (referência rápida)
-
-| Nome | Arquivo | Padrão | Pega |
-|---|---|---|---|
-| `scriptRe` | parser.go | `(?s)<script>(.*?)</script>` | bloco script |
-| `cssRe` | parser.go | `import "x.css";` | import de CSS |
-| `tsRe` | parser.go | `import "x.ts/js";` | import de script |
-| `compRe` | parser.go | `import { N } from "x.pierrot";` | import de componente |
-| `metaRe` | parser.go | `set.X("..."` ou `set.X(Ident)` | metadados |
-| `bindingRe` | dev_server.go | `\$\{(\w+)\}` | `${var}` simples |
-| `eventRe` | dev_server.go | `@(\w+)=\{(\w+)\}` | `@click={fn}` |
-| `slotRe` | dev_server.go | `<Slot\s*/>` | slot do layout |
-| `unknownTagRe` | dev_server.go | `<([A-Z]\w*)[^>]*/?>` | componente sem import |
-| `interpRe` | template.go | `\$\{([^{}\n]+)\}` | `${expr}` (inclusive composto) |
-| `forLineRe` / `ifLineRe` / `elseLineRe` / `endLineRe` | template.go | linhas `@for/@if/@else/@end` | diretivas |
-| `commentLineRe` | template.go | linha `//...` | comentários |
+Continue to [**Hello World in 30s →**](./getting-started.md)

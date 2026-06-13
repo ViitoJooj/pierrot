@@ -1,38 +1,89 @@
-# Pierrot — documentação
-
-Pierrot é um framework web com componentes de arquivo único (`.pierrot`). O CLI em Go
-compila os componentes para HTML + JS no servidor; o browser recebe HTML pronto com um
-runtime mínimo (sem virtual DOM, sem eval, sem dependência de npm).
-
-## Índice
-
-| Documento | Conteúdo |
-|---|---|
-| [cli.md](./docs/cli.md) | Comandos `pierrot init`, `pierrot dev`, `pierrot build` |
-| [projeto.md](./docs/projeto.md) | Estrutura de pastas, `settings.pierrot.json`, rotas, dotenv |
-| [componentes.md](./docs/componentes.md) | Anatomia de um `.pierrot`: `<script>`, imports, `set.X()`, layout e `<Slot />` |
-| [template.md](./docs/template.md) | Sintaxe de template: `${var}`, `@for`, `@if`, `@click={fn}`, comentários |
-| [arquitetura.md](./docs/arquitetura.md) | Como o compilador funciona por dentro (arquivos Go, pipeline, runtime JS) |
-
-## Visão geral em 30 segundos
-
-```
-pierrot init meuapp
-cd meuapp
-pierrot dev        # http://localhost:3000, recompila a cada request, live reload
-pierrot build      # site estático no outDir do settings
+```bash
+                                     ======                     
+                                   ==========                   
+          -------     =======     ============      --------    
+        ---------   ===========  =============+     ----------  
+        ------     ====================    ==++         ------  
+       ------     ====== ==============     +=-:         -----  
+       ------    ++++    ==============      :::         -----  
+       ------   ::--     ===============                 -----  
+      ------    ::::     ===============                  ------
+   ---------            ================                  ---------
+   ---------            ======+++========                 ---------
+      ------           ======+*+*+==++===                 ------
+       ------          ++*+++*=:-++++*+++                -----  
+       ------         -+++=-:::::::-=+++=:               -----  
+       ------        ::-=-::-=-:-=-::-==-::              -----  
+       ------        ::=*+-:=+=:-++-:-++-::              -----  
+        ------       ::::::::::::::::::::::             ------  
+        ---------                                   --------- 
 ```
 
-Cada página é um `src/pages/<rota>/index.pierrot`. O arquivo tem um bloco `<script>`
-(imports, metadados e código TS/JS) e o HTML do template embaixo. O `src/main.pierrot`
-é o layout global: envolve toda página no lugar do `<Slot />`.
+<h1 align="center">Pierrot <img src="./imgs/pierrot.svg" width="20px" height="20px"></h1>
 
-```html
-<script>
-    import "./style.css";
+### [Read the docs →](./docs/documentation.md)
+## What is pierrot ?
+Pierrot is a JavaScript-free framework built in Golang. It functions as a compiler that understands the `.pierrot` language, but also allows the use of TypeScript when needed. Its goal is to offer a simple and flexible way to develop web applications, without imposing limitations on the developer.
 
-    let title: string = "Hello, pierrot!";
-</script>
-
-<h1>${title}</h1>
+## how install ?
+```bash
+go install github.com/pierrot/cmd/pierrot@latest
 ```
+This command will install the Pierrot binary in ~/.pierrot/bin/pierrot.exe. After installation, you will be able to use the Pierrot command-line commands, shown in the example below.
+
+Alternatively, you can download the latest release by clicking <a href="https://github.com/ViitoJooj/pierrot/releases/">here</a>.
+
+We recommend creating a `.pierrot` directory in your user folder and placing the binary inside `.pierrot/bin`. After that, add the directory to your environment variables so the `pierrot` command can be accessed from anywhere in your terminal.
+
+## Simple usage:
+To start a project with the Pierrot architecture, you need to run the following command:
+```bash
+pierrot init <project-name>
+```
+This command will create your website/app folders in the following format:
+
+```txt
+project-name/
+├── src/
+│   ├── assets/                     # static files
+│   │   ├── robots.txt              # search engine instructions
+│   │   └── favicon.ico             # website icon
+│   ├── components/                 # reusable components
+│   │   └── header/
+│   │       ├── script.ts           # component logic
+│   │       ├── styles.css          # component styles
+│   │       └── index.pierrot       # component template
+│   ├── pages/                      # application routes
+│   │   ├── errors/                 # "*" router fallback
+│   │   │   ├── script.ts           # error page logic
+│   │   │   ├── styles.css          # error page styles
+│   │   │   └── index.pierrot       # fallback page template status (404)
+│   │   └── home/                   # the router for "/home" and "/"
+│   │       ├── script.ts           # home page logic
+│   │       ├── styles.css          # home page styles
+│   │       └── index.pierrot       # page template rendered by Pierrot
+│   ├── globals.css                 # global styles and variables
+│   └── main.pierrot                # application entry point
+└── setting.pierrot.json            # Pierrot configuration file
+```
+### how start ?
+use this command for development mode:
+```bash
+cd <project-name>
+pierrot dev
+```
+and to build use:
+```bash
+cd <project-name>
+pierrot build
+```
+Remember that these two commands need to be executed using settings.pierrot.json.
+
+
+## Contributing
+
+Refer to the [Project > Contributing](./CONTRIBUTING.md) guide to start contributing to Pierrot.
+
+## License
+
+Refer to the [Project > License](./LICENSE.md) page for information about Pierrot's licensing.
