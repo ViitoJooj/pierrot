@@ -1,5 +1,0 @@
-{
-  "buildCommand": "make web",
-  "outputDirectory": "www/build",
-  "framework": null
-}
