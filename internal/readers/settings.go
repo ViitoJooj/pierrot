@@ -38,7 +38,8 @@ type Project struct {
 	OutDir    string
 	Minify    bool
 	Sourcemap bool
-	Dotenv    string // vazio = desabilitado
+	Dotenv    string            // vazio = desabilitado
+	Env       map[string]string // variáveis do .env (nil = dotenv desabilitado)
 }
 
 // LoadProject lê o settings.pierrot.json de root e resolve os caminhos.
@@ -94,12 +95,15 @@ func resolve(base, rel string) string {
 	return filepath.Clean(filepath.Join(base, filepath.FromSlash(rel)))
 }
 
-// LoadDotenv injeta as linhas KEY=VALUE do arquivo no ambiente do processo
-func LoadDotenv(path string) error {
+// LoadDotenv injeta as linhas KEY=VALUE do arquivo no ambiente do processo e
+// devolve só as variáveis do arquivo — é esse map que o get.Dotenv consulta,
+// para não expor o ambiente inteiro do sistema ao front
+func LoadDotenv(path string) (map[string]string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return err
+		return nil, err
 	}
+	env := map[string]string{}
 	for line := range strings.SplitSeq(string(data), "\n") {
 		line = strings.TrimSpace(line)
 		if line == "" || strings.HasPrefix(line, "#") {
@@ -109,7 +113,10 @@ func LoadDotenv(path string) error {
 		if !ok {
 			continue
 		}
-		os.Setenv(strings.TrimSpace(k), strings.Trim(strings.TrimSpace(v), `"`))
+		key := strings.TrimSpace(k)
+		val := strings.Trim(strings.TrimSpace(v), `"`)
+		env[key] = val
+		os.Setenv(key, val)
 	}
-	return nil
+	return env, nil
 }

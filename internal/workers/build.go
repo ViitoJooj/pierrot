@@ -27,7 +27,7 @@ func Build(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 	if p.Dotenv != "" {
-		if err := readers.LoadDotenv(p.Dotenv); err != nil {
+		if p.Env, err = readers.LoadDotenv(p.Dotenv); err != nil {
 			log.Printf("dotenv: %v", err)
 		}
 	}

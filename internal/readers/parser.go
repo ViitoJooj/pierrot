@@ -39,8 +39,12 @@ func ParsePierrot(path string) (*Component, error) {
 	if err != nil {
 		return nil, fmt.Errorf("lendo %s: %w", path, err)
 	}
-	src := string(data)
+	return ParseSource(string(data)), nil
+}
 
+// ParseSource parseia fonte .pierrot já em memória (arquivo ou trecho de
+// @render pierrot)
+func ParseSource(src string) *Component {
 	c := &Component{Meta: map[string]string{}}
 
 	if m := scriptRe.FindStringSubmatch(src); m != nil {
@@ -75,5 +79,5 @@ func ParsePierrot(path string) (*Component, error) {
 	c.Script = strings.TrimSpace(metaRe.ReplaceAllString(c.Script, ""))
 	c.Template = strings.TrimSpace(src)
 
-	return c, nil
+	return c
 }

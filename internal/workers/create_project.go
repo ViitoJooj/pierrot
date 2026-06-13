@@ -30,19 +30,22 @@ func CreateProject(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	files := map[string]string{
-		filepath.Join(name, "settings.pierrot.json"):                   fmt.Sprintf(files.ConfJson, name),
-		filepath.Join(name, "src", "main.pierrot"):                     fmt.Sprintf(files.MainPierrot, name),
-		filepath.Join(name, "src", "globals.css"):                      files.GlobalCSS,
-		filepath.Join(name, "src", "pages", "home", "index.pierrot"):   pages.HomePagePierrot,
-		filepath.Join(name, "src", "pages", "home", "styles.css"):      pages.HomeCss,
-		filepath.Join(name, "src", "pages", "home", "script.ts"):       pages.HomeTS,
-		filepath.Join(name, "src", "pages", "errors", "index.pierrot"): pages.ErrorPierrot,
-		filepath.Join(name, "src", "pages", "errors", "styles.css"):    pages.ErrorCSS,
-		filepath.Join(name, "src", "pages", "errors", "script.ts"):     pages.ErrorTS,
+	scaffold := map[string][]byte{
+		filepath.Join(name, "settings.pierrot.json"):                   fmt.Appendf(nil, files.ConfJson, name),
+		filepath.Join(name, "src", "main.pierrot"):                     fmt.Appendf(nil, files.MainPierrot, name),
+		filepath.Join(name, "src", "globals.css"):                      []byte(files.GlobalCSS),
+		filepath.Join(name, "src", "pages", "home", "index.pierrot"):   []byte(pages.HomePagePierrot),
+		filepath.Join(name, "src", "pages", "home", "styles.css"):      []byte(pages.HomeCss),
+		filepath.Join(name, "src", "pages", "home", "script.ts"):       []byte(pages.HomeTS),
+		filepath.Join(name, "src", "pages", "errors", "index.pierrot"): []byte(pages.ErrorPierrot),
+		filepath.Join(name, "src", "pages", "errors", "styles.css"):    []byte(pages.ErrorCSS),
+		filepath.Join(name, "src", "pages", "errors", "script.ts"):     []byte(pages.ErrorTS),
+		// referenciados pelo set.Robots/set.Icon do main.pierrot do scaffold
+		filepath.Join(name, "src", "assets", "robots.txt"):  []byte(files.RobotsTxt),
+		filepath.Join(name, "src", "assets", "favicon.ico"): files.Favicon(),
 	}
-	for path, content := range files {
-		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+	for path, content := range scaffold {
+		if err := os.WriteFile(path, content, 0o644); err != nil {
 			log.Fatal(err)
 		}
 	}

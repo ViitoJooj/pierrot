@@ -2,8 +2,11 @@ package workers
 
 import (
 	"fmt"
+	"html"
 	"regexp"
 	"strings"
+
+	"github.com/ViitoJooj/pierrot/internal/readers"
 )
 
 // Diretivas de template: @for/@if viram funções JS que rendem o bloco no
@@ -12,14 +15,141 @@ import (
 // cada __pierrotUpdate) pelo runtime. Interpolação ${expr} fora de bloco vira
 // <span data-pierrot-expr="N"> atualizado do mesmo jeito.
 var (
-	commentLineRe = regexp.MustCompile(`(?m)^[ \t]*//.*\r?\n?`)
+	// comentário só com // no primeiro caractere da linha; indentado vira texto
+	commentLineRe = regexp.MustCompile(`(?m)^//.*\r?\n?`)
 	forLineRe     = regexp.MustCompile(`^\s*@for\s+(\w+)\s+in\s+(.+?)\s*$`)
 	ifLineRe      = regexp.MustCompile(`^\s*@if\s+(.+?)\s*$`)
 	elseLineRe    = regexp.MustCompile(`^\s*@else\s*$`)
 	endLineRe     = regexp.MustCompile(`^\s*@(?:end|endif)\s*$`)
 	interpRe      = regexp.MustCompile(`\$\{([^{}\n]+)\}`)
 	identRe       = regexp.MustCompile(`^[A-Za-z_$][\w$]*$`)
+	// @render nome(arg); em linha própria. O arg é ganancioso até o último ")"
+	// da linha, para string literal com parênteses dentro das aspas funcionar
+	renderLineRe = regexp.MustCompile(`(?m)^[ \t]*@render\s+(\w+)\s*\((.*)\)\s*;?[ \t\r]*$`)
+	// @bind={var}: two-way binding de input/textarea com uma variável do <script>
+	bindRe = regexp.MustCompile(`@bind=\{([^{}\n]+)\}`)
 )
+
+// renderEntry é um @render html/markdown avaliado pelo runtime no browser
+type renderEntry struct {
+	kind string // "html" ou "markdown"
+	expr string
+}
+
+// expandRenders processa as linhas @render antes de compileTemplate.
+// pierrot com string literal é resolvido em compilação: o trecho é parseado
+// como um mini-componente — o <script> dele entra no bundle da página e o
+// template é inlined no corpo. pierrot com expressão vira um iframe de preview
+// re-compilado no browser quando o valor muda (debounce de 300ms). html e
+// markdown viram placeholders <div data-pierrot-render="N"> preenchidos pelo
+// runtime a cada __pierrotUpdate
+func (rc *renderCtx) expandRenders(body string) (string, []renderEntry) {
+	var entries []renderEntry
+	body = renderLineRe.ReplaceAllStringFunc(body, func(m string) string {
+		g := renderLineRe.FindStringSubmatch(m)
+		kind, arg := g[1], strings.TrimSpace(g[2])
+		switch kind {
+		case "pierrot":
+			if src, ok := staticString(arg); ok {
+				frag := readers.ParseSource(src)
+				if frag.Script != "" {
+					rc.scripts = append(rc.scripts, chunk{name: "@render pierrot", code: frag.Script})
+				}
+				return frag.Template
+			}
+			fallthrough
+		case "html", "markdown":
+			id := len(entries)
+			// mesmo guard de typeof dos bindings: variável não declarada vira ""
+			if identRe.MatchString(arg) {
+				arg = fmt.Sprintf(`typeof %s === "undefined" ? "" : %s`, arg, arg)
+			}
+			entries = append(entries, renderEntry{kind: kind, expr: arg})
+			return fmt.Sprintf(`<div data-pierrot-render="%d" style="display:contents"></div>`, id)
+		default:
+			rc.errs = append(rc.errs, fmt.Sprintf("@render %s: renderizador desconhecido (use html, markdown ou pierrot)", kind))
+			return ""
+		}
+	})
+	return body, entries
+}
+
+// staticString reconhece um argumento que é string literal JS (a substituição
+// de prop literal gera um deles, possivelmente entre parênteses)
+func staticString(arg string) (string, bool) {
+	arg = trimBalancedParens(arg)
+	if len(arg) >= 2 {
+		switch arg[0] {
+		case '\'', '"', '`':
+			if arg[len(arg)-1] == arg[0] {
+				return jsUnquote(arg), true
+			}
+		}
+	}
+	return "", false
+}
+
+// expandBinds troca @bind={var} pelo oninput que escreve no alvo + um marcador
+// que o runtime usa para preencher o valor do elemento a partir da variável
+// (pulando o elemento focado, para não brigar com o usuário digitando)
+func (ct *compiledTemplate) expandBinds(s string) string {
+	return bindRe.ReplaceAllStringFunc(s, func(m string) string {
+		g := bindRe.FindStringSubmatch(m)
+		target := strings.TrimSpace(g[1])
+		id := len(ct.binds)
+		ct.binds = append(ct.binds, target)
+		return fmt.Sprintf(`oninput="%s = this.value; __pierrotUpdate()" data-pierrot-bindval="%d"`, html.EscapeString(target), id)
+	})
+}
+
+// trimBalancedParens tira um par externo de parênteses, se de fato envolver o
+// argumento todo (ex. "(code)" sim, "(a)+(b)" não)
+func trimBalancedParens(s string) string {
+	for strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
+		depth := 0
+		for i, r := range s {
+			switch r {
+			case '(':
+				depth++
+			case ')':
+				depth--
+			}
+			if depth == 0 && i < len(s)-1 {
+				return s
+			}
+		}
+		s = strings.TrimSpace(s[1 : len(s)-1])
+	}
+	return s
+}
+
+// jsUnquote decodifica uma string literal JS ('...', "..." ou `...`):
+// remove as aspas e resolve os escapes comuns (\n, \t, \r, \\, \', \", \/)
+func jsUnquote(s string) string {
+	if len(s) < 2 {
+		return s
+	}
+	s = s[1 : len(s)-1]
+	var b strings.Builder
+	for i := 0; i < len(s); i++ {
+		if s[i] != '\\' || i+1 >= len(s) {
+			b.WriteByte(s[i])
+			continue
+		}
+		i++
+		switch s[i] {
+		case 'n':
+			b.WriteByte('\n')
+		case 't':
+			b.WriteByte('\t')
+		case 'r':
+			b.WriteByte('\r')
+		default:
+			b.WriteByte(s[i])
+		}
+	}
+	return b.String()
+}
 
 // compiledTemplate é o resultado de compileTemplate: o HTML com placeholders
 // e o JS que o runtime usa para preenchê-los
@@ -27,6 +157,7 @@ type compiledTemplate struct {
 	html   string
 	blocks []string // corpo da função JS de cada bloco @for/@if, na ordem dos placeholders
 	exprs  []string // expressão JS de cada ${expr} fora de bloco, na ordem dos spans
+	binds  []string // alvo JS de cada @bind={var}, na ordem dos data-pierrot-bindval
 	errs   []string
 }
 
@@ -108,8 +239,10 @@ func (ct *compiledTemplate) compileBlock(lines []string) string {
 // ${expr} pela expressão escapada. %q do Go gera um literal de string válido
 // em JS para o trecho fixo
 func (ct *compiledTemplate) emitText(line string, b *strings.Builder) {
+	// @bind antes de @evento: o eventRe casaria @bind={var} como evento
+	line = ct.expandBinds(line)
 	// @click={fn} dentro de bloco vira o mesmo onclick gerado fora dele
-	line = eventRe.ReplaceAllString(line, `on$1="$2(); __pierrotUpdate()"`)
+	line = expandEvents(line)
 	b.WriteString("__h += ")
 	last := 0
 	for _, loc := range interpRe.FindAllStringSubmatchIndex(line, -1) {

@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -22,12 +23,40 @@ import (
 
 var (
 	bindingRe = regexp.MustCompile(`\$\{(\w+)\}`)
-	// @click={fn}
-	eventRe = regexp.MustCompile(`@(\w+)=\{(\w+)\}`)
+	// @click={fn} ou @click={fn(args)} — args sem parênteses/chaves aninhados
+	eventRe = regexp.MustCompile(`@(\w+)=\{(\w+)(?:\(([^(){}\n]*)\))?\}`)
 	slotRe  = regexp.MustCompile(`<Slot\s*/>`)
 	// tag capitalizada = componente; se sobrar no HTML final, faltou import
 	unknownTagRe = regexp.MustCompile(`<([A-Z]\w*)[^>]*/?>`)
+	// get.Dotenv("NOME") — resolvido no servidor (ver substDotenv)
+	dotenvCallRe = regexp.MustCompile(`get\.Dotenv\(\s*"([^"\n]*)"\s*\)`)
+	dotenvAnyRe  = regexp.MustCompile(`get\.Dotenv\s*\(`)
 )
+
+// substDotenv troca cada get.Dotenv("NOME") do script pelo valor literal do
+// .env, antes do bundle. Só as variáveis referenciadas saem no HTML — o resto
+// do .env nunca chega no browser. env == nil significa dotenv desabilitado no
+// settings. Chamada com argumento que não seja string literal vira erro:
+// a substituição é textual, não dá para resolver nome dinâmico
+func substDotenv(code, src string, env map[string]string, errs *[]string) string {
+	code = dotenvCallRe.ReplaceAllStringFunc(code, func(m string) string {
+		name := dotenvCallRe.FindStringSubmatch(m)[1]
+		if env == nil {
+			*errs = append(*errs, fmt.Sprintf("get.Dotenv(%q) em %s: dotenv desabilitado no settings.pierrot.json", name, src))
+			return `""`
+		}
+		v, ok := env[name]
+		if !ok {
+			*errs = append(*errs, fmt.Sprintf("get.Dotenv(%q) em %s: variável não existe no .env", name, src))
+			return `""`
+		}
+		return strconv.Quote(v)
+	})
+	if dotenvAnyRe.MatchString(code) {
+		*errs = append(*errs, fmt.Sprintf("get.Dotenv em %s: só aceita string literal entre aspas duplas", src))
+	}
+	return code
+}
 
 // runtimeJS gera o runtime de bindings sem eval: o servidor conhece os nomes
 // usados em ${...} e monta um objeto state com eles. typeof protege contra
@@ -35,10 +64,101 @@ var (
 // blocks e exprs vêm de compileTemplate: cada bloco @for/@if e cada {expr}
 // vira uma função reavaliada a cada __pierrotUpdate, então os placeholders
 // re-renderizam quando um @evento muda o estado
-func runtimeJS(names, blocks, exprs []string) string {
+// compilerJS é o compilador de template portado para o browser, incluído só
+// quando a página usa @render pierrot com expressão. Compila o trecho inteiro
+// como uma função de render (blocos viram controle de fluxo JS) e monta um
+// documento completo para o iframe sandboxed — o <script> do exemplo roda
+// isolado lá dentro, sem tocar no estado da página
+const compilerJS = `function __pierrotCompile(src) {
+	var esc = function (s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); };
+	var m = String(src).match(/<script>([\s\S]*?)<\/script>/i);
+	var script = m ? m[1] : "";
+	var tpl = m ? String(src).replace(m[0], "") : String(src);
+	script = script.replace(/^\s*import\s+.*$/gm, "");
+	// anotação de tipo em let/const/var some; o resto do TS não é suportado
+	script = script.replace(/^(\s*(?:let|const|var)\s+\w+)\s*:\s*[^=;\n]+(?=[=;])/gm, "$1");
+	var events = function (l) {
+		return l.replace(/@(\w+)=\{(\w+)(?:\(([^(){}\n]*)\))?\}/g, function (_, ev, fn, args) {
+			return "on" + ev + '="' + fn + "(" + esc(args || "") + '); __update()"';
+		});
+	};
+	var body = 'var __h = "";\n';
+	var lines = tpl.split(/\r?\n/);
+	var interp = /\$\{([^{}\n]+)\}/g;
+	for (var i = 0; i < lines.length; i++) {
+		var l = lines[i], mm;
+		if (/^\/\//.test(l)) continue;
+		if ((mm = l.match(/^\s*@for\s+(\w+)\s+in\s+(.+?)\s*$/))) { body += "for (const " + mm[1] + " of (" + mm[2] + ")) {\n"; continue; }
+		if ((mm = l.match(/^\s*@if\s+(.+?)\s*$/))) { body += "if (" + mm[1] + ") {\n"; continue; }
+		if (/^\s*@else\s*$/.test(l)) { body += "} else {\n"; continue; }
+		if (/^\s*@(?:end|endif)\s*$/.test(l)) { body += "}\n"; continue; }
+		if (!l.trim()) continue;
+		l = events(l);
+		var part = "__h += ", last = 0, mt;
+		interp.lastIndex = 0;
+		while ((mt = interp.exec(l))) {
+			part += JSON.stringify(l.slice(last, mt.index)) + " + __esc(" + mt[1] + ") + ";
+			last = mt.index + mt[0].length;
+		}
+		part += JSON.stringify(l.slice(last) + "\n") + ";\n";
+		body += part;
+	}
+	body += "return __h;";
+	var js = 'function __esc(v){return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}\n'
+		+ script
+		+ "\nfunction __render() {\n" + body + "\n}\n"
+		+ "function __update(){try{document.getElementById('app').innerHTML=__render()}catch(e){document.getElementById('app').innerHTML=\"<pre style='color:#e5484d;white-space:pre-wrap'>\"+__esc(e)+\"</pre>\"}}\n__update();";
+	// "</script" dentro das strings geradas fecharia o <script> do documento;
+	// só essa sequência — "</" solto aparece em regex legítima (ex. /</g)
+	js = js.replace(/<\/script/gi, "<\\/script");
+	return '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:system-ui;margin:14px;color:#1a1410}h1,h2{font-family:Georgia,serif;font-weight:400;margin:0 0 10px}button{font-family:ui-monospace,Consolas,monospace;font-size:13px;padding:5px 16px;border:none;border-radius:8px;background:#1a1410;color:#f5f0e4;cursor:pointer}</style></head><body><div id="app"></div><script>' + js + '<\/script></body></html>';
+}
+`
+
+func runtimeJS(names, blocks, exprs, binds []string, renders []renderEntry) string {
 	var b strings.Builder
+	for _, r := range renders {
+		if r.kind == "pierrot" {
+			b.WriteString(compilerJS)
+			break
+		}
+	}
 	b.WriteString(`function __pierrotEsc(v) {
 	return String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function __pierrotMd(src) {
+	var esc = function (s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); };
+	var inline = function (s) {
+		return esc(s)
+			.replace(/\x60([^\x60]+)\x60/g, "<code>$1</code>")
+			.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+			.replace(/\*([^*]+)\*/g, "<em>$1</em>")
+			.replace(/\[([^\]]+)\]\(([^()\s]+)\)/g, '<a href="$2">$1</a>');
+	};
+	var lines = String(src).split(/\r?\n/), out = [], i = 0;
+	while (i < lines.length) {
+		var l = lines[i];
+		if (/^\x60\x60\x60/.test(l)) {
+			var buf = [];
+			for (i++; i < lines.length && !/^\x60\x60\x60/.test(lines[i]); i++) buf.push(lines[i]);
+			i++;
+			out.push("<pre><code>" + esc(buf.join("\n")) + "</code></pre>");
+			continue;
+		}
+		var h = l.match(/^(#{1,6})\s+(.*)$/);
+		if (h) { out.push("<h" + h[1].length + ">" + inline(h[2]) + "</h" + h[1].length + ">"); i++; continue; }
+		if (/^\s*[-*]\s+/.test(l)) {
+			var items = [];
+			for (; i < lines.length && /^\s*[-*]\s+/.test(lines[i]); i++) items.push("<li>" + inline(lines[i].replace(/^\s*[-*]\s+/, "")) + "</li>");
+			out.push("<ul>" + items.join("") + "</ul>");
+			continue;
+		}
+		if (/^\s*$/.test(l)) { i++; continue; }
+		var para = [];
+		for (; i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#{1,6}\s|\x60\x60\x60|\s*[-*]\s)/.test(lines[i]); i++) para.push(lines[i]);
+		out.push("<p>" + para.map(inline).join("<br>") + "</p>");
+	}
+	return out.join("\n");
 }
 var __pierrotBlocks = [
 `)
@@ -47,6 +167,14 @@ var __pierrotBlocks = [
 	}
 	b.WriteString("];\nvar __pierrotExprs = [\n")
 	for _, e := range exprs {
+		fmt.Fprintf(&b, "function () { return (%s); },\n", e)
+	}
+	b.WriteString("];\nvar __pierrotRenders = [\n")
+	for _, r := range renders {
+		fmt.Fprintf(&b, "{ kind: %q, fn: function () { return (%s); } },\n", r.kind, r.expr)
+	}
+	b.WriteString("];\nvar __pierrotBindVals = [\n")
+	for _, e := range binds {
 		fmt.Fprintf(&b, "function () { return (%s); },\n", e)
 	}
 	b.WriteString("];\nfunction __pierrotUpdate() {\n\tconst state = {\n")
@@ -67,6 +195,38 @@ var __pierrotBlocks = [
 			try { el.textContent = fn(); } catch (e) { console.error("pierrot: {expr} " + i + ":", e); }
 		});
 	});
+	__pierrotBindVals.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-bindval="' + i + '"]').forEach(function (el) {
+			if (el === document.activeElement) return;
+			try { var v = fn(); el.value = v == null ? "" : v; } catch (e) {}
+		});
+	});
+	__pierrotRenders.forEach(function (r, i) {
+		document.querySelectorAll('[data-pierrot-render="' + i + '"]').forEach(function (el) {
+			try {
+				if (r.kind === "pierrot") {
+					// preview num iframe, recriado só quando o valor muda;
+					// debounce de 300ms segura recompilação durante digitação
+					var fr = el.firstChild;
+					if (!fr) {
+						fr = document.createElement("iframe");
+						fr.className = "pierrot-preview";
+						fr.setAttribute("sandbox", "allow-scripts");
+						el.appendChild(fr);
+					}
+					var v = String(r.fn());
+					if (v === el.__pierrotSrc) return;
+					var first = el.__pierrotSrc === undefined;
+					el.__pierrotSrc = v;
+					clearTimeout(el.__pierrotT);
+					el.__pierrotT = setTimeout(function () { fr.srcdoc = __pierrotCompile(v); }, first ? 0 : 300);
+					return;
+				}
+				var v = String(r.fn());
+				el.innerHTML = r.kind === "markdown" ? __pierrotMd(v) : v;
+			} catch (e) { console.error("pierrot: @render " + i + ":", e); }
+		});
+	});
 }
 __pierrotUpdate();
 `)
@@ -80,11 +240,15 @@ __pierrotUpdate();
 // 2 = "team"); fora do range devolve ""
 // get.Status(): status HTTP da página como string ("200", "404"...), vindo do
 // __pierrotStatus injetado pelo renderPage
-// client.Redirect(url): navega para a url
+// get.Dotenv("NOME"): resolvido no servidor (substDotenv) — não existe em
+// runtime; o bundle já sai com o valor literal
+// client.Redirect(url): navega para a url; .newTab() abre em nova aba em vez
+// de navegar (a navegação é agendada num setTimeout(0) para o .newTab poder
+// cancelá-la na mesma chamada síncrona)
 // time.Sleep(n).sec(): Promise que resolve após n segundos (msec/sec/min/hr/
-// day/week/month/year); ao resolver dispara __pierrotUpdate para os bindings
-// refletirem estado mudado durante a espera. O compilador injeta o await
-// (ver makeSleepAsync)
+// day/week/month/year); depois que o código após o await roda, dispara
+// __pierrotUpdate para os bindings refletirem o estado novo. O compilador
+// injeta o await (ver makeSleepAsync)
 const preludeJS = `var get = {
 	Path: function (n) {
 		var p = location.pathname.split("/").filter(Boolean);
@@ -95,15 +259,25 @@ const preludeJS = `var get = {
 	},
 };
 var client = {
-	Redirect: function (url) { location.assign(url); },
+	Redirect: function (url) {
+		var t = setTimeout(function () { location.assign(url); }, 0);
+		return {
+			newTab: function () {
+				clearTimeout(t);
+				window.open(url, "_blank", "noopener");
+			},
+		};
+	},
 };
 var time = {
 	Sleep: function (n) {
 		var wait = function (ms) {
 			return new Promise(function (done) {
 				setTimeout(function () {
-					if (typeof __pierrotUpdate === "function") __pierrotUpdate();
 					done();
+					// microtask depois da continuação do await: o estado mudado
+					// após o Sleep já está aplicado quando o update roda
+					if (typeof __pierrotUpdate === "function") Promise.resolve().then(__pierrotUpdate);
 				}, n * ms);
 			});
 		};
@@ -136,7 +310,7 @@ func DevServer(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 	if p.Dotenv != "" {
-		if err := readers.LoadDotenv(p.Dotenv); err != nil {
+		if p.Env, err = readers.LoadDotenv(p.Dotenv); err != nil {
 			log.Printf("dotenv: %v", err)
 		}
 	}
@@ -145,6 +319,9 @@ func DevServer(cmd *cobra.Command, args []string) {
 	http.HandleFunc("/__pierrot/events", reloadEvents)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// sem isso o browser aplica cache heurístico no Last-Modified do
+		// ServeFile e segura css/js velho mesmo após o live reload
+		w.Header().Set("Cache-Control", "no-store")
 		page := strings.Trim(r.URL.Path, "/")
 		if page == "" {
 			page = defaultPage(p)
@@ -518,6 +695,10 @@ func renderPage(p *readers.Project, page string, comp *readers.Component, dev bo
 		}
 	}
 
+	// linhas @render: pierrot é compilado e inlined; html/markdown viram
+	// placeholders preenchidos pelo runtime
+	body, renders := rc.expandRenders(body)
+
 	// comentários //, blocos @for/@if e interpolações ${expr} do template
 	ct := compileTemplate(body)
 	rc.errs = append(rc.errs, ct.errs...)
@@ -533,10 +714,13 @@ func renderPage(p *readers.Project, page string, comp *readers.Component, dev bo
 		}
 	}
 
+	// @bind={var} vira oninput + marcador de valor; antes de expandEvents,
+	// que casaria @bind como @evento
+	body = ct.expandBinds(body)
 	// ${var} vira um span que o runtime preenche
 	body = bindingRe.ReplaceAllString(body, `<span data-bind="$1"></span>`)
-	// @click={fn} vira onclick nativo + atualização do DOM
-	body = eventRe.ReplaceAllString(body, `on$1="$2(); __pierrotUpdate()"`)
+	// @click={fn} ou @click={fn(args)} vira onclick nativo + atualização do DOM
+	body = expandEvents(body)
 	// ${expr} composto que sobrou vira span preenchido pelo runtime (depois de ${var} e @evento)
 	body = ct.replaceExprs(body)
 
@@ -549,7 +733,9 @@ func renderPage(p *readers.Project, page string, comp *readers.Component, dev bo
 	}
 	var js strings.Builder
 	for _, ch := range rc.scripts {
-		res := api.Transform(makeSleepAsync(ch.code), api.TransformOptions{
+		// get.Dotenv("X") vira o valor literal antes do transform
+		code := substDotenv(ch.code, ch.name, p.Env, &rc.errs)
+		res := api.Transform(makeSleepAsync(code), api.TransformOptions{
 			Loader: api.LoaderTS,
 			// sem MinifyIdentifiers: renomear variável de topo quebraria o
 			// state gerado para os bindings ${var}
@@ -622,5 +808,5 @@ var __pierrotStatus = %d;
 %s
 </script>
 </body>
-</html>`, head.String(), body, overlay, status, preludeJS, js.String(), runtimeJS(bindNames, ct.blocks, ct.exprs), reload), rc.styles, nil
+</html>`, head.String(), body, overlay, status, preludeJS, js.String(), runtimeJS(bindNames, ct.blocks, ct.exprs, ct.binds, renders), reload), rc.styles, nil
 }
