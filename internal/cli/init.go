@@ -6,8 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// pierrot init <project-name>
-
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize a new project",

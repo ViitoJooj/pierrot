@@ -1,0 +1,105 @@
+<script>
+    // /docs — documentation overview (English default).
+    import { DocsNav } from "../../components/docs-nav/index.pierrot";
+    import "../../lib/doc.ts";
+    import "./snippets.ts";
+
+    set.Title("Documentation · pierrot");
+    set.Description("Pierrot is a single-file component framework compiled in Go. Read the full documentation.");
+</script>
+
+<div class="docs-wrap">
+    <DocsNav />
+    <article class="docs-content doc">
+        <p class="doc-kicker">— Reference / Overview</p>
+        <h1>Pierrot documentation</h1>
+        <p class="doc-lead">Pierrot is a <strong>single-file component</strong> framework
+            compiled in <strong>Go</strong>. The CLI understands the <code>.pierrot</code>
+            language, compiles everything to static HTML and ships the browser a runtime of a
+            few kilobytes — no virtual DOM, no <code>eval</code>, no <code>node_modules</code>.</p>
+
+        <p>This is the full documentation. If you just want to see something running, jump to
+            <a href="/docs/getting-started">Hello World in 30s</a>.</p>
+
+        <h2>What Pierrot is</h2>
+        <p>You write the UI in <code>.pierrot</code> files. Each file is a single component that
+            bundles three things — an optional <code>&lt;script&gt;</code> (imports, metadata,
+            props and TypeScript logic) and the template (HTML plus directives):</p>
+
+@render html(docCode(snipComponent));
+
+        <p>The server (<code>pierrot dev</code>) or the build (<code>pierrot build</code>) reads
+            this file, resolves imports and components, turns the TypeScript into JavaScript with
+            <a href="https://esbuild.github.io/">esbuild</a> and assembles a complete HTML
+            document. The browser gets ready-made HTML plus a small runtime that re-evaluates the
+            dynamic bits when an event changes the state.</p>
+
+        <p>There is no JS build step in your project, no <code>package.json</code>, no virtual
+            DOM. State is just the top-level variables of the <code>&lt;script&gt;</code>; every
+            <code>@event</code> calls <code>__pierrotUpdate()</code> at the end to repaint the
+            affected spans and blocks.</p>
+
+        <h2>Architecture</h2>
+        <p>The whole compiler lives in <code>internal/</code>. It is a short pipeline of pure
+            functions that runs <strong>per request</strong> under <code>pierrot dev</code> and
+            <strong>once per page</strong> under <code>pierrot build</code>. No giant AST, no
+            worker pool, no cache.</p>
+
+        <div class="doc-table-wrap">
+            <table>
+                <thead>
+                    <tr><th>#</th><th>Step</th><th>File</th><th>What it does</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td><strong>parse</strong></td><td><code>readers/parser.go</code></td><td>Splits the <code>&lt;script&gt;</code> from the template. Extracts CSS/TS/component imports, <code>set.X</code> metadata and props.</td></tr>
+                    <tr><td>2</td><td><strong>expansion</strong></td><td><code>workers/dev_server.go</code></td><td>Recursive: layout → page → components. <code>&lt;Slot /&gt;</code> receives the page; each <code>&lt;Name /&gt;</code> receives the component HTML, props applied per instance.</td></tr>
+                    <tr><td>3</td><td><strong>template</strong></td><td><code>workers/template.go</code></td><td><code>@for</code>/<code>@if</code> blocks become JS functions. <code>@render</code> becomes a placeholder. <code>//</code> comments are dropped.</td></tr>
+                    <tr><td>4</td><td><strong>bindings</strong></td><td><code>workers/dev_server.go</code></td><td>Plain <code>&#36;{var}</code> becomes <code>&lt;span data-bind&gt;</code>. <code>@bind</code> becomes <code>oninput</code>. <code>@event</code> becomes <code>on&lt;event&gt;</code> + update.</td></tr>
+                    <tr><td>5</td><td><strong>transform</strong></td><td>esbuild</td><td>Each <code>&lt;script&gt;</code> and each <code>import "*.ts"</code> becomes a TS → JS chunk. <code>get.Dotenv("X")</code> is replaced by the literal value first.</td></tr>
+                    <tr><td>6</td><td><strong>assembly</strong></td><td><code>workers/dev_server.go</code></td><td>Final HTML: <code>&lt;head&gt;</code> with title/meta/CSS links, <code>&lt;body&gt;</code> with the markup, and the generated runtime.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>The browser runtime</h3>
+        <p>The runtime uses no <code>eval</code>. The server already knows the names used in
+            <code>&#36;{...}</code> and generates a <code>state</code> object from them. On every
+            <code>__pierrotUpdate()</code>:</p>
+        <ul>
+            <li><code>data-bind</code> spans get the variable's value;</li>
+            <li><code>data-pierrot-block</code> blocks (<code>@for</code>/<code>@if</code>) re-run their JS function and re-render;</li>
+            <li><code>data-pierrot-expr</code> spans (composite expressions) are re-evaluated;</li>
+            <li>inputs with <code>@bind</code> get the variable's value (skipping the focused element);</li>
+            <li><code>@render</code> placeholders are refilled (html / markdown / preview iframe).</li>
+        </ul>
+
+        <h3>dev vs build</h3>
+        <div class="doc-table-wrap">
+            <table>
+                <thead>
+                    <tr><th></th><th><code>pierrot dev</code></th><th><code>pierrot build</code></th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>When it compiles</td><td>every request</td><td>once per page</td></tr>
+                    <tr><td>CSS</td><td>one <code>&lt;link&gt;</code> per file</td><td>one minified <code>bundle.css</code> per page</td></tr>
+                    <tr><td>Errors</td><td>overlay + live reload</td><td>abort the build (non-zero exit)</td></tr>
+                    <tr><td>Live reload</td><td>yes (SSE on <code>/__pierrot/events</code>)</td><td>—</td></tr>
+                    <tr><td>Output</td><td>in memory</td><td><code>outDir/</code> (static HTML + assets)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>Quick conventions</h2>
+        <ul>
+            <li><strong>Routes</strong> = folders in <code>src/pages/</code>. <code>pages/about/index.pierrot</code> → route <code>/about</code>.</li>
+            <li>The <strong>default page</strong> (<code>/</code>) and <strong>fallback</strong> (404) are set in the layout with <code>set.Default(...)</code> and <code>set.Fallback(...)</code>.</li>
+            <li><strong>Components</strong> start with an <strong>uppercase letter</strong> (<code>&lt;Header /&gt;</code>); lowercase tags are plain HTML.</li>
+            <li><strong>Props</strong> are declared in the component as <code>let name: type;</code> <strong>with no value</strong>.</li>
+            <li><strong>Assets</strong> (images, fonts, <code>robots.txt</code>, <code>favicon.ico</code>) live in <code>src/assets/</code>.</li>
+        </ul>
+
+        <div class="doc-pager">
+            <a class="pager-next" href="/docs/getting-started"><span class="pager-dir">Next →</span><span>Hello World in 30s</span></a>
+        </div>
+    </article>
+</div>

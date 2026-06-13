@@ -3,14 +3,17 @@
     import { CliComponent } from "../../components/cli-div/index.pierrot";
     import { CodeExample } from "../../components/code-example/index.pierrot";
 
-    let code: string = '<script>\nimport "./style.css";\nlet count: number = 0;\n \nfunction increment() {\n    count++;\n }\n <\/script>\n\n<h1>Cliques: ${count}</h1>\n<button @click={increment}>+1</button>';
+    set.Title("pierrot · front-end framework in Go");
+    set.Description("Pierrot is a single-file component framework compiled in Go.");
+
+    let code: string = '<script>\nimport "./style.css";\nlet count: number = 0;\n \nfunction increment() {\n    count++;\n }\n <\/script>\n\n<h1>Clicks: ${count}</h1>\n<button @click={increment}>+1</button>';
 
     let strip = [
-        { label: "sem node_modules", color: "#FFB300" },
-        { label: "sem virtual DOM", color: "#C8553D" },
-        { label: "sem eval", color: "#1A1410" },
-        { label: "live reload por SSE", color: "#FFB300" },
-        { label: "overlay de erros", color: "#C8553D" },
+        { label: "no node_modules", color: "#FFB300" },
+        { label: "no virtual DOM", color: "#C8553D" },
+        { label: "no eval", color: "#1A1410" },
+        { label: "live reload over SSE", color: "#FFB300" },
+        { label: "error overlay", color: "#C8553D" },
         { label: "TypeScript via esbuild", color: "#1A1410" },
     ];
 
@@ -18,22 +21,22 @@
         {
             n: "01",
             color: "#FFB300",
-            title: "Sem node_modules.",
-            desc: "Um único binário Go. Sem package-lock, sem pasta gigante, sem npm install de quatro minutos. Você baixa o pierrot e pronto.",
+            title: "No node_modules.",
+            desc: "A single Go binary. No package-lock, no giant folder, no four-minute npm install. You download pierrot and you are done.",
             note: "go install · ~12 MB",
         },
         {
             n: "02",
             color: "#C8553D",
-            title: "Sem virtual DOM.",
-            desc: "O servidor já sabe o HTML. O browser só preenche spans com data-bind e re-roda blocos @for/@if após cada evento. Runtime gerado, sem eval.",
+            title: "No virtual DOM.",
+            desc: "The server already knows the HTML. The browser only fills data-bind spans and re-runs @for/@if blocks after each event. Generated runtime, no eval.",
             note: "runtime · ~3 KB gzip",
         },
         {
             n: "03",
             color: "#1A1410",
             title: "Single-file.",
-            desc: "Script, template, imports e metadados no mesmo .pierrot. Componente, página ou layout — todos seguem a mesma anatomia simples.",
+            desc: "Script, template, imports and metadata in the same .pierrot. Component, page or layout — all share the same simple anatomy.",
             note: "<script> + template",
         },
     ];
@@ -42,23 +45,23 @@
         {
             n: "1",
             tag: "init",
-            title: "Crie um projeto",
-            cmd: "pierrot init meuapp",
-            desc: "Scaffold mínimo: settings.pierrot.json, main.pierrot com layout global e uma página home pronta.",
+            title: "Create a project",
+            cmd: "pierrot init myapp",
+            desc: "Minimal scaffold: settings.pierrot.json, main.pierrot with the global layout and a ready-made home page.",
         },
         {
             n: "2",
             tag: "dev",
-            title: "Rode o servidor",
-            cmd: "cd meuapp && pierrot dev",
-            desc: "http://localhost:3000 com live reload por SSE. Cada request recompila — sem cache, sem hot module replacement quebrado.",
+            title: "Run the server",
+            cmd: "cd myapp && pierrot dev",
+            desc: "http://localhost:3000 with live reload over SSE. Every request recompiles — no cache, no broken hot module replacement.",
         },
         {
             n: "3",
             tag: "ship",
-            title: "Site estático",
+            title: "Static site",
             cmd: "pierrot build",
-            desc: "Gera HTML + bundle.css por página no outDir. JS e CSS minificados. Pode jogar em qualquer CDN.",
+            desc: "Generates HTML + bundle.css per page in the outDir. Minified JS and CSS. Drop it on any CDN.",
         },
     ];
 
@@ -67,37 +70,37 @@
             n: "1",
             title: "parse",
             file: "parser.go",
-            desc: "Separa <script> do HTML; extrai imports CSS/TS/componente e metadados set.X.",
+            desc: "Splits <script> from HTML; extracts CSS/TS/component imports and set.X metadata.",
         },
         {
             n: "2",
-            title: "expansão",
+            title: "expansion",
             file: "dev_server.go",
-            desc: "Recursivo: layout → página → componentes. <Slot /> recebe a página; <Nome /> recebe o HTML do filho.",
+            desc: "Recursive: layout → page → components. <Slot /> receives the page; <Name /> receives the child HTML.",
         },
         {
             n: "3",
             title: "template",
             file: "template.go",
-            desc: "Blocos @for/@if viram funções JS. ${expr} compõe com __pierrotEsc(). @evento vira onclick nativo.",
+            desc: "@for/@if blocks become JS functions. ${expr} composes with __pierrotEsc(). @event becomes a native onclick.",
         },
         {
             n: "4",
             title: "bindings",
             file: "dev_server.go",
-            desc: "${var} simples vira <span data-bind>. @evento ganha __pierrotUpdate() após o handler.",
+            desc: "Plain ${var} becomes <span data-bind>. @event gains __pierrotUpdate() after the handler.",
         },
         {
             n: "5",
             title: "transform",
             file: "esbuild",
-            desc: "TS → JS por chunk. Erro de transform vai pro overlay no dev, derruba o build em produção.",
+            desc: "TS → JS per chunk. A transform error hits the overlay in dev, aborts the build in production.",
         },
         {
             n: "6",
-            title: "montagem",
+            title: "assembly",
             file: "dev_server.go",
-            desc: "HTML final: <head> com title/meta/links + <body> com markup + runtime estático sem eval.",
+            desc: "Final HTML: <head> with title/meta/links + <body> with markup + static runtime, no eval.",
         },
     ];
 
@@ -110,22 +113,22 @@
 
 <main>
     <div class="home-top-left-side">
-        <div class="home-badge"><span class="badge-dot"></span>v0.1 · framework de front-end em Go</div>
+        <div class="home-badge"><span class="badge-dot"></span>v0.1 · front-end framework in Go</div>
 
-        <h2 class="home-title">Componentes em um arquivo.</h2>
-        <h2 class="home-title-secondary">Compilados em Go.</h2>
+        <h2 class="home-title">Components in one file.</h2>
+        <h2 class="home-title-secondary">Compiled in Go.</h2>
 
-        <p class="home-desc">Pierrot é um framework de componentes single-file.
-            O CLI escrito em Go compila <span class="mkd-string">.pierrot</span>
-            direto para HTML; o browser recebe um runtime de poucos kilobytes,
-            sem virtual DOM, sem eval, sem npm.
+        <p class="home-desc">Pierrot is a single-file component framework.
+            The Go CLI compiles <span class="mkd-string">.pierrot</span>
+            straight to HTML; the browser gets a runtime of a few kilobytes,
+            no virtual DOM, no eval, no npm.
         </p>
 
         <CliComponent command="go install github.com/pierrot/cmd/pierrot@latest" />
 
         <div class="home-actions">
-            <a class="primary-btn" href="/docs">ler a documentação →</a>
-            <a class="ghost-btn" href="/docs">hello world em 30s</a>
+            <a class="primary-btn" href="/docs">read the documentation →</a>
+            <a class="ghost-btn" href="/docs/getting-started">hello world in 30s</a>
         </div>
     </div>
     <div class="home-top-right-side">
@@ -142,12 +145,12 @@
 <section class="why">
     <div class="why-head">
         <div>
-            <p class="why-kicker">— 01 / POR QUÊ</p>
-            <h2 class="why-title">Três coisas<br>que o Pierrot <em>não tem.</em></h2>
+            <p class="why-kicker">— 01 / WHY</p>
+            <h2 class="why-title">Three things<br>Pierrot <em>does not have.</em></h2>
         </div>
-        <p class="why-desc">Cada decisão do framework começa em remoção. O resultado é
-            um stack que cabe na cabeça em uma tarde: um binário Go, um arquivo por
-            componente, um runtime que cabe em poucos kilobytes.</p>
+        <p class="why-desc">Every framework decision starts with removal. The result is
+            a stack that fits in your head in an afternoon: one Go binary, one file per
+            component, a runtime that fits in a few kilobytes.</p>
     </div>
     <div class="why-cards">
 @for c in cards
@@ -167,11 +170,11 @@
         <div class="qs-head">
             <div>
                 <p class="qs-kicker">— 02 / QUICKSTART</p>
-                <h2 class="qs-title">Do zero ao<br>localhost <em>em 30 segundos.</em></h2>
+                <h2 class="qs-title">From zero to<br>localhost <em>in 30 seconds.</em></h2>
             </div>
-            <p class="qs-desc">Sem template repo no GitHub, sem
-                <span class="qs-chip">create-pierrot-app</span>. Um binário, três
-                comandos. Salvou o arquivo, o browser recarrega.</p>
+            <p class="qs-desc">No GitHub template repo, no
+                <span class="qs-chip">create-pierrot-app</span>. One binary, three
+                commands. Save the file, the browser reloads.</p>
         </div>
         <div class="qs-cards">
 @for s in steps
@@ -189,12 +192,12 @@
 <section class="arch">
     <div class="arch-head">
         <div>
-            <p class="arch-kicker">— 05 / ARQUITETURA</p>
-            <h2 class="arch-title">O que acontece<br>entre <em>.pierrot</em> e <em class="arch-html">&lt;html&gt;</em>.</h2>
+            <p class="arch-kicker">— 05 / ARCHITECTURE</p>
+            <h2 class="arch-title">What happens<br>between <em>.pierrot</em> and <em class="arch-html">&lt;html&gt;</em>.</h2>
         </div>
-        <p class="arch-desc">Um pipeline curto, todo em Go. Cada etapa é um arquivo no
-            <span class="arch-chip">internal/</span>. Sem AST gigante, sem worker pool,
-            sem cache — funções puras que rodam por request no dev e uma vez no build.</p>
+        <p class="arch-desc">A short pipeline, all in Go. Each step is a file under
+            <span class="arch-chip">internal/</span>. No giant AST, no worker pool,
+            no cache — pure functions that run per request in dev and once at build.</p>
     </div>
     <div class="arch-panel">
         <div class="arch-steps">
@@ -210,7 +213,7 @@
 @end
         </div>
         <div class="arch-out">
-            <span class="arch-out-label">SAÍDA ↳</span>
+            <span class="arch-out-label">OUTPUT ↳</span>
 @for o in outputs
             <span class="arch-pill"><span class="pill-diamond" style="color: ${o.color}">◆</span>${o.label}</span>
 @end
@@ -221,13 +224,13 @@
 <section class="cta">
     <div class="cta-box">
         <div class="cta-decor"><span style="color: #FFB300">◆</span><span style="color: #C8553D">◆</span><span style="color: #B8AEA0">◆</span></div>
-        <p class="cta-kicker">— V0.1 DISPONÍVEL</p>
-        <h2 class="cta-title">Web em Go.<br><em>Em um arquivo.</em></h2>
-        <p class="cta-desc">Instale o binário, rode <span class="cta-chip">pierrot init</span>
-            e tenha um projeto rodando antes do café terminar.</p>
+        <p class="cta-kicker">— V0.1 AVAILABLE</p>
+        <h2 class="cta-title">Web in Go.<br><em>In one file.</em></h2>
+        <p class="cta-desc">Install the binary, run <span class="cta-chip">pierrot init</span>
+            and have a project running before your coffee is done.</p>
         <div class="cta-actions">
             <a class="cta-primary" href="https://github.com/ViitoJooj/pierrot">github.com/pierrot ↗</a>
-            <a class="cta-ghost" href="/docs">documentação completa</a>
+            <a class="cta-ghost" href="/docs">full documentation</a>
         </div>
     </div>
 </section>

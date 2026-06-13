@@ -6,8 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// pierrot build
-
 var buildCmd = &cobra.Command{
 	Use:   "build",
 	Short: "Build the project as a static site",

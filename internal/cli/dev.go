@@ -6,8 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// pierrot dev
-
 var devCmd = &cobra.Command{
 	Use:   "dev",
 	Short: "Start the development server",

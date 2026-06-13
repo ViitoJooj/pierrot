@@ -2,50 +2,50 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>lading-page</title>
-<meta name="description" content="This is my page description">
+<title>pierrot · front-end framework in Go</title>
+<meta name="description" content="Pierrot is a single-file component framework compiled in Go — no virtual DOM, no eval, no node_modules.">
 <link rel="icon" href="./assets/favicon.ico">
 <link rel="stylesheet" href="/errors/bundle.css">
 </head>
 <body>
 <header>
-    <button onclick="pierrotRedirect(); __pierrotUpdate()" class="logo">
+    <button onclick="navigateToHome(); __pierrotUpdate()" class="logo">
         <p class="logo-curlybraces">{</p>
         <p>pierrot</p>
         <p class="logo-curlybraces">}</p>
     </button>
 
     <div class="nav">
-        <a class="nav-link">hello, World!</a>
-        <a class="nav-link">sintaxe</a>
-        <a class="nav-link">cli</a>
-        <a class="nav-link">arquitetura</a>
+<div data-pierrot-block="0" style="display:contents"></div>
 
+        <button onclick="switchLanguage(); __pierrotUpdate()" class="nav-lang"><span data-bind="headerSwitchLanguageLabel"></span></button>
         <button class="secondary-btn" onclick="goTo(&#34;https://github.com/ViitoJooj/pierrot&#34;); __pierrotUpdate()">github ↗</button>
     </div>
 </header>
 <main class="error-page">
     <div class="error-decor"><span style="color: #FFB300">◆</span><span style="color: #C8553D">◆</span><span style="color: #1A1410">◆</span></div>
-<div data-pierrot-block="0" style="display:contents"></div>
+<div data-pierrot-block="1" style="display:contents"></div>
     <div class="error-actions">
-        <a class="error-primary" href="/">voltar pra home →</a>
-        <a class="error-ghost" href="https://github.com/ViitoJooj/pierrot/issues">reportar problema ↗</a>
+<div data-pierrot-block="2" style="display:contents"></div>
+        <a class="error-ghost" href="https://github.com/ViitoJooj/pierrot/issues"><span data-pierrot-expr="0"></span></a>
     </div>
 </main>
 <footer class="site-footer">
     <div class="footer-inner">
         <div class="footer-brand">
             <p class="footer-logo"><span class="footer-brace">{</span> pierrot <span class="footer-brace">}</span></p>
-            <p class="footer-tagline">Componentes em um arquivo.<br>Compilados em Go.</p>
+            <p class="footer-tagline">
+<div data-pierrot-render="2" style="display:contents"></div>
+            </p>
             <div class="footer-diamonds"><span style="color: #FFB300">◆</span><span style="color: #C8553D">◆</span><span style="color: #B8AEA0">◆</span></div>
         </div>
         <div class="footer-cols">
-<div data-pierrot-block="1" style="display:contents"></div>
+<div data-pierrot-block="3" style="display:contents"></div>
         </div>
     </div>
     <div class="footer-bottom">
         <span>© 2026 pierrot · MIT</span>
-        <span class="footer-made">feito com pierrot, óbvio ◆</span>
+        <span class="footer-made"><span data-bind="footerMadeWithText"></span></span>
     </div>
 </footer>
 
@@ -98,15 +98,17 @@ var time = {
 
 document.documentElement.setAttribute("data-theme","light");
 
-function pierrotRedirect(){window.location.href="/"}
+const uiTranslations={en:{header:{switchLanguageLabel:"PT-BR",navigation:[{label:"Docs",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Syntax",path:"/docs/templates"},{label:"CLI",path:"/docs/cli"}]},footer:{taglineHtml:"Components in one file.<br>Compiled in Go.",madeWith:"made with pierrot, obviously \u25C6",columns:[{title:"learn",links:[{label:"hello world in 30s",path:"/docs/getting-started"},{label:"template syntax",path:"/docs/templates"},{label:"components & props",path:"/docs/components"},{label:"CLI & settings",path:"/docs/cli"}]},{title:"project",links:[{label:"github \u2197",url:"https://github.com/ViitoJooj/pierrot"},{label:"issues \u2197",url:"https://github.com/ViitoJooj/pierrot/issues"},{label:"MIT license",url:"https://github.com/ViitoJooj/pierrot/blob/main/LICENSE.md"}]}]},documentationSidebar:{brandSuffix:"docs",groups:[{title:"Getting started",items:[{label:"Overview",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Project structure",path:"/docs/project-structure"}]},{title:"The .pierrot language",items:[{label:"Template syntax",path:"/docs/templates"},{label:"Components & props",path:"/docs/components"},{label:"Reactivity",path:"/docs/reactivity"},{label:"Script API",path:"/docs/script-api"}]},{title:"Tooling",items:[{label:"CLI & configuration",path:"/docs/cli"}]}]},errorPage:{kickerPrefix:"\u2014 ERROR / ",notFoundTitleHtml:"This route <em>does not compile.</em>",notFoundDescriptionPrefix:"The page you are looking for does not exist \u2014 or has not been written yet. Heading back home in ",genericTitleHtml:"Something <em>broke.</em>",genericDescriptionPrefix:"Unexpected error. Heading back home in ",descriptionSuffix:".",backHomeLabel:"back to home \u2192",reportIssueLabel:"report an issue \u2197"}},pt:{header:{switchLanguageLabel:"EN",navigation:[{label:"Docs",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Sintaxe",path:"/docs/templates"},{label:"CLI",path:"/docs/cli"}]},footer:{taglineHtml:"Componentes em um arquivo.<br>Compilados em Go.",madeWith:"feito com pierrot, \xF3bvio \u25C6",columns:[{title:"aprenda",links:[{label:"hello world em 30s",path:"/docs/getting-started"},{label:"sintaxe de template",path:"/docs/templates"},{label:"componentes e props",path:"/docs/components"},{label:"CLI e settings",path:"/docs/cli"}]},{title:"projeto",links:[{label:"github \u2197",url:"https://github.com/ViitoJooj/pierrot"},{label:"issues \u2197",url:"https://github.com/ViitoJooj/pierrot/issues"},{label:"licen\xE7a MIT",url:"https://github.com/ViitoJooj/pierrot/blob/main/LICENSE.md"}]}]},documentationSidebar:{brandSuffix:"docs",groups:[{title:"Primeiros passos",items:[{label:"Vis\xE3o geral",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Estrutura do projeto",path:"/docs/project-structure"}]},{title:"A linguagem .pierrot",items:[{label:"Sintaxe de template",path:"/docs/templates"},{label:"Componentes e props",path:"/docs/components"},{label:"Reatividade",path:"/docs/reactivity"},{label:"Script API",path:"/docs/script-api"}]},{title:"Ferramentas",items:[{label:"CLI e configura\xE7\xE3o",path:"/docs/cli"}]}]},errorPage:{kickerPrefix:"\u2014 ERRO / ",notFoundTitleHtml:"Essa rota <em>n\xE3o compila.</em>",notFoundDescriptionPrefix:"A p\xE1gina que voc\xEA procura n\xE3o existe \u2014 ou ainda n\xE3o foi escrita. Voltando pra home em ",genericTitleHtml:"Algo <em>quebrou.</em>",genericDescriptionPrefix:"Erro inesperado. Voltando pra home em ",descriptionSuffix:".",backHomeLabel:"voltar pra home \u2192",reportIssueLabel:"reportar problema \u2197"}}};function activeLocale(){return get.Path(1)==="pt-br"?"pt":"en"}function localeBasePath(){return activeLocale()==="pt"?"/pt-br":""}function uiText(){return uiTranslations[activeLocale()]}
+
+let headerStrings=uiText().header,headerBasePath=localeBasePath(),headerNavigationLinks=headerStrings.navigation.map(item=>({label:item.label,href:headerBasePath+item.path})),headerSwitchLanguageLabel=headerStrings.switchLanguageLabel,headerOtherLocaleHref=activeLocale()==="pt"?location.pathname.replace(/^\/pt-br/,"")||"/":"/pt-br"+(location.pathname==="/"?"":location.pathname);function navigateToHome(){client.Redirect(headerBasePath+"/")}function switchLanguage(){client.Redirect(headerOtherLocaleHref)}
 
 function goTo(url){client.Redirect(url).newTab()}
 
-let cols=[{title:"aprenda",links:[{label:"hello world em 30s",href:"/docs"},{label:"sintaxe de template",href:"/docs"},{label:"componentes e props",href:"/docs"},{label:"CLI e settings",href:"/docs"}]},{title:"projeto",links:[{label:"github \u2197",href:"https://github.com/ViitoJooj/pierrot"},{label:"issues \u2197",href:"https://github.com/ViitoJooj/pierrot/issues"},{label:"licen\xE7a MIT",href:"https://github.com/ViitoJooj/pierrot"}]}];
+let footerStrings=uiText().footer,footerBasePath=localeBasePath(),footerColumns=footerStrings.columns.map(column=>({title:column.title,links:column.links.map(link=>({label:link.label,href:link.url||footerBasePath+link.path}))})),footerTaglineHtml=footerStrings.taglineHtml,footerMadeWithText=footerStrings.madeWith;
 
 function onLoad(status){console.log("error:",status)}
 
-let status=get.Status(),count=30;onLoad(status),returning();async function returning(){for(let i=0;i<30;i++)await time.Sleep(1).sec(),count--;client.Redirect("/")}
+let errorPageStrings=uiText().errorPage,errorPageIsPortuguese=activeLocale()==="pt",errorPageHomeHref=localeBasePath()+"/",errorPageStatus=get.Status(),errorPageCountdown=30;onLoad(errorPageStatus),startReturnCountdown();async function startReturnCountdown(){for(let i=0;i<30;i++)await time.Sleep(1).sec(),errorPageCountdown--;client.Redirect(errorPageHomeHref)}
 
 
 function __pierrotEsc(v) {
@@ -149,28 +151,46 @@ function __pierrotMd(src) {
 var __pierrotBlocks = [
 function () {
 var __h = "";
-if (status == "404") {
-__h += "    <p class=\"error-kicker\">— ERRO / 404</p>\n";
-__h += "    <h1 class=\"error-code\">404</h1>\n";
-__h += "    <h2 class=\"error-title\">Essa rota <em>não compila.</em></h2>\n";
-__h += "    <p class=\"error-desc\">A página que você procura não existe — ou ainda não foi\n";
-__h += "        escrita. Voltando pra home em <span class=\"error-count\">" + __pierrotEsc(typeof count === "undefined" ? "" : count) + "s</span>.</p>\n";
-} else {
-__h += "    <p class=\"error-kicker\">— ERRO / " + __pierrotEsc(typeof status === "undefined" ? "" : status) + "</p>\n";
-__h += "    <h1 class=\"error-code\">" + __pierrotEsc(typeof status === "undefined" ? "" : status) + "</h1>\n";
-__h += "    <h2 class=\"error-title\">Algo <em>quebrou.</em></h2>\n";
-__h += "    <p class=\"error-desc\">Erro inesperado. Voltando pra home em\n";
-__h += "        <span class=\"error-count\">" + __pierrotEsc(typeof count === "undefined" ? "" : count) + "s</span>.</p>\n";
+for (const link of (headerNavigationLinks)) {
+__h += "        <a class=\"nav-link\" href=\"" + __pierrotEsc(link.href) + "\">" + __pierrotEsc(link.label) + "</a>\n";
 }
 return __h;
 },
 function () {
 var __h = "";
-for (const col of (cols)) {
+if (errorPageStatus == "404") {
+__h += "    <p class=\"error-kicker\">" + __pierrotEsc(errorPageStrings.kickerPrefix) + "404</p>\n";
+__h += "    <h1 class=\"error-code\">404</h1>\n";
+__h += "    <h2 class=\"error-title\">\n";
+__h += "<div data-pierrot-render=\"0\" style=\"display:contents\"></div>\n";
+__h += "    </h2>\n";
+__h += "    <p class=\"error-desc\">" + __pierrotEsc(errorPageStrings.notFoundDescriptionPrefix) + "<span class=\"error-count\">" + __pierrotEsc(typeof errorPageCountdown === "undefined" ? "" : errorPageCountdown) + "s</span>" + __pierrotEsc(errorPageStrings.descriptionSuffix) + "</p>\n";
+} else {
+__h += "    <p class=\"error-kicker\">" + __pierrotEsc(errorPageStrings.kickerPrefix) + "" + __pierrotEsc(typeof errorPageStatus === "undefined" ? "" : errorPageStatus) + "</p>\n";
+__h += "    <h1 class=\"error-code\">" + __pierrotEsc(typeof errorPageStatus === "undefined" ? "" : errorPageStatus) + "</h1>\n";
+__h += "    <h2 class=\"error-title\">\n";
+__h += "<div data-pierrot-render=\"1\" style=\"display:contents\"></div>\n";
+__h += "    </h2>\n";
+__h += "    <p class=\"error-desc\">" + __pierrotEsc(errorPageStrings.genericDescriptionPrefix) + "<span class=\"error-count\">" + __pierrotEsc(typeof errorPageCountdown === "undefined" ? "" : errorPageCountdown) + "s</span>" + __pierrotEsc(errorPageStrings.descriptionSuffix) + "</p>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+if (errorPageIsPortuguese) {
+__h += "        <a class=\"error-primary\" href=\"/pt-br/\">" + __pierrotEsc(errorPageStrings.backHomeLabel) + "</a>\n";
+} else {
+__h += "        <a class=\"error-primary\" href=\"/\">" + __pierrotEsc(errorPageStrings.backHomeLabel) + "</a>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+for (const column of (footerColumns)) {
 __h += "            <div class=\"footer-col\">\n";
-__h += "                <p class=\"footer-col-title\">" + __pierrotEsc(col.title) + "</p>\n";
-for (const l of (col.links)) {
-__h += "                <a class=\"footer-link\" href=\"" + __pierrotEsc(l.href) + "\">" + __pierrotEsc(l.label) + "</a>\n";
+__h += "                <p class=\"footer-col-title\">" + __pierrotEsc(column.title) + "</p>\n";
+for (const link of (column.links)) {
+__h += "                <a class=\"footer-link\" href=\"" + __pierrotEsc(link.href) + "\">" + __pierrotEsc(link.label) + "</a>\n";
 }
 __h += "            </div>\n";
 }
@@ -178,13 +198,19 @@ return __h;
 },
 ];
 var __pierrotExprs = [
+function () { return (errorPageStrings.reportIssueLabel); },
 ];
 var __pierrotRenders = [
+{ kind: "html", fn: function () { return (errorPageStrings.notFoundTitleHtml); } },
+{ kind: "html", fn: function () { return (errorPageStrings.genericTitleHtml); } },
+{ kind: "html", fn: function () { return (typeof footerTaglineHtml === "undefined" ? "" : footerTaglineHtml); } },
 ];
 var __pierrotBindVals = [
 ];
 function __pierrotUpdate() {
 	const state = {
+		"headerSwitchLanguageLabel": typeof headerSwitchLanguageLabel === "undefined" ? "" : headerSwitchLanguageLabel,
+		"footerMadeWithText": typeof footerMadeWithText === "undefined" ? "" : footerMadeWithText,
 	};
 	document.querySelectorAll("[data-bind]").forEach(function (el) {
 		el.textContent = state[el.getAttribute("data-bind")];

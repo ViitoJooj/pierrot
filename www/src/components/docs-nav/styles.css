@@ -1,0 +1,358 @@
+@import "../../globals.css";
+
+/* =========================================================================
+   Documentation layout
+   This stylesheet ships on every /docs page (DocsNav is always present), so
+   it owns BOTH the sidebar chrome and the `.doc` prose system used by the
+   article column. Keeping it in one place means a docs page only has to
+   import DocsNav to get the full look.
+   ========================================================================= */
+
+/* ---------- two-column shell ---------- */
+
+.docs-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 3rem;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+    min-height: calc(100vh - 3.5rem - 1px);
+}
+
+/* ---------- sidebar ---------- */
+
+.docs-sidebar {
+    position: sticky;
+    top: 2rem;
+    flex: 0 0 230px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+}
+
+.docs-side-brand {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.4rem;
+    color: var(--primary-font-color);
+    text-decoration: none;
+}
+
+.docs-side-brace {
+    color: var(--primary-accent-color);
+}
+
+.docs-side-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.docs-side-title {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--thirdary-font-color);
+    margin-bottom: 0.4rem;
+}
+
+.docs-side-link {
+    padding: 0.3rem 0.7rem;
+    border-left: 2px solid transparent;
+    font-size: 14px;
+    color: var(--secondary-font-color);
+    text-decoration: none;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.docs-side-link:hover {
+    color: var(--primary-font-color);
+}
+
+.docs-side-link.is-active {
+    border-left-color: var(--primary-accent-color);
+    color: var(--primary-font-color);
+    font-weight: 600;
+}
+
+/* ---------- article column ---------- */
+
+.docs-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 760px;
+}
+
+/* ---------- prose (`.doc`) ---------- */
+
+.doc {
+    color: var(--secondary-font-color);
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.doc-kicker {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--thirdary-accent-color);
+    margin-bottom: 0.8rem;
+}
+
+.doc h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 52px;
+    font-weight: 400;
+    line-height: 1.05;
+    color: var(--primary-font-color);
+    margin-bottom: 1rem;
+}
+
+.doc .doc-lead {
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--secondary-font-color);
+    margin-bottom: 2.5rem;
+}
+
+.doc h2 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 34px;
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--primary-font-color);
+    margin: 3rem 0 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--primary-border-color);
+}
+
+.doc h3 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--primary-font-color);
+    margin: 2rem 0 0.8rem;
+}
+
+.doc p {
+    margin: 1rem 0;
+}
+
+.doc a {
+    color: var(--thirdary-accent-color);
+    text-decoration: none;
+    border-bottom: 1px solid var(--secondary-border-color);
+}
+
+.doc a:hover {
+    border-bottom-color: var(--primary-accent-color);
+}
+
+.doc ul,
+.doc ol {
+    margin: 1rem 0;
+    padding-left: 1.4rem;
+}
+
+.doc li {
+    margin: 0.4rem 0;
+}
+
+.doc strong {
+    color: var(--primary-font-color);
+    font-weight: 600;
+}
+
+.doc em {
+    color: var(--secondary-font-color);
+}
+
+/* inline code */
+.doc :not(pre) > code,
+.doc .ic {
+    padding: 0.1rem 0.35rem;
+    background-color: var(--secondary-bg-color);
+    border: 1px solid var(--primary-border-color);
+    border-radius: var(--border-radius-sml);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85em;
+    color: var(--primary-font-color);
+}
+
+/* ---------- code blocks ---------- */
+
+.doc-code {
+    margin: 1.4rem 0;
+    padding: 1.1rem 1.3rem;
+    background-color: #1A1410;
+    border: 1px solid rgba(245, 240, 228, 0.10);
+    border-radius: var(--border-radius-med);
+    overflow-x: auto;
+}
+
+/* zero only the CHILDREN — keep the block's own dark background. Including
+   .doc-code here would let the globals `*` light bg win and make the light
+   code text unreadable. */
+.doc-code * {
+    background-color: transparent;
+}
+
+.doc-code code {
+    display: block;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #F5F0E4;
+    white-space: pre;
+}
+
+/* a labelled code block (filename chip on top) */
+.doc-file {
+    display: inline-block;
+    margin: 1.4rem 0 -0.6rem;
+    padding: 0.25rem 0.7rem;
+    background-color: var(--secondary-bg-color);
+    border: 1px solid var(--primary-border-color);
+    border-bottom: none;
+    border-radius: var(--border-radius-sml) var(--border-radius-sml) 0 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--thirdary-font-color);
+}
+
+.doc-file + .doc-code {
+    margin-top: 0;
+    border-top-left-radius: 0;
+}
+
+/* syntax-highlight palette (matches docHl tokens) — light-on-dark */
+.doc-code .tok-keyword { color: #FF8A65; font-weight: 600; }
+.doc-code .tok-string { color: #9CCC65; }
+.doc-code .tok-directive { color: #FFB300; font-weight: 600; }
+.doc-code .tok-type { color: #4DD0E1; font-style: italic; }
+.doc-code .tok-number { color: #82AAFF; }
+.doc-code .tok-fn { color: #C792EA; }
+.doc-code .tok-tag { color: #F07178; }
+.doc-code .tok-punct { color: #8B8175; }
+.doc-code .tok-comment { color: #6F6557; font-style: italic; }
+
+/* ---------- tables ---------- */
+
+.doc-table-wrap {
+    margin: 1.4rem 0;
+    overflow-x: auto;
+}
+
+.doc table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.doc th,
+.doc td {
+    padding: 0.6rem 0.9rem;
+    text-align: left;
+    border: 1px solid var(--primary-border-color);
+    vertical-align: top;
+}
+
+.doc th {
+    background-color: var(--secondary-bg-color);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--thirdary-font-color);
+    font-weight: 600;
+}
+
+.doc td code {
+    white-space: nowrap;
+}
+
+/* ---------- callout ---------- */
+
+.doc-note {
+    margin: 1.6rem 0;
+    padding: 1rem 1.2rem;
+    background-color: var(--thirdary-bg-color);
+    border: 1px solid var(--primary-border-color);
+    border-left: 3px solid var(--primary-accent-color);
+    border-radius: 0 var(--border-radius-med) var(--border-radius-med) 0;
+    font-size: 15px;
+}
+
+.doc-note.is-warn {
+    border-left-color: var(--secondary-accent-color);
+}
+
+.doc-note p {
+    margin: 0;
+}
+
+.doc-note p + p {
+    margin-top: 0.6rem;
+}
+
+/* ---------- prev / next footer ---------- */
+
+.doc-pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--primary-border-color);
+}
+
+.doc-pager a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.9rem 1.2rem;
+    border: 1px solid var(--primary-border-color);
+    border-radius: var(--border-radius-med);
+    text-decoration: none;
+    font-size: 15px;
+    color: var(--primary-font-color);
+    max-width: 48%;
+}
+
+.doc-pager a:hover {
+    border-color: var(--secondary-border-color);
+}
+
+.doc-pager .pager-dir {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--thirdary-font-color);
+}
+
+.doc-pager .pager-next {
+    text-align: right;
+    margin-left: auto;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 860px) {
+    .docs-wrap {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .docs-sidebar {
+        position: static;
+        flex-basis: auto;
+        width: 100%;
+    }
+
+    .doc h1 {
+        font-size: 40px;
+    }
+}

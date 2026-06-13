@@ -11,6 +11,7 @@ import (
 //
 // Formato ICO: ICONDIR + ICONDIRENTRY + DIB (BITMAPINFOHEADER com altura
 // dobrada, pixels BGRA de baixo para cima, máscara AND zerada = tudo opaco)
+// essa parte foi gerada com Inteligencia Artificial, talvez precise de ajustes manuais.
 func Favicon() []byte {
 	const n = 16
 	var px bytes.Buffer
@@ -23,19 +24,16 @@ func Favicon() []byte {
 			}
 		}
 	}
-	andMask := make([]byte, n*4) // 1bpp, linhas com pad de 32 bits
+	andMask := make([]byte, n*4)
 
 	dibSize := uint32(40 + px.Len() + len(andMask))
 
 	var b bytes.Buffer
 	le := binary.LittleEndian
-	// ICONDIR: reservado, tipo (1 = ícone), quantidade
 	binary.Write(&b, le, [3]uint16{0, 1, 1})
-	// ICONDIRENTRY: w, h, cores, reservado, planos, bpp, tamanho, offset
 	b.Write([]byte{n, n, 0, 0})
 	binary.Write(&b, le, [2]uint16{1, 32})
 	binary.Write(&b, le, [2]uint32{dibSize, 22})
-	// BITMAPINFOHEADER: size, w, h (dobrada: XOR + AND), planos, bpp, resto zero
 	binary.Write(&b, le, [3]uint32{40, n, n * 2})
 	binary.Write(&b, le, [2]uint16{1, 32})
 	binary.Write(&b, le, [6]uint32{0, 0, 0, 0, 0, 0})

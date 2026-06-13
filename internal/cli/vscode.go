@@ -6,8 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// pierrot vscode install
-
 var vscodeCmd = &cobra.Command{
 	Use:   "vscode",
 	Short: "Manage the Pierrot VS Code extension",

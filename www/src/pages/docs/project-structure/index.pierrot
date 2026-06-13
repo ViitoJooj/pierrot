@@ -1,0 +1,83 @@
+<script>
+    // /docs/project-structure
+    import { DocsNav } from "../../../components/docs-nav/index.pierrot";
+    import "../../../lib/doc.ts";
+    import "./snippets.ts";
+
+    set.Title("Project structure · pierrot");
+    set.Description("The folders, the routing rules and the anatomy of a .pierrot file.");
+</script>
+
+<div class="docs-wrap">
+    <DocsNav />
+    <article class="docs-content doc">
+        <p class="doc-kicker">— Getting started</p>
+        <h1>Project structure</h1>
+        <p class="doc-lead">Where files go, how folders become routes, and the shared anatomy
+            of every <code>.pierrot</code> — page, component or layout.</p>
+
+        <h2>Folder layout</h2>
+@render html(docCode(snipTree));
+        <p>The paths are not magic: the entry point is <code>app.entry</code> from
+            <code>settings.pierrot.json</code> (default <code>./src/main.pierrot</code>), and its
+            folder becomes the project's <code>src</code> root. Everything else is relative to
+            that folder.</p>
+        <p>→ See <a href="/docs/cli">configuration</a> to change these paths.</p>
+
+        <h2>Routes = folders in <code>pages/</code></h2>
+        <p>Each <code>pages/&lt;route&gt;/index.pierrot</code> becomes a route. The folder name
+            is the path:</p>
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>Folder</th><th>Route</th></tr></thead>
+                <tbody>
+                    <tr><td><code>pages/home/index.pierrot</code></td><td>depends on <code>set.Default</code> (usually <code>/</code>)</td></tr>
+                    <tr><td><code>pages/about/index.pierrot</code></td><td><code>/about</code></td></tr>
+                    <tr><td><code>pages/blog/post/index.pierrot</code></td><td><code>/blog/post</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>The <code>/</code> route points to the page marked with <code>set.Default(...)</code>
+            in the layout. Non-existent routes fall back to the <code>set.Fallback(...)</code>
+            page with status 404.</p>
+
+        <h2>Anatomy of a <code>.pierrot</code> file</h2>
+        <p>Every <code>.pierrot</code> — page, component or layout — has the same shape: an
+            optional <code>&lt;script&gt;</code> followed by the template.</p>
+@render html(docCode(snipAnatomy));
+        <p>What the parser does with each part:</p>
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>In <code>&lt;script&gt;</code></th><th>Becomes</th><th>Detail</th></tr></thead>
+                <tbody>
+                    <tr><td><code>import "x.css";</code></td><td>stylesheet</td><td>added to <code>&lt;head&gt;</code> (dev) or to the bundle (build)</td></tr>
+                    <tr><td><code>import "x.ts";</code></td><td>script chunk</td><td>bundled into the page</td></tr>
+                    <tr><td><code>import { Name } from "x.pierrot";</code></td><td>component</td><td>usable as <code>&lt;Name /&gt;</code> in the template</td></tr>
+                    <tr><td><code>set.X(...)</code></td><td>metadata</td><td>title, icon, default, fallback…</td></tr>
+                    <tr><td><code>let name: type;</code> (no value)</td><td><strong>prop</strong></td><td>declares a component prop</td></tr>
+                    <tr><td>any other code</td><td>logic</td><td>transformed TS → JS and sent to the browser</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="doc-note">
+            <p>The <code>import</code>, <code>set.X</code> and prop-declaration lines are
+                <strong>stripped</strong> from the script that ships to the browser — they are
+                instructions for the compiler, not runtime code.</p>
+        </div>
+
+        <h3>The three roles of a <code>.pierrot</code></h3>
+        <ul>
+            <li><strong>Layout</strong> (<code>main.pierrot</code>): the entry. Has <code>&lt;Slot /&gt;</code> (where the page is injected) and the global <code>set.X</code>. May wrap the page with components.</li>
+            <li><strong>Page</strong> (<code>pages/*/index.pierrot</code>): the content of a route. May override the layout's metadata.</li>
+            <li><strong>Component</strong> (<code>components/*/index.pierrot</code>): a reusable piece, with props.</li>
+        </ul>
+
+        <h3>Real layout example</h3>
+@render html(docCode(snipLayout));
+
+        <div class="doc-pager">
+            <a class="pager-prev" href="/docs/getting-started"><span class="pager-dir">← Prev</span><span>Hello World</span></a>
+            <a class="pager-next" href="/docs/templates"><span class="pager-dir">Next →</span><span>Template syntax</span></a>
+        </div>
+    </article>
+</div>

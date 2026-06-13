@@ -1,24 +1,51 @@
 <script>
+    // Global header. Lives in the layout, so it renders on every page.
+    // All copy comes from lib/i18n.ts; the locale is derived from the URL.
     import "./styles.css";
-    import "./script.ts";
+    import "../../lib/i18n.ts";
 
     import { ButtonSecondary } from "../buttons/btn-secondary/index.pierrot";
 
+    let headerStrings = uiText().header;
+    let headerBasePath = localeBasePath();
+
+    // nav targets, prefixed with /pt-br when on a Portuguese route.
+    let headerNavigationLinks = headerStrings.navigation.map(item => ({
+        label: item.label,
+        href: headerBasePath + item.path,
+    }));
+
+    let headerSwitchLanguageLabel = headerStrings.switchLanguageLabel;
+
+    // the "other language" target: same page, opposite locale.
+    let headerOtherLocaleHref = activeLocale() === "pt"
+        ? (location.pathname.replace(/^\/pt-br/, "") || "/")
+        : ("/pt-br" + (location.pathname === "/" ? "" : location.pathname));
+
+    // dynamic hrefs in a bare attribute do not interpolate (only inside
+    // @for/@if), so logo and language switch navigate via client.Redirect.
+    function navigateToHome() {
+        client.Redirect(headerBasePath + "/");
+    }
+
+    function switchLanguage() {
+        client.Redirect(headerOtherLocaleHref);
+    }
 </script>
 
 <header>
-    <button @click={pierrotRedirect} class="logo">
+    <button @click={navigateToHome} class="logo">
         <p class="logo-curlybraces">{</p>
         <p>pierrot</p>
         <p class="logo-curlybraces">}</p>
     </button>
 
     <div class="nav">
-        <a class="nav-link">hello, World!</a>
-        <a class="nav-link">sintaxe</a>
-        <a class="nav-link">cli</a>
-        <a class="nav-link">arquitetura</a>
+@for link in headerNavigationLinks
+        <a class="nav-link" href="${link.href}">${link.label}</a>
+@end
 
+        <button @click={switchLanguage} class="nav-lang">${headerSwitchLanguageLabel}</button>
         <ButtonSecondary url="https://github.com/ViitoJooj/pierrot" children="github ↗"/>
     </div>
 </header>

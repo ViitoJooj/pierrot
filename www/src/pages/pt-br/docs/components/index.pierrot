@@ -1,0 +1,96 @@
+<script>
+    // /pt-br/docs/components
+    import { DocsNav } from "../../../../components/docs-nav/index.pierrot";
+    import "../../../../lib/doc.ts";
+    import "../../../docs/components/snippets.ts";
+
+    set.Title("Componentes & props · pierrot");
+    set.Description("Componentes single-file, como importá-los, <Slot /> e passagem de props.");
+</script>
+
+<div class="docs-wrap">
+    <DocsNav />
+    <article class="docs-content doc">
+        <p class="doc-kicker">— A linguagem .pierrot</p>
+        <h1>Componentes &amp; props</h1>
+        <p class="doc-lead">Um componente é um <code>.pierrot</code> reutilizável. Mesma anatomia
+            de uma página: um <code>&lt;script&gt;</code> opcional e um template. A diferença é que
+            ele declara <strong>props</strong> e é usado como tag (<code>&lt;Nome /&gt;</code>)
+            dentro de outro <code>.pierrot</code>.</p>
+
+        <h2>Definindo um componente</h2>
+        <p><code>src/components/cli-div/index.pierrot</code>:</p>
+@render html(docCode(snipDefine));
+
+        <h2>Usando um componente</h2>
+        <p>Importe dentro do <code>&lt;script&gt;</code> de quem usa, depois solte a tag no
+            template. <strong>Componentes começam com letra maiúscula</strong>; o nome em
+            <code>import { Nome }</code> é o nome da tag.</p>
+@render html(docCode(snipUse));
+        <ul>
+            <li>A tag precisa ser <strong>self-closing</strong>: <code>&lt;Nome ... /&gt;</code>. Não há tag de fechamento separada.</li>
+            <li>Componentes podem importar outros componentes — a expansão é recursiva.</li>
+            <li>Se sobrar uma tag maiúscula no HTML final (sem <code>import</code>), o Pierrot reporta <code>tag &lt;Nome /&gt; não corresponde a nenhum componente importado</code>.</li>
+        </ul>
+
+        <h2><code>&lt;Slot /&gt;</code> — onde a página entra</h2>
+        <p>O <strong>layout</strong> (<code>main.pierrot</code>) usa <code>&lt;Slot /&gt;</code>
+            para marcar onde a página da rota atual deve ser injetada:</p>
+@render html(docCode(snipSlot));
+        <p><code>&lt;Slot /&gt;</code> é exclusivo do layout (a relação layout ↔ página).
+            Componentes comuns recebem dados via <strong>props</strong>, não via slot.</p>
+
+        <h2>Props</h2>
+        <p>Uma prop é declarada no componente como <code>let nome: tipo;</code>
+            <strong>sem valor</strong>. Quem usa o componente passa o valor como atributo da
+            tag.</p>
+@render html(docCode(snipProps));
+@render html(docCode(snipUseProps));
+
+        <h3>Literal vs. expressão</h3>
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>No uso</th><th>Significado</th><th>Como chega</th></tr></thead>
+                <tbody>
+                    <tr><td><code>title="Olá"</code></td><td><strong>literal</strong></td><td>inserido como texto puro no HTML do componente</td></tr>
+                    <tr><td><code>price={valor}</code></td><td><strong>expressão</strong></td><td>vira <code>&#36;{valor}</code>, avaliado no browser</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>No template do componente, cada referência à prop (<code>{title}</code>,
+            <code>&#36;{price}</code>) é trocada pelo valor da instância. Uma prop declarada mas
+            <strong>não passada</strong> vira <code>""</code>.</p>
+
+        <h3>Props em atributos</h3>
+        <p>Uma prop como <strong>expressão</strong> dentro de um atributo só funciona
+            <strong>dentro de um bloco</strong> <code>@for</code> / <code>@if</code>:</p>
+@render html(docCode(snipExprAttr));
+        <p>Fora de um bloco, uma expressão num atributo viraria um <code>&lt;span&gt;</code> dentro
+            do atributo (quebrado). Use uma prop <strong>literal</strong> ali, ou mova para dentro
+            de um bloco.</p>
+
+        <h3>Props no <code>&lt;script&gt;</code> do componente</h3>
+        <p>O <code>&lt;script&gt;</code> de um componente é <strong>compartilhado</strong> entre
+            todas as instâncias — por isso uma prop <strong>não</strong> vira variável dentro
+            dele. O único jeito de uma prop chegar à lógica do componente é como
+            <strong>argumento</strong> de um <code>@event</code> ou <code>@render</code>:</p>
+@render html(docCode(snipArg));
+        <div class="doc-note">
+            <p><strong>Limites das props, resumidos:</strong></p>
+            <p>1. Uma prop não vira variável no <code>&lt;script&gt;</code> (passe como argumento de event/render).<br>
+               2. Uma prop expressão num atributo só funciona dentro de <code>@for</code> / <code>@if</code>.<br>
+               3. Uma prop não passada = <code>""</code>.</p>
+        </div>
+
+        <h2>Composição e CSS</h2>
+        <ul>
+            <li>Cada componente importa seu próprio <code>styles.css</code>. O CSS é coletado <strong>uma vez</strong> (sem duplicar) mesmo que o componente apareça várias vezes.</li>
+            <li>No <code>pierrot dev</code>, cada CSS vira um <code>&lt;link&gt;</code>. No <code>pierrot build</code>, todos viram um único <code>bundle.css</code> minificado por página.</li>
+        </ul>
+
+        <div class="doc-pager">
+            <a class="pager-prev" href="/pt-br/docs/templates"><span class="pager-dir">← Anterior</span><span>Sintaxe de template</span></a>
+            <a class="pager-next" href="/pt-br/docs/reactivity"><span class="pager-dir">Próximo →</span><span>Reatividade</span></a>
+        </div>
+    </article>
+</div>

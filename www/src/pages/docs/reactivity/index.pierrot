@@ -1,0 +1,94 @@
+<script>
+    // /docs/reactivity
+    import { DocsNav } from "../../../components/docs-nav/index.pierrot";
+    import "../../../lib/doc.ts";
+    import "./snippets.ts";
+
+    set.Title("Reactivity · pierrot");
+    set.Description("@event, @bind and @render — how state repaints the DOM without a virtual DOM.");
+</script>
+
+<div class="docs-wrap">
+    <DocsNav />
+    <article class="docs-content doc">
+        <p class="doc-kicker">— The .pierrot language</p>
+        <h1>Reactivity</h1>
+        <p class="doc-lead">Pierrot has no virtual DOM and no <code>eval</code>. State is just the
+            top-level variables of the <code>&lt;script&gt;</code>. Every interaction calls
+            <code>__pierrotUpdate()</code> at the end, and the runtime repaints only the bits that
+            depend on the state.</p>
+
+        <p>On each update: <code>&#36;{var}</code> spans get the new value; <code>@for</code> /
+            <code>@if</code> blocks re-run; inputs with <code>@bind</code> get the value (except
+            the focused one); <code>@render</code> is refilled. This page covers
+            <code>@event</code>, <code>@bind</code> and <code>@render</code>. Interpolation and
+            blocks are in <a href="/docs/templates">Template syntax</a>.</p>
+
+        <h2><code>@event=&#123;fn&#125;</code> — events</h2>
+        <p>Any DOM event becomes an <code>@&lt;event&gt;</code> directive:</p>
+@render html(docCode(snipEvent));
+        <p><code>@click=&#123;increment&#125;</code> becomes
+            <code>onclick="increment(); __pierrotUpdate()"</code>. After the handler runs, the
+            update repaints <code>&#36;{count}</code>. Works with any event: <code>@input</code>,
+            <code>@submit</code>, <code>@mouseover</code>, <code>@scroll</code>, etc.</p>
+
+        <h3>With arguments</h3>
+@render html(docCode(snipArgs));
+        <ul>
+            <li><code>@click=&#123;fn&#125;</code> → <code>fn()</code></li>
+            <li><code>@click=&#123;fn(args)&#125;</code> → <code>fn(args)</code></li>
+        </ul>
+        <p>In a component, passing a <strong>prop</strong> as an argument is the way to get it
+            into the logic (see <a href="/docs/components">props in the script</a>).</p>
+
+        <h2><code>@bind=&#123;var&#125;</code> — two-way binding</h2>
+        <p>Links an <code>&lt;input&gt;</code> or <code>&lt;textarea&gt;</code> to a variable both
+            ways:</p>
+@render html(docCode(snipBind));
+        <ul>
+            <li>Typing in the input updates <code>name</code> and fires <code>__pierrotUpdate()</code>.</li>
+            <li>Changing <code>name</code> in code updates the input's value.</li>
+            <li>The <strong>focused</strong> element is not overwritten while you type.</li>
+        </ul>
+
+        <h2><code>@render</code> — HTML, Markdown and Pierrot</h2>
+        <p>Renders dynamic content that is <strong>not</strong> escaped as text. Goes on its own
+            line.</p>
+
+        <h3><code>@render html(expr)</code></h3>
+        <p>Injects raw HTML (the result of <code>expr</code>) in place. Re-evaluated on every
+            update. Useful for syntax highlighting, generated content, etc.</p>
+@render html(docCode(snipRenderHtml));
+        <div class="doc-note is-warn">
+            <p>You are responsible for safety: raw HTML is not escaped. Do not inject untrusted
+                user input.</p>
+        </div>
+
+        <h3><code>@render markdown(expr)</code></h3>
+        <p>Converts Markdown to HTML in the browser. Supports headings, lists, code blocks, and
+            inline (<code>**bold**</code>, <code>*italic*</code>, <code>`code`</code>,
+            <code>[link](url)</code>).</p>
+@render html(docCode(snipRenderMd));
+
+        <h3><code>@render pierrot(expr | "literal")</code></h3>
+        <p>Renders a snippet of <code>.pierrot</code> code — a live mini-component.</p>
+        <ul>
+            <li><strong>String literal</strong>: resolved at <strong>compile time</strong>. The snippet's <code>&lt;script&gt;</code> goes into the page bundle and the template is inlined.</li>
+            <li><strong>Expression</strong>: becomes a <strong>sandboxed iframe</strong> (<code>allow-scripts</code>) recompiled in the browser when the value changes (300ms debounce). That is how this site does the live editor preview:</li>
+        </ul>
+@render html(docCode(snipRenderPierrot));
+
+        <h2>How it all connects</h2>
+@render html(docCode(snipAll));
+        <p>Typing in the input → <code>query</code> changes → <code>__pierrotUpdate()</code> →
+            the <code>@for</code> block re-evaluates <code>filtered()</code> and re-renders the
+            list. No virtual DOM, no state management framework.</p>
+        <p>→ Helpers available in the <code>&lt;script&gt;</code> (<code>get</code>,
+            <code>client</code>, <code>time</code>): <a href="/docs/script-api">Script API</a>.</p>
+
+        <div class="doc-pager">
+            <a class="pager-prev" href="/docs/components"><span class="pager-dir">← Prev</span><span>Components &amp; props</span></a>
+            <a class="pager-next" href="/docs/script-api"><span class="pager-dir">Next →</span><span>Script API</span></a>
+        </div>
+    </article>
+</div>

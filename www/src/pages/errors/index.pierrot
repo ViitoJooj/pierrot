@@ -1,40 +1,54 @@
 <script>
     import "./styles.css";
     import "./script.ts";
+    import "../../lib/i18n.ts";
 
-    let status: string = get.Status();
-    let count: number = 30;
+    // Fallback page (set.Fallback). Served for any unknown route with status
+    // 404, so it also covers /pt-br/<missing> — the locale and copy come from
+    // lib/i18n.ts.
+    let errorPageStrings = uiText().errorPage;
+    let errorPageIsPortuguese = activeLocale() === "pt";
+    let errorPageHomeHref = localeBasePath() + "/";
 
-    onLoad(status);
-    returning();
+    let errorPageStatus = get.Status();
+    let errorPageCountdown = 30;
 
-    function returning() {
+    onLoad(errorPageStatus);
+    startReturnCountdown();
+
+    function startReturnCountdown() {
         for (let i = 0; i < 30; i++) {
             time.Sleep(1).sec();
-            count--;
+            errorPageCountdown--;
         }
 
-        client.Redirect("/");
+        client.Redirect(errorPageHomeHref);
     }
 </script>
 
 <main class="error-page">
     <div class="error-decor"><span style="color: #FFB300">◆</span><span style="color: #C8553D">◆</span><span style="color: #1A1410">◆</span></div>
-@if status == "404"
-    <p class="error-kicker">— ERRO / 404</p>
+@if errorPageStatus == "404"
+    <p class="error-kicker">${errorPageStrings.kickerPrefix}404</p>
     <h1 class="error-code">404</h1>
-    <h2 class="error-title">Essa rota <em>não compila.</em></h2>
-    <p class="error-desc">A página que você procura não existe — ou ainda não foi
-        escrita. Voltando pra home em <span class="error-count">${count}s</span>.</p>
+    <h2 class="error-title">
+@render html(errorPageStrings.notFoundTitleHtml);
+    </h2>
+    <p class="error-desc">${errorPageStrings.notFoundDescriptionPrefix}<span class="error-count">${errorPageCountdown}s</span>${errorPageStrings.descriptionSuffix}</p>
 @else
-    <p class="error-kicker">— ERRO / ${status}</p>
-    <h1 class="error-code">${status}</h1>
-    <h2 class="error-title">Algo <em>quebrou.</em></h2>
-    <p class="error-desc">Erro inesperado. Voltando pra home em
-        <span class="error-count">${count}s</span>.</p>
+    <p class="error-kicker">${errorPageStrings.kickerPrefix}${errorPageStatus}</p>
+    <h1 class="error-code">${errorPageStatus}</h1>
+    <h2 class="error-title">
+@render html(errorPageStrings.genericTitleHtml);
+    </h2>
+    <p class="error-desc">${errorPageStrings.genericDescriptionPrefix}<span class="error-count">${errorPageCountdown}s</span>${errorPageStrings.descriptionSuffix}</p>
 @endif
     <div class="error-actions">
-        <a class="error-primary" href="/">voltar pra home →</a>
-        <a class="error-ghost" href="https://github.com/ViitoJooj/pierrot/issues">reportar problema ↗</a>
+@if errorPageIsPortuguese
+        <a class="error-primary" href="/pt-br/">${errorPageStrings.backHomeLabel}</a>
+@else
+        <a class="error-primary" href="/">${errorPageStrings.backHomeLabel}</a>
+@endif
+        <a class="error-ghost" href="https://github.com/ViitoJooj/pierrot/issues">${errorPageStrings.reportIssueLabel}</a>
     </div>
 </main>

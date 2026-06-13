@@ -1,0 +1,79 @@
+<script>
+    // /docs/getting-started — install + Hello World.
+    import { DocsNav } from "../../../components/docs-nav/index.pierrot";
+    import "../../../lib/doc.ts";
+    import "./snippets.ts";
+
+    set.Title("Hello World in 30s · pierrot");
+    set.Description("Install the pierrot binary, create a project and run your first page.");
+</script>
+
+<div class="docs-wrap">
+    <DocsNav />
+    <article class="docs-content doc">
+        <p class="doc-kicker">— Getting started</p>
+        <h1>Installation &amp; Hello World in 30s</h1>
+        <p class="doc-lead">Install the binary, scaffold a project and watch the browser
+            reload as you type. No <code>node_modules</code>, no build config.</p>
+
+        <h2>Installation</h2>
+        <h3>Via <code>go install</code></h3>
+@render html(docCode(snipInstall));
+        <p>The binary lands in <code>~/.pierrot/bin/pierrot</code> (<code>pierrot.exe</code> on
+            Windows).</p>
+
+        <h3>Via release</h3>
+        <p>Download a pre-built binary from the
+            <a href="https://github.com/ViitoJooj/pierrot/releases/">releases page</a>. We
+            recommend creating a <code>.pierrot</code> folder in your user directory, putting the
+            binary in <code>.pierrot/bin</code> and adding that folder to your <code>PATH</code>
+            so you can call <code>pierrot</code> from anywhere.</p>
+        <p>Verify the install:</p>
+@render html(docCode(snipVerify));
+
+        <h2>Hello World in 30s</h2>
+        <h3>1. Create the project</h3>
+@render html(docCode(snipInit));
+        <p>This generates the minimal scaffold:</p>
+@render html(docCode(snipTree));
+        <p>→ What each file does:
+            <a href="/docs/project-structure">Project structure</a>.</p>
+
+        <h3>2. Run the dev server</h3>
+@render html(docCode(snipRun));
+        <p>Open <code>http://localhost:3000</code>. The server recompiles on every request and
+            reloads the browser by itself over SSE when you save a file (live reload).
+            Compilation errors show up in an overlay over the page, without taking the server
+            down.</p>
+
+        <h3>3. Edit the page</h3>
+        <p><code>src/pages/home/index.pierrot</code> ships with a clickable counter:</p>
+@render html(docCode(snipCounter));
+        <ul>
+            <li><code>let count</code> is the state — just a top-level variable in the <code>&lt;script&gt;</code>.</li>
+            <li><code>&#36;{count}</code> is interpolated into the HTML and stays reactive.</li>
+            <li><code>@click=&#123;increment&#125;</code> wires the click to the function; after it runs, Pierrot repaints the bits that depend on <code>count</code>.</li>
+        </ul>
+        <p>Save the file — the browser reloads on its own.</p>
+
+        <h3>4. Build the static site</h3>
+@render html(docCode(snipBuild));
+        <p>Renders every page under <code>src/pages/</code> to static HTML in the
+            <code>outDir</code>, with one minified <code>bundle.css</code> per page. The result
+            is pure static output — deploy it to any CDN or static host.</p>
+        <p>→ Details in <a href="/docs/cli">CLI &amp; configuration</a>.</p>
+
+        <h2>Next steps</h2>
+        <ul>
+            <li><a href="/docs/project-structure"><strong>Project structure</strong></a> — understand each file.</li>
+            <li><a href="/docs/templates"><strong>Template syntax</strong></a> — <code>&#36;{}</code>, <code>@for</code>, <code>@if</code>.</li>
+            <li><a href="/docs/components"><strong>Components &amp; props</strong></a> — split the UI into components.</li>
+            <li><a href="/docs/reactivity"><strong>Reactivity</strong></a> — <code>@bind</code>, <code>@event</code>, <code>@render</code>.</li>
+        </ul>
+
+        <div class="doc-pager">
+            <a class="pager-prev" href="/docs"><span class="pager-dir">← Prev</span><span>Overview</span></a>
+            <a class="pager-next" href="/docs/project-structure"><span class="pager-dir">Next →</span><span>Project structure</span></a>
+        </div>
+    </article>
+</div>

@@ -1,3 +1,8 @@
+//TODO: melhorar muito esse código!!!
+//
+// Separar funções, parar de utilizar regex, preciso pensar em uma nova arch,
+// para evitar essa bagunça.
+
 package workers
 
 import (
@@ -22,15 +27,12 @@ import (
 )
 
 var (
-	bindingRe = regexp.MustCompile(`\$\{(\w+)\}`)
-	// @click={fn} ou @click={fn(args)} — args sem parênteses/chaves aninhados
-	eventRe = regexp.MustCompile(`@(\w+)=\{(\w+)(?:\(([^(){}\n]*)\))?\}`)
-	slotRe  = regexp.MustCompile(`<Slot\s*/>`)
-	// tag capitalizada = componente; se sobrar no HTML final, faltou import
-	unknownTagRe = regexp.MustCompile(`<([A-Z]\w*)[^>]*/?>`)
-	// get.Dotenv("NOME") — resolvido no servidor (ver substDotenv)
-	dotenvCallRe = regexp.MustCompile(`get\.Dotenv\(\s*"([^"\n]*)"\s*\)`)
-	dotenvAnyRe  = regexp.MustCompile(`get\.Dotenv\s*\(`)
+	bindingRe    = regexp.MustCompile(`\$\{(\w+)\}`)                           // ${nome} em texto = binding de nome "nome"
+	eventRe      = regexp.MustCompile(`@(\w+)=\{(\w+)(?:\(([^(){}\n]*)\))?\}`) // @evento={fn} ou @evento={fn(args)}
+	slotRe       = regexp.MustCompile(`<Slot\s*/>`)                            // tag de slot para renderização de filho único (sem props ou múltiplos slots por enquanto)
+	unknownTagRe = regexp.MustCompile(`<([A-Z]\w*)[^>]*/?>`)                   // tags HTML legítimas começam minúsculas, então isso pega tags que parecem componente mas não foram importadas
+	dotenvCallRe = regexp.MustCompile(`get\.Dotenv\(\s*"([^"\n]*)"\s*\)`)      // get.Dotenv("NOME") — resolvido no servidor (ver substDotenv)
+	dotenvAnyRe  = regexp.MustCompile(`get\.Dotenv\s*\(`)                      // qualquer get.Dotenv( — para avisar erro de argumento não string literal, já que a substituição é textual
 )
 
 // substDotenv troca cada get.Dotenv("NOME") do script pelo valor literal do

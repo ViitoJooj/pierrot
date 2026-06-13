@@ -1,0 +1,93 @@
+<script>
+    // /pt-br/docs/templates
+    import { DocsNav } from "../../../../components/docs-nav/index.pierrot";
+    import "../../../../lib/doc.ts";
+    import "../../../docs/templates/snippets.ts";
+
+    set.Title("Sintaxe de template · pierrot");
+    set.Description("Interpolação, comentários e os blocos de controle @for / @if.");
+</script>
+
+<div class="docs-wrap">
+    <DocsNav />
+    <article class="docs-content doc">
+        <p class="doc-kicker">— A linguagem .pierrot</p>
+        <h1>Sintaxe de template</h1>
+        <p class="doc-lead">O template é tudo depois do <code>&lt;script&gt;</code>. HTML puro mais
+            um punhado de diretivas: interpolação <code>&#36;{}</code>, comentários e os blocos de
+            controle <code>@for</code> / <code>@if</code>.</p>
+
+        <h2>Interpolação <code>&#36;{...}</code></h2>
+        <p>Coloque qualquer expressão JavaScript entre <code>&#36;{</code> e <code>}</code>. O valor
+            é <strong>escapado</strong> (HTML-safe) e continua reativo: quando o estado muda, o
+            ponto é repintado.</p>
+@render html(docCode(snipInterp));
+        <ul>
+            <li><code>&#36;{name}</code> (identificador simples) vira <code>&lt;span data-bind="name"&gt;</code>.</li>
+            <li><code>&#36;{user.age + 10}</code> (expressão composta) vira <code>&lt;span data-pierrot-expr&gt;</code> reavaliado a cada update.</li>
+        </ul>
+        <p>Uma variável <strong>não declarada</strong> vira string vazia em vez de quebrar a
+            página (um guard de <code>typeof</code>). Útil em componentes onde uma prop pode não
+            ter sido passada.</p>
+        <div class="doc-note is-warn">
+            <p>A interpolação <strong>não</strong> roda em atributos <strong>fora</strong> de um
+                bloco. Dentro de <code>@for</code> / <code>@if</code> funciona normal — veja
+                <a href="/pt-br/docs/components">props em atributos</a>.</p>
+        </div>
+
+        <h2>Comentários</h2>
+        <p>Uma linha começando com <code>//</code> (no primeiro caractere, sem indentação) é
+            removida da saída:</p>
+@render html(docCode(snipComment));
+        <p>Um <code>//</code> <strong>indentado</strong> é tratado como texto. Para comentar HTML
+            no meio do markup, use um comentário HTML normal <code>&lt;!-- ... --&gt;</code> (que
+            permanece na saída).</p>
+
+        <h2><code>@for</code> — repetição</h2>
+@render html(docCode(snipFor));
+        <ul>
+            <li>Sintaxe: <code>@for &lt;var&gt; in &lt;expr&gt;</code> … <code>@end</code>.</li>
+            <li>Vira um <code>for...of</code> em JavaScript, reavaliado a cada <code>__pierrotUpdate()</code>. Se a lista muda, o bloco re-renderiza.</li>
+            <li><code>&lt;expr&gt;</code> é qualquer iterável JS (array, resultado de <code>.filter()</code>, etc).</li>
+        </ul>
+        <div class="doc-note">
+            <p>Cada diretiva (<code>@for</code>, <code>@if</code>) fica em <strong>sua própria
+                linha</strong>. O conteúdo do bloco fica entre a linha de abertura e o
+                <code>@end</code>.</p>
+        </div>
+
+        <h2><code>@if</code> / <code>@else</code> — condicional</h2>
+@render html(docCode(snipIf));
+        <ul>
+            <li>Sintaxe: <code>@if &lt;expr&gt;</code> … (<code>@else</code>) … <code>@end</code> <strong>ou</strong> <code>@endif</code>.</li>
+            <li><code>&lt;expr&gt;</code> é qualquer condição JavaScript.</li>
+            <li><code>@end</code> e <code>@endif</code> são equivalentes.</li>
+        </ul>
+
+        <h2>Aninhamento</h2>
+        <p><code>@for</code> e <code>@if</code> podem ser aninhados livremente. O <code>@end</code>
+            de fechamento conta profundidade, então cada bloco interno precisa do seu próprio
+            <code>@end</code>:</p>
+@render html(docCode(snipNest));
+
+        <h2>Erros comuns</h2>
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>Sintoma</th><th>Causa</th></tr></thead>
+                <tbody>
+                    <tr><td><code>diretiva "@for ..." sem @end/@endif</code></td><td>bloco não fechado</td></tr>
+                    <tr><td><code>"@end" sem @for/@if correspondente</code></td><td><code>@end</code> / <code>@else</code> solto</td></tr>
+                    <tr><td><code>&#36;{expr}</code> aparece literal num atributo</td><td>expressão num atributo fora de bloco — mova para dentro de um <code>@for</code> / <code>@if</code> ou use uma prop literal</td></tr>
+                    <tr><td>uma variável "some" silenciosamente</td><td>variável não declarada vira <code>""</code> (guard de <code>typeof</code>)</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>No <code>pierrot dev</code> esses erros aparecem no overlay no canto da página. No
+            <code>pierrot build</code>, eles derrubam o build.</p>
+
+        <div class="doc-pager">
+            <a class="pager-prev" href="/pt-br/docs/project-structure"><span class="pager-dir">← Anterior</span><span>Estrutura do projeto</span></a>
+            <a class="pager-next" href="/pt-br/docs/components"><span class="pager-dir">Próximo →</span><span>Componentes &amp; props</span></a>
+        </div>
+    </article>
+</div>

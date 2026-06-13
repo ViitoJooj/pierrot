@@ -5,8 +5,8 @@
 	import { Header } from "./components/header/index.pierrot";
 	import { Footer } from "./components/footer/index.pierrot";
 
-	set.Title("lading-page");
-	set.Description("This is my page description");
+	set.Title("pierrot · front-end framework in Go");
+	set.Description("Pierrot is a single-file component framework compiled in Go — no virtual DOM, no eval, no node_modules.");
 	set.Charset("UTF-8");
 	set.Icon("./assets/favicon.ico");
 	set.Robots("./assets/robots.txt");

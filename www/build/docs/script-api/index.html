@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Script API · pierrot</title>
+<meta name="description" content="The set, get, client and time helpers available inside a .pierrot script, plus .env.">
+<link rel="icon" href="./assets/favicon.ico">
+<link rel="stylesheet" href="/docs/script-api/bundle.css">
+</head>
+<body>
+<header>
+    <button onclick="navigateToHome(); __pierrotUpdate()" class="logo">
+        <p class="logo-curlybraces">{</p>
+        <p>pierrot</p>
+        <p class="logo-curlybraces">}</p>
+    </button>
+
+    <div class="nav">
+<div data-pierrot-block="0" style="display:contents"></div>
+
+        <button onclick="switchLanguage(); __pierrotUpdate()" class="nav-lang"><span data-bind="headerSwitchLanguageLabel"></span></button>
+        <button class="secondary-btn" onclick="goTo(&#34;https://github.com/ViitoJooj/pierrot&#34;); __pierrotUpdate()">github ↗</button>
+    </div>
+</header>
+<div class="docs-wrap">
+    <aside class="docs-sidebar">
+<div data-pierrot-block="1" style="display:contents"></div>
+<div data-pierrot-block="2" style="display:contents"></div>
+</aside>
+    <article class="docs-content doc">
+        <p class="doc-kicker">— The .pierrot language</p>
+        <h1>Script API</h1>
+        <p class="doc-lead">Inside the <code>&lt;script&gt;</code> of any <code>.pierrot</code> you
+            get, on top of plain TypeScript, four framework objects: <code>set</code> (metadata,
+            at compile time), <code>get</code>, <code>client</code> and <code>time</code>
+            (runtime in the browser). Plus access to <code>.env</code> variables.</p>
+
+        <h2><code>set</code> — metadata</h2>
+        <p><code>set.X(...)</code> configures the page. It makes sense in the
+            <strong>layout</strong> (<code>main.pierrot</code>) and in <strong>pages</strong> — a
+            page can override what the layout set. The calls are resolved at compile time and
+            stripped from the script.</p>
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>Call</th><th>Effect</th></tr></thead>
+                <tbody>
+                    <tr><td><code>set.Title("...")</code></td><td><code>&lt;title&gt;</code></td></tr>
+                    <tr><td><code>set.Description("...")</code></td><td><code>&lt;meta name="description"&gt;</code></td></tr>
+                    <tr><td><code>set.Charset("...")</code></td><td><code>&lt;meta charset&gt;</code> (default <code>UTF-8</code>)</td></tr>
+                    <tr><td><code>set.Icon("./assets/favicon.ico")</code></td><td><code>&lt;link rel="icon"&gt;</code></td></tr>
+                    <tr><td><code>set.Robots("./assets/robots.txt")</code></td><td>file served at <code>/robots.txt</code></td></tr>
+                    <tr><td><code>set.Default(Component)</code></td><td>page for the <code>/</code> route</td></tr>
+                    <tr><td><code>set.Fallback(Component)</code></td><td>page served for non-existent routes (404)</td></tr>
+                </tbody>
+            </table>
+        </div>
+<div data-pierrot-render="0" style="display:contents"></div>
+        <div class="doc-note">
+            <p><code>set.Default</code> and <code>set.Fallback</code> take an
+                <strong>imported component</strong>, and its folder (relative to
+                <code>pages/</code>) becomes the route. The import must point inside
+                <code>pages/</code>.</p>
+        </div>
+
+        <h2><code>get</code> — request info</h2>
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>Call</th><th>Returns</th></tr></thead>
+                <tbody>
+                    <tr><td><code>get.Path(n)</code></td><td>the n-th segment of the pathname, <strong>1-based</strong>. <code>/about/team</code> → <code>get.Path(1) == "about"</code>. Out of range: <code>""</code>.</td></tr>
+                    <tr><td><code>get.Status()</code></td><td>HTTP status as a string: <code>"200"</code>, <code>"404"</code>.</td></tr>
+                    <tr><td><code>get.Dotenv("NAME")</code></td><td>value of an <code>.env</code> variable (see below).</td></tr>
+                </tbody>
+            </table>
+        </div>
+<div data-pierrot-render="1" style="display:contents"></div>
+
+        <h2><code>client</code> — navigation</h2>
+<div data-pierrot-render="2" style="display:contents"></div>
+        <ul>
+            <li><code>client.Redirect(url)</code> — navigates to <code>url</code>.</li>
+            <li><code>client.Redirect(url).newTab()</code> — opens in a new tab instead of navigating.</li>
+        </ul>
+
+        <h2><code>time</code> — async waiting</h2>
+        <p><code>time.Sleep(n)</code> returns a <code>Promise</code> that resolves after
+            <code>n</code> units. Pick the unit by chaining:</p>
+<div data-pierrot-render="3" style="display:contents"></div>
+        <p>Available units: <code>.msec()</code>, <code>.sec()</code>, <code>.min()</code>,
+            <code>.hr()</code>, <code>.day()</code>, <code>.week()</code>, <code>.month()</code>,
+            <code>.year()</code>.</p>
+        <div class="doc-note">
+            <p>The compiler injects the <code>await</code> and makes the function
+                <code>async</code> automatically when it sees <code>time.Sleep(...)</code>. After
+                the code following the <code>await</code> runs, a <code>__pierrotUpdate()</code>
+                fires — so state changed post-sleep is already on screen.</p>
+        </div>
+
+        <h2>Environment variables (<code>.env</code>)</h2>
+        <p>Enable it in <code>settings.pierrot.json</code>:</p>
+<div data-pierrot-render="4" style="display:contents"></div>
+        <p>Read with <code>get.Dotenv("NAME")</code>:</p>
+<div data-pierrot-render="5" style="display:contents"></div>
+        <p>How it works, and the limits:</p>
+        <ul>
+            <li>The substitution happens <strong>on the server</strong>, at compile time: <code>get.Dotenv("API_URL")</code> becomes the literal value before the bundle. It does not exist at runtime.</li>
+            <li><strong>Only the referenced variables</strong> end up in the HTML — the rest of the <code>.env</code> never reaches the browser.</li>
+            <li>The argument must be a <strong>double-quoted string literal</strong>. A dynamic name is an error — the substitution is textual.</li>
+            <li>A variable missing from <code>.env</code>, or dotenv disabled, becomes <code>""</code> + an error in the overlay/build.</li>
+        </ul>
+        <div class="doc-note is-warn">
+            <p>⚠️ Since the value is embedded in the HTML sent to the browser, do
+                <strong>not</strong> put secrets (private API keys, passwords) in variables read
+                by <code>get.Dotenv</code>. Treat anything that goes through it as public.</p>
+        </div>
+
+        <div class="doc-pager">
+            <a class="pager-prev" href="/docs/reactivity"><span class="pager-dir">← Prev</span><span>Reactivity</span></a>
+            <a class="pager-next" href="/docs/cli"><span class="pager-dir">Next →</span><span>CLI &amp; configuration</span></a>
+        </div>
+    </article>
+</div>
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <p class="footer-logo"><span class="footer-brace">{</span> pierrot <span class="footer-brace">}</span></p>
+            <p class="footer-tagline">
+<div data-pierrot-render="6" style="display:contents"></div>
+            </p>
+            <div class="footer-diamonds"><span style="color: #FFB300">◆</span><span style="color: #C8553D">◆</span><span style="color: #B8AEA0">◆</span></div>
+        </div>
+        <div class="footer-cols">
+<div data-pierrot-block="3" style="display:contents"></div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 pierrot · MIT</span>
+        <span class="footer-made"><span data-bind="footerMadeWithText"></span></span>
+    </div>
+</footer>
+
+<script>
+var __pierrotStatus = 200;
+var get = {
+	Path: function (n) {
+		var p = location.pathname.split("/").filter(Boolean);
+		return n >= 1 && n <= p.length ? p[n - 1] : "";
+	},
+	Status: function () {
+		return String(typeof __pierrotStatus === "undefined" ? 200 : __pierrotStatus);
+	},
+};
+var client = {
+	Redirect: function (url) {
+		var t = setTimeout(function () { location.assign(url); }, 0);
+		return {
+			newTab: function () {
+				clearTimeout(t);
+				window.open(url, "_blank", "noopener");
+			},
+		};
+	},
+};
+var time = {
+	Sleep: function (n) {
+		var wait = function (ms) {
+			return new Promise(function (done) {
+				setTimeout(function () {
+					done();
+					// microtask depois da continuação do await: o estado mudado
+					// após o Sleep já está aplicado quando o update roda
+					if (typeof __pierrotUpdate === "function") Promise.resolve().then(__pierrotUpdate);
+				}, n * ms);
+			});
+		};
+		return {
+			msec: function () { return wait(1); },
+			sec: function () { return wait(1000); },
+			min: function () { return wait(60 * 1000); },
+			hr: function () { return wait(60 * 60 * 1000); },
+			day: function () { return wait(24 * 60 * 60 * 1000); },
+			week: function () { return wait(7 * 24 * 60 * 60 * 1000); },
+			month: function () { return wait(30 * 24 * 60 * 60 * 1000); },
+			year: function () { return wait(365 * 24 * 60 * 60 * 1000); },
+		};
+	},
+};
+
+document.documentElement.setAttribute("data-theme","light");
+
+const uiTranslations={en:{header:{switchLanguageLabel:"PT-BR",navigation:[{label:"Docs",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Syntax",path:"/docs/templates"},{label:"CLI",path:"/docs/cli"}]},footer:{taglineHtml:"Components in one file.<br>Compiled in Go.",madeWith:"made with pierrot, obviously \u25C6",columns:[{title:"learn",links:[{label:"hello world in 30s",path:"/docs/getting-started"},{label:"template syntax",path:"/docs/templates"},{label:"components & props",path:"/docs/components"},{label:"CLI & settings",path:"/docs/cli"}]},{title:"project",links:[{label:"github \u2197",url:"https://github.com/ViitoJooj/pierrot"},{label:"issues \u2197",url:"https://github.com/ViitoJooj/pierrot/issues"},{label:"MIT license",url:"https://github.com/ViitoJooj/pierrot/blob/main/LICENSE.md"}]}]},documentationSidebar:{brandSuffix:"docs",groups:[{title:"Getting started",items:[{label:"Overview",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Project structure",path:"/docs/project-structure"}]},{title:"The .pierrot language",items:[{label:"Template syntax",path:"/docs/templates"},{label:"Components & props",path:"/docs/components"},{label:"Reactivity",path:"/docs/reactivity"},{label:"Script API",path:"/docs/script-api"}]},{title:"Tooling",items:[{label:"CLI & configuration",path:"/docs/cli"}]}]},errorPage:{kickerPrefix:"\u2014 ERROR / ",notFoundTitleHtml:"This route <em>does not compile.</em>",notFoundDescriptionPrefix:"The page you are looking for does not exist \u2014 or has not been written yet. Heading back home in ",genericTitleHtml:"Something <em>broke.</em>",genericDescriptionPrefix:"Unexpected error. Heading back home in ",descriptionSuffix:".",backHomeLabel:"back to home \u2192",reportIssueLabel:"report an issue \u2197"}},pt:{header:{switchLanguageLabel:"EN",navigation:[{label:"Docs",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Sintaxe",path:"/docs/templates"},{label:"CLI",path:"/docs/cli"}]},footer:{taglineHtml:"Componentes em um arquivo.<br>Compilados em Go.",madeWith:"feito com pierrot, \xF3bvio \u25C6",columns:[{title:"aprenda",links:[{label:"hello world em 30s",path:"/docs/getting-started"},{label:"sintaxe de template",path:"/docs/templates"},{label:"componentes e props",path:"/docs/components"},{label:"CLI e settings",path:"/docs/cli"}]},{title:"projeto",links:[{label:"github \u2197",url:"https://github.com/ViitoJooj/pierrot"},{label:"issues \u2197",url:"https://github.com/ViitoJooj/pierrot/issues"},{label:"licen\xE7a MIT",url:"https://github.com/ViitoJooj/pierrot/blob/main/LICENSE.md"}]}]},documentationSidebar:{brandSuffix:"docs",groups:[{title:"Primeiros passos",items:[{label:"Vis\xE3o geral",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Estrutura do projeto",path:"/docs/project-structure"}]},{title:"A linguagem .pierrot",items:[{label:"Sintaxe de template",path:"/docs/templates"},{label:"Componentes e props",path:"/docs/components"},{label:"Reatividade",path:"/docs/reactivity"},{label:"Script API",path:"/docs/script-api"}]},{title:"Ferramentas",items:[{label:"CLI e configura\xE7\xE3o",path:"/docs/cli"}]}]},errorPage:{kickerPrefix:"\u2014 ERRO / ",notFoundTitleHtml:"Essa rota <em>n\xE3o compila.</em>",notFoundDescriptionPrefix:"A p\xE1gina que voc\xEA procura n\xE3o existe \u2014 ou ainda n\xE3o foi escrita. Voltando pra home em ",genericTitleHtml:"Algo <em>quebrou.</em>",genericDescriptionPrefix:"Erro inesperado. Voltando pra home em ",descriptionSuffix:".",backHomeLabel:"voltar pra home \u2192",reportIssueLabel:"reportar problema \u2197"}}};function activeLocale(){return get.Path(1)==="pt-br"?"pt":"en"}function localeBasePath(){return activeLocale()==="pt"?"/pt-br":""}function uiText(){return uiTranslations[activeLocale()]}
+
+let headerStrings=uiText().header,headerBasePath=localeBasePath(),headerNavigationLinks=headerStrings.navigation.map(item=>({label:item.label,href:headerBasePath+item.path})),headerSwitchLanguageLabel=headerStrings.switchLanguageLabel,headerOtherLocaleHref=activeLocale()==="pt"?location.pathname.replace(/^\/pt-br/,"")||"/":"/pt-br"+(location.pathname==="/"?"":location.pathname);function navigateToHome(){client.Redirect(headerBasePath+"/")}function switchLanguage(){client.Redirect(headerOtherLocaleHref)}
+
+function goTo(url){client.Redirect(url).newTab()}
+
+let footerStrings=uiText().footer,footerBasePath=localeBasePath(),footerColumns=footerStrings.columns.map(column=>({title:column.title,links:column.links.map(link=>({label:link.label,href:link.url||footerBasePath+link.path}))})),footerTaglineHtml=footerStrings.taglineHtml,footerMadeWithText=footerStrings.madeWith;
+
+function docEsc(src){return src.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}function docHl(src){const esc=docEsc(src),span=(cls,txt)=>'<span class="'+cls+'">'+txt+"</span>",re=/(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`(?:[^`\\]|\\.)*`)|(\$\{[^}\n]*\}|@\w+)|\b(let|const|var|function|return|if|else|for|of|in|import|from|new|typeof|async|await)\b|(:\s*)([A-Za-z_]\w*)|\b(\d+(?:\.\d+)?)\b|(&lt;\/?)([\w-]+)|(\/?&gt;)|([A-Za-z_]\w*)(?=\s*\()/g;return esc.replace(re,function(m,com,str,dir,kw,colon,type,num,tagp,tagn,gt,fn){return com?span("tok-comment",com):str?span("tok-string",str):dir?span("tok-directive",dir):kw?span("tok-keyword",kw):type?colon+span("tok-type",type):num?span("tok-number",num):tagn?span("tok-punct",tagp)+span("tok-tag",tagn):gt?span("tok-punct",gt):fn?span("tok-fn",fn):m})}function docCode(src){return'<pre class="doc-code"><code>'+docHl(src)+"</code></pre>"}function docCodeFile(file,src){return'<span class="doc-file">'+docEsc(file)+"</span>"+docCode(src)}
+
+const snipSet=`<script>
+    import { Home } from "./pages/home/index.pierrot";
+    import { Errors } from "./pages/errors/index.pierrot";
+
+    set.Title("myapp");
+    set.Description("Page description");
+    set.Icon("./assets/favicon.ico");
+    set.Robots("./assets/robots.txt");
+    set.Default(Home);
+    set.Fallback(Errors);
+<\/script>`,snipStatus=`<script>
+    let status: string = get.Status();
+<\/script>
+
+@if status == "404"
+    <h1>Page not found</h1>
+@endif`,snipClient=`<script>
+    function openGithub() {
+        client.Redirect("https://github.com/ViitoJooj/pierrot").newTab();
+    }
+
+    function goHome() {
+        client.Redirect("/");
+    }
+<\/script>`,snipTime=`<script>
+    let count: number = 30;
+
+    async function countdown() {
+        for (let i = 0; i < 30; i++) {
+            await time.Sleep(1).sec();
+            count--;
+        }
+        client.Redirect("/");
+    }
+<\/script>
+
+<p>Returning in \${count}s...</p>`,snipEnvJson=`{
+  "dotenv": { "enabled": true, "path": "./.env" }
+}`,snipEnvRead=`<script>
+    let apiUrl: string = get.Dotenv("API_URL");
+<\/script>`;
+
+
+let documentationSidebarStrings=uiText().documentationSidebar,documentationSidebarBasePath=localeBasePath(),documentationSidebarIsPortuguese=activeLocale()==="pt",documentationSidebarCurrentPath=location.pathname.replace(/\/+$/,"")||"/",documentationSidebarBrandSuffix=documentationSidebarStrings.brandSuffix,documentationSidebarGroups=documentationSidebarStrings.groups.map(group=>({title:group.title,items:group.items.map(item=>{const href=documentationSidebarBasePath+item.path;return{label:item.label,href,isActive:href.replace(/\/+$/,"")===documentationSidebarCurrentPath}})}));
+
+
+function __pierrotEsc(v) {
+	return String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function __pierrotMd(src) {
+	var esc = function (s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); };
+	var inline = function (s) {
+		return esc(s)
+			.replace(/\x60([^\x60]+)\x60/g, "<code>$1</code>")
+			.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+			.replace(/\*([^*]+)\*/g, "<em>$1</em>")
+			.replace(/\[([^\]]+)\]\(([^()\s]+)\)/g, '<a href="$2">$1</a>');
+	};
+	var lines = String(src).split(/\r?\n/), out = [], i = 0;
+	while (i < lines.length) {
+		var l = lines[i];
+		if (/^\x60\x60\x60/.test(l)) {
+			var buf = [];
+			for (i++; i < lines.length && !/^\x60\x60\x60/.test(lines[i]); i++) buf.push(lines[i]);
+			i++;
+			out.push("<pre><code>" + esc(buf.join("\n")) + "</code></pre>");
+			continue;
+		}
+		var h = l.match(/^(#{1,6})\s+(.*)$/);
+		if (h) { out.push("<h" + h[1].length + ">" + inline(h[2]) + "</h" + h[1].length + ">"); i++; continue; }
+		if (/^\s*[-*]\s+/.test(l)) {
+			var items = [];
+			for (; i < lines.length && /^\s*[-*]\s+/.test(lines[i]); i++) items.push("<li>" + inline(lines[i].replace(/^\s*[-*]\s+/, "")) + "</li>");
+			out.push("<ul>" + items.join("") + "</ul>");
+			continue;
+		}
+		if (/^\s*$/.test(l)) { i++; continue; }
+		var para = [];
+		for (; i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#{1,6}\s|\x60\x60\x60|\s*[-*]\s)/.test(lines[i]); i++) para.push(lines[i]);
+		out.push("<p>" + para.map(inline).join("<br>") + "</p>");
+	}
+	return out.join("\n");
+}
+var __pierrotBlocks = [
+function () {
+var __h = "";
+for (const link of (headerNavigationLinks)) {
+__h += "        <a class=\"nav-link\" href=\"" + __pierrotEsc(link.href) + "\">" + __pierrotEsc(link.label) + "</a>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+if (documentationSidebarIsPortuguese) {
+__h += "    <a class=\"docs-side-brand\" href=\"/pt-br/docs\"><span class=\"docs-side-brace\">{</span> pierrot <span class=\"docs-side-brace\">}</span> · " + __pierrotEsc(typeof documentationSidebarBrandSuffix === "undefined" ? "" : documentationSidebarBrandSuffix) + "</a>\n";
+} else {
+__h += "    <a class=\"docs-side-brand\" href=\"/docs\"><span class=\"docs-side-brace\">{</span> pierrot <span class=\"docs-side-brace\">}</span> · " + __pierrotEsc(typeof documentationSidebarBrandSuffix === "undefined" ? "" : documentationSidebarBrandSuffix) + "</a>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+for (const group of (documentationSidebarGroups)) {
+__h += "    <div class=\"docs-side-group\">\n";
+__h += "        <p class=\"docs-side-title\">" + __pierrotEsc(group.title) + "</p>\n";
+for (const item of (group.items)) {
+if (item.isActive) {
+__h += "        <a class=\"docs-side-link is-active\" href=\"" + __pierrotEsc(item.href) + "\">" + __pierrotEsc(item.label) + "</a>\n";
+} else {
+__h += "        <a class=\"docs-side-link\" href=\"" + __pierrotEsc(item.href) + "\">" + __pierrotEsc(item.label) + "</a>\n";
+}
+}
+__h += "    </div>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+for (const column of (footerColumns)) {
+__h += "            <div class=\"footer-col\">\n";
+__h += "                <p class=\"footer-col-title\">" + __pierrotEsc(column.title) + "</p>\n";
+for (const link of (column.links)) {
+__h += "                <a class=\"footer-link\" href=\"" + __pierrotEsc(link.href) + "\">" + __pierrotEsc(link.label) + "</a>\n";
+}
+__h += "            </div>\n";
+}
+return __h;
+},
+];
+var __pierrotExprs = [
+];
+var __pierrotRenders = [
+{ kind: "html", fn: function () { return (docCode(snipSet)); } },
+{ kind: "html", fn: function () { return (docCode(snipStatus)); } },
+{ kind: "html", fn: function () { return (docCode(snipClient)); } },
+{ kind: "html", fn: function () { return (docCode(snipTime)); } },
+{ kind: "html", fn: function () { return (docCode(snipEnvJson)); } },
+{ kind: "html", fn: function () { return (docCode(snipEnvRead)); } },
+{ kind: "html", fn: function () { return (typeof footerTaglineHtml === "undefined" ? "" : footerTaglineHtml); } },
+];
+var __pierrotBindVals = [
+];
+function __pierrotUpdate() {
+	const state = {
+		"headerSwitchLanguageLabel": typeof headerSwitchLanguageLabel === "undefined" ? "" : headerSwitchLanguageLabel,
+		"footerMadeWithText": typeof footerMadeWithText === "undefined" ? "" : footerMadeWithText,
+	};
+	document.querySelectorAll("[data-bind]").forEach(function (el) {
+		el.textContent = state[el.getAttribute("data-bind")];
+	});
+	__pierrotBlocks.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-block="' + i + '"]').forEach(function (el) {
+			try { el.innerHTML = fn(); } catch (e) { console.error("pierrot: bloco " + i + ":", e); }
+		});
+	});
+	__pierrotExprs.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-expr="' + i + '"]').forEach(function (el) {
+			try { el.textContent = fn(); } catch (e) { console.error("pierrot: {expr} " + i + ":", e); }
+		});
+	});
+	__pierrotBindVals.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-bindval="' + i + '"]').forEach(function (el) {
+			if (el === document.activeElement) return;
+			try { var v = fn(); el.value = v == null ? "" : v; } catch (e) {}
+		});
+	});
+	__pierrotRenders.forEach(function (r, i) {
+		document.querySelectorAll('[data-pierrot-render="' + i + '"]').forEach(function (el) {
+			try {
+				if (r.kind === "pierrot") {
+					// preview num iframe, recriado só quando o valor muda;
+					// debounce de 300ms segura recompilação durante digitação
+					var fr = el.firstChild;
+					if (!fr) {
+						fr = document.createElement("iframe");
+						fr.className = "pierrot-preview";
+						fr.setAttribute("sandbox", "allow-scripts");
+						el.appendChild(fr);
+					}
+					var v = String(r.fn());
+					if (v === el.__pierrotSrc) return;
+					var first = el.__pierrotSrc === undefined;
+					el.__pierrotSrc = v;
+					clearTimeout(el.__pierrotT);
+					el.__pierrotT = setTimeout(function () { fr.srcdoc = __pierrotCompile(v); }, first ? 0 : 300);
+					return;
+				}
+				var v = String(r.fn());
+				el.innerHTML = r.kind === "markdown" ? __pierrotMd(v) : v;
+			} catch (e) { console.error("pierrot: @render " + i + ":", e); }
+		});
+	});
+}
+__pierrotUpdate();
+
+
+</script>
+</body>
+</html>

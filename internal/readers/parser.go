@@ -24,14 +24,16 @@ type Import struct {
 	Path string
 }
 
+// ParsePierrot parseia um arquivo .pierrot do caminho dado e retorna um Component ou erro.
+//
+// TODO: parar de utilizar regex e utilizar a std lib do golang para parsear.
 var (
 	scriptRe = regexp.MustCompile(`(?s)<script>(.*?)</script>`)
 	cssRe    = regexp.MustCompile(`(?m)^\s*import\s+"(.+?\.css)";?\s*$`)
 	tsRe     = regexp.MustCompile(`(?m)^\s*import\s+"(.+?\.(?:ts|js))";?\s*$`)
 	compRe   = regexp.MustCompile(`(?m)^\s*import\s+\{\s*(\w+)\s*\}\s+from\s+"(.+?\.pierrot)";?\s*$`)
 	metaRe   = regexp.MustCompile(`(?m)^\s*set\.(\w+)\(\s*(?:"(.*?)"|(\w+))\s*\);?\s*$`)
-	// let nome: tipo; SEM valor = declaração de prop do componente
-	propRe = regexp.MustCompile(`(?m)^\s*let\s+(\w+)\s*(?::[^=;\n]*)?;\s*$`)
+	propRe   = regexp.MustCompile(`(?m)^\s*let\s+(\w+)\s*(?::[^=;\n]*)?;\s*$`)
 )
 
 func ParsePierrot(path string) (*Component, error) {
@@ -42,8 +44,11 @@ func ParsePierrot(path string) (*Component, error) {
 	return ParseSource(string(data)), nil
 }
 
+// minha feat favorita!!!!
+//
 // ParseSource parseia fonte .pierrot já em memória (arquivo ou trecho de
 // @render pierrot)
+// acredito que precisara passar por alguns ajustes para ficar mais facil de entender o código.
 func ParseSource(src string) *Component {
 	c := &Component{Meta: map[string]string{}}
 
@@ -64,6 +69,7 @@ func ParseSource(src string) *Component {
 	for _, m := range propRe.FindAllStringSubmatch(c.Script, -1) {
 		c.Props = append(c.Props, m[1])
 	}
+
 	// set.X("texto") guarda a string; set.X(Identificador) guarda o nome
 	for _, m := range metaRe.FindAllStringSubmatch(c.Script, -1) {
 		if m[3] != "" {

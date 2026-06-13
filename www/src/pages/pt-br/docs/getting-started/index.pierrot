@@ -1,0 +1,78 @@
+<script>
+    // /pt-br/docs/getting-started
+    import { DocsNav } from "../../../../components/docs-nav/index.pierrot";
+    import "../../../../lib/doc.ts";
+    import "../../../docs/getting-started/snippets.ts";
+
+    set.Title("Hello World em 30s · pierrot");
+    set.Description("Instale o binário do pierrot, crie um projeto e rode sua primeira página.");
+</script>
+
+<div class="docs-wrap">
+    <DocsNav />
+    <article class="docs-content doc">
+        <p class="doc-kicker">— Primeiros passos</p>
+        <h1>Instalação &amp; Hello World em 30s</h1>
+        <p class="doc-lead">Instale o binário, gere um projeto e veja o browser recarregar
+            enquanto você digita. Sem <code>node_modules</code>, sem config de build.</p>
+
+        <h2>Instalação</h2>
+        <h3>Via <code>go install</code></h3>
+@render html(docCode(snipInstall));
+        <p>O binário vai para <code>~/.pierrot/bin/pierrot</code> (<code>pierrot.exe</code> no
+            Windows).</p>
+
+        <h3>Via release</h3>
+        <p>Baixe um binário pré-compilado na
+            <a href="https://github.com/ViitoJooj/pierrot/releases/">página de releases</a>.
+            Recomendamos criar uma pasta <code>.pierrot</code> no diretório do usuário, colocar o
+            binário em <code>.pierrot/bin</code> e adicionar essa pasta ao <code>PATH</code> para
+            chamar <code>pierrot</code> de qualquer lugar.</p>
+        <p>Verifique a instalação:</p>
+@render html(docCode(snipVerify));
+
+        <h2>Hello World em 30s</h2>
+        <h3>1. Crie o projeto</h3>
+@render html(docCode(snipInit));
+        <p>Isso gera o scaffold mínimo:</p>
+@render html(docCode(snipTree));
+        <p>→ O que cada arquivo faz:
+            <a href="/pt-br/docs/project-structure">Estrutura do projeto</a>.</p>
+
+        <h3>2. Rode o servidor de dev</h3>
+@render html(docCode(snipRun));
+        <p>Abra <code>http://localhost:3000</code>. O servidor recompila a cada request e
+            recarrega o browser sozinho via SSE quando você salva um arquivo (live reload). Erros
+            de compilação aparecem num overlay sobre a página, sem derrubar o servidor.</p>
+
+        <h3>3. Edite a página</h3>
+        <p><code>src/pages/home/index.pierrot</code> já vem com um contador clicável:</p>
+@render html(docCode(snipCounter));
+        <ul>
+            <li><code>let count</code> é o estado — só uma variável de topo no <code>&lt;script&gt;</code>.</li>
+            <li><code>&#36;{count}</code> é interpolado no HTML e continua reativo.</li>
+            <li><code>@click=&#123;increment&#125;</code> liga o clique à função; depois que ela roda, o Pierrot repinta o que depende de <code>count</code>.</li>
+        </ul>
+        <p>Salve o arquivo — o browser recarrega sozinho.</p>
+
+        <h3>4. Gere o site estático</h3>
+@render html(docCode(snipBuild));
+        <p>Renderiza toda página em <code>src/pages/</code> para HTML estático no
+            <code>outDir</code>, com um <code>bundle.css</code> minificado por página. O resultado
+            é saída estática pura — publique em qualquer CDN ou host estático.</p>
+        <p>→ Detalhes em <a href="/pt-br/docs/cli">CLI &amp; configuração</a>.</p>
+
+        <h2>Próximos passos</h2>
+        <ul>
+            <li><a href="/pt-br/docs/project-structure"><strong>Estrutura do projeto</strong></a> — entenda cada arquivo.</li>
+            <li><a href="/pt-br/docs/templates"><strong>Sintaxe de template</strong></a> — <code>&#36;{}</code>, <code>@for</code>, <code>@if</code>.</li>
+            <li><a href="/pt-br/docs/components"><strong>Componentes &amp; props</strong></a> — divida a UI em componentes.</li>
+            <li><a href="/pt-br/docs/reactivity"><strong>Reatividade</strong></a> — <code>@bind</code>, <code>@event</code>, <code>@render</code>.</li>
+        </ul>
+
+        <div class="doc-pager">
+            <a class="pager-prev" href="/pt-br/docs"><span class="pager-dir">← Anterior</span><span>Visão geral</span></a>
+            <a class="pager-next" href="/pt-br/docs/project-structure"><span class="pager-dir">Próximo →</span><span>Estrutura do projeto</span></a>
+        </div>
+    </article>
+</div>

@@ -1,0 +1,114 @@
+<script>
+    // /pt-br/docs/cli
+    import { DocsNav } from "../../../../components/docs-nav/index.pierrot";
+    import "../../../../lib/doc.ts";
+    import "../../../docs/cli/snippets.ts";
+
+    set.Title("CLI & configuração · pierrot");
+    set.Description("init, dev, build, vscode e a referência do settings.pierrot.json.");
+</script>
+
+<div class="docs-wrap">
+    <DocsNav />
+    <article class="docs-content doc">
+        <p class="doc-kicker">— Ferramentas</p>
+        <h1>CLI &amp; configuração</h1>
+        <p class="doc-lead">Um binário, quatro comandos, um arquivo de config. Tudo que você faz
+            com o Pierrot pelo terminal.</p>
+
+        <h2>Comandos</h2>
+@render html(docCode(snipCmds));
+
+        <h3><code>pierrot init &lt;nome&gt;</code></h3>
+        <p>Cria uma pasta <code>&lt;nome&gt;/</code> com o scaffold mínimo:
+            <code>settings.pierrot.json</code>, <code>src/main.pierrot</code> (layout), uma página
+            <code>home</code> (default) e uma página <code>errors</code> (fallback), mais
+            <code>globals.css</code> e <code>assets/</code>.</p>
+@render html(docCode(snipInit));
+
+        <h3><code>pierrot dev</code></h3>
+        <p>Inicia o servidor de desenvolvimento (default <code>http://localhost:3000</code>).
+            Precisa rodar de dentro do projeto (onde está o <code>settings.pierrot.json</code>).</p>
+@render html(docCode(snipDev));
+        <ul>
+            <li><strong>Compila a cada request</strong> — sem cache, sem HMR para dar errado.</li>
+            <li><strong>Live reload via SSE</strong>: o servidor observa arquivos (<code>.pierrot</code>, <code>.css</code>, <code>.ts</code>, <code>.js</code>, <code>.html</code>) e recarrega o browser quando algo muda.</li>
+            <li><strong>Overlay de erros</strong>: erros de template ou de transform de TS aparecem num popup sobre a página, sem derrubar o servidor.</li>
+            <li>Arquivos com extensão (CSS, imagens) são servidos direto do <code>src/</code>; <code>/robots.txt</code> vem do arquivo apontado por <code>set.Robots</code>.</li>
+        </ul>
+
+        <h3><code>pierrot build</code></h3>
+        <p>Renderiza toda página em <code>src/pages/</code> para HTML estático no
+            <code>outDir</code>.</p>
+@render html(docCode(snipBuild));
+        <p>O que é gerado:</p>
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>Saída</th><th>Origem</th></tr></thead>
+                <tbody>
+                    <tr><td><code>&lt;outDir&gt;/&lt;rota&gt;/index.html</code></td><td>cada <code>pages/&lt;rota&gt;/index.pierrot</code></td></tr>
+                    <tr><td><code>&lt;outDir&gt;/&lt;rota&gt;/bundle.css</code></td><td><code>globals.css</code> + CSS da página + CSS de componentes, minificado</td></tr>
+                    <tr><td><code>&lt;outDir&gt;/index.html</code></td><td>cópia da página <code>set.Default</code> (rota <code>/</code>)</td></tr>
+                    <tr><td><code>&lt;outDir&gt;/404.html</code></td><td>a página <code>set.Fallback</code> renderizada com status 404</td></tr>
+                    <tr><td><code>&lt;outDir&gt;/robots.txt</code></td><td>o arquivo <code>set.Robots</code></td></tr>
+                    <tr><td>outros assets</td><td>copiados do <code>src/</code> preservando a estrutura</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <ul>
+            <li>CSS e JS são <strong>minificados</strong> (configurável).</li>
+            <li><strong>Qualquer erro derruba o build</strong> (diferente do dev, que mostra no overlay).</li>
+        </ul>
+
+        <h3><code>pierrot vscode install</code></h3>
+        <p>Instala a extensão do VS Code embutida (syntax highlight de <code>.pierrot</code>,
+            snippets e ícones) usando a CLI <code>code</code>.</p>
+@render html(docCode(snipVscode));
+        <p>Requer o comando <code>code</code> no PATH. Se não estiver lá: abra o VS Code, rode
+            <strong>"Shell Command: Install 'code' command in PATH"</strong> e tente de novo.</p>
+
+        <h2><code>settings.pierrot.json</code></h2>
+        <p>Fica na raiz do projeto. Controla nome, entry, porta, dotenv e o build.</p>
+@render html(docCode(snipSettings));
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>Campo</th><th>Default</th><th>Descrição</th></tr></thead>
+                <tbody>
+                    <tr><td><code>app.name</code></td><td>—</td><td>nome do projeto</td></tr>
+                    <tr><td><code>app.version</code></td><td>—</td><td>versão (metadado)</td></tr>
+                    <tr><td><code>app.entry</code></td><td><code>./src/main.pierrot</code></td><td>layout / entry point. <strong>Relativo à pasta do settings.</strong> A pasta dele vira o <code>src</code>.</td></tr>
+                    <tr><td><code>app.port</code></td><td><code>3000</code></td><td>porta do <code>pierrot dev</code></td></tr>
+                    <tr><td><code>dotenv.enabled</code></td><td><code>false</code></td><td>habilita <code>get.Dotenv(...)</code></td></tr>
+                    <tr><td><code>dotenv.path</code></td><td>—</td><td>caminho do <code>.env</code>, relativo ao <code>src</code></td></tr>
+                    <tr><td><code>build.outDir</code></td><td><code>./dist</code></td><td>pasta de saída do build, relativa ao <code>src</code></td></tr>
+                    <tr><td><code>build.minify</code></td><td><code>true</code></td><td>minifica CSS e JS</td></tr>
+                    <tr><td><code>build.sourcemap</code></td><td><code>false</code></td><td>sourcemap inline no JS do build</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="doc-note">
+            <p><strong>Resolução de caminhos:</strong> <code>app.entry</code> é relativo à pasta do
+                <code>settings.pierrot.json</code>. Todos os outros caminhos (<code>outDir</code>,
+                <code>dotenv.path</code>) são relativos à pasta do entry — ou seja, ao
+                <code>src</code>. Por isso o <code>outDir</code> default do scaffold é
+                <code>../build</code>: a partir do <code>src/</code>, isso aponta para a raiz do
+                projeto.</p>
+        </div>
+
+        <h2>Deploy (site estático)</h2>
+        <p><code>pierrot build</code> produz HTML estático puro — sem servidor, sem runtime de
+            backend. Suba o conteúdo do <code>outDir</code> para qualquer host estático:</p>
+        <ul>
+            <li><strong>GitHub Pages / Cloudflare Pages / Netlify / Vercel</strong> — aponte o diretório de publish para o seu <code>outDir</code>.</li>
+            <li><strong>Qualquer CDN ou bucket</strong> (S3, etc).</li>
+        </ul>
+        <p>A convenção de <code>404.html</code> na raiz é reconhecida pela maioria dos hosts
+            estáticos, então rotas inexistentes caem na sua página <code>set.Fallback</code>
+            automaticamente.</p>
+
+        <div class="doc-pager">
+            <a class="pager-prev" href="/pt-br/docs/script-api"><span class="pager-dir">← Anterior</span><span>Script API</span></a>
+            <a class="pager-next" href="/pt-br/docs"><span class="pager-dir">Próximo →</span><span>Voltar à visão geral</span></a>
+        </div>
+    </article>
+</div>

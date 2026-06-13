@@ -1,0 +1,97 @@
+<script>
+    // /docs/components
+    import { DocsNav } from "../../../components/docs-nav/index.pierrot";
+    import "../../../lib/doc.ts";
+    import "./snippets.ts";
+
+    set.Title("Components & props · pierrot");
+    set.Description("Single-file components, importing them, <Slot /> and passing props.");
+</script>
+
+<div class="docs-wrap">
+    <DocsNav />
+    <article class="docs-content doc">
+        <p class="doc-kicker">— The .pierrot language</p>
+        <h1>Components &amp; props</h1>
+        <p class="doc-lead">A component is a reusable <code>.pierrot</code>. Same anatomy as a
+            page: an optional <code>&lt;script&gt;</code> and a template. The difference is that
+            it declares <strong>props</strong> and is used as a tag (<code>&lt;Name /&gt;</code>)
+            inside another <code>.pierrot</code>.</p>
+
+        <h2>Defining a component</h2>
+        <p><code>src/components/cli-div/index.pierrot</code>:</p>
+@render html(docCode(snipDefine));
+
+        <h2>Using a component</h2>
+        <p>Import it inside the <code>&lt;script&gt;</code> of whoever uses it, then drop the tag
+            in the template. <strong>Components start with an uppercase letter</strong>; the name
+            in <code>import { Name }</code> is the tag name.</p>
+@render html(docCode(snipUse));
+        <ul>
+            <li>The tag must be <strong>self-closing</strong>: <code>&lt;Name ... /&gt;</code>. There is no separate closing tag.</li>
+            <li>Components can import other components — expansion is recursive.</li>
+            <li>If an uppercase tag is left over in the final HTML (no matching <code>import</code>), Pierrot reports <code>tag &lt;Name /&gt; doesn't match any imported component</code>.</li>
+        </ul>
+
+        <h2><code>&lt;Slot /&gt;</code> — where the page goes</h2>
+        <p>The <strong>layout</strong> (<code>main.pierrot</code>) uses <code>&lt;Slot /&gt;</code>
+            to mark where the current route's page should be injected:</p>
+@render html(docCode(snipSlot));
+        <p><code>&lt;Slot /&gt;</code> is exclusive to the layout (the layout ↔ page
+            relationship). Regular components receive data via <strong>props</strong>, not via
+            slot.</p>
+
+        <h2>Props</h2>
+        <p>A prop is declared in the component as <code>let name: type;</code>
+            <strong>with no value</strong>. Whoever uses the component passes the value as a tag
+            attribute.</p>
+@render html(docCode(snipProps));
+@render html(docCode(snipUseProps));
+
+        <h3>Literal vs. expression</h3>
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>In the usage</th><th>Meaning</th><th>How it arrives</th></tr></thead>
+                <tbody>
+                    <tr><td><code>title="Hello"</code></td><td><strong>literal</strong></td><td>inserted as plain text into the component's HTML</td></tr>
+                    <tr><td><code>price={value}</code></td><td><strong>expression</strong></td><td>becomes <code>&#36;{value}</code>, evaluated in the browser</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>In the component's template, each reference to the prop (<code>{title}</code>,
+            <code>&#36;{price}</code>) is replaced by the instance's value. A prop declared but
+            <strong>not passed</strong> becomes <code>""</code>.</p>
+
+        <h3>Props in attributes</h3>
+        <p>A prop as an <strong>expression</strong> inside an attribute only works
+            <strong>inside a block</strong> <code>@for</code> / <code>@if</code>:</p>
+@render html(docCode(snipExprAttr));
+        <p>Outside a block, an expression in an attribute would turn into a <code>&lt;span&gt;</code>
+            inside the attribute (broken). Use a <strong>literal</strong> prop there, or move it
+            inside a block.</p>
+
+        <h3>Props in the component's <code>&lt;script&gt;</code></h3>
+        <p>A component's <code>&lt;script&gt;</code> is <strong>shared</strong> across all
+            instances — that is why a prop <strong>does not</strong> become a variable inside it.
+            The only way a prop reaches the component's logic is as an <strong>argument</strong>
+            to an <code>@event</code> or <code>@render</code>:</p>
+@render html(docCode(snipArg));
+        <div class="doc-note">
+            <p><strong>Prop limits, summarized:</strong></p>
+            <p>1. A prop doesn't become a variable in <code>&lt;script&gt;</code> (pass it as an event/render argument).<br>
+               2. An expression prop in an attribute only works inside <code>@for</code> / <code>@if</code>.<br>
+               3. A prop not passed = <code>""</code>.</p>
+        </div>
+
+        <h2>Composition and CSS</h2>
+        <ul>
+            <li>Each component imports its own <code>styles.css</code>. CSS is collected <strong>once</strong> (no duplicates) even if the component appears multiple times.</li>
+            <li>Under <code>pierrot dev</code>, each CSS becomes a <code>&lt;link&gt;</code>. Under <code>pierrot build</code>, they all become a single minified <code>bundle.css</code> per page.</li>
+        </ul>
+
+        <div class="doc-pager">
+            <a class="pager-prev" href="/docs/templates"><span class="pager-dir">← Prev</span><span>Template syntax</span></a>
+            <a class="pager-next" href="/docs/reactivity"><span class="pager-dir">Next →</span><span>Reactivity</span></a>
+        </div>
+    </article>
+</div>

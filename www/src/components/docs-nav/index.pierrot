@@ -1,0 +1,47 @@
+<script>
+    // DocsNav — the sticky sidebar shared by every documentation page.
+    // Labels and grouping come from lib/i18n.ts; links are localized and the
+    // entry matching the current route is flagged active.
+    import "./styles.css";
+    import "../../lib/i18n.ts";
+
+    let documentationSidebarStrings = uiText().documentationSidebar;
+    let documentationSidebarBasePath = localeBasePath();
+    let documentationSidebarIsPortuguese = activeLocale() === "pt";
+
+    // current route, trailing slash stripped, so "/docs/" matches "/docs".
+    let documentationSidebarCurrentPath = location.pathname.replace(/\/+$/, "") || "/";
+    let documentationSidebarBrandSuffix = documentationSidebarStrings.brandSuffix;
+
+    let documentationSidebarGroups = documentationSidebarStrings.groups.map(group => ({
+        title: group.title,
+        items: group.items.map(item => {
+            const href = documentationSidebarBasePath + item.path;
+            return {
+                label: item.label,
+                href: href,
+                isActive: href.replace(/\/+$/, "") === documentationSidebarCurrentPath,
+            };
+        }),
+    }));
+</script>
+
+<aside class="docs-sidebar">
+@if documentationSidebarIsPortuguese
+    <a class="docs-side-brand" href="/pt-br/docs"><span class="docs-side-brace">{</span> pierrot <span class="docs-side-brace">}</span> · ${documentationSidebarBrandSuffix}</a>
+@else
+    <a class="docs-side-brand" href="/docs"><span class="docs-side-brace">{</span> pierrot <span class="docs-side-brace">}</span> · ${documentationSidebarBrandSuffix}</a>
+@endif
+@for group in documentationSidebarGroups
+    <div class="docs-side-group">
+        <p class="docs-side-title">${group.title}</p>
+@for item in group.items
+@if item.isActive
+        <a class="docs-side-link is-active" href="${item.href}">${item.label}</a>
+@else
+        <a class="docs-side-link" href="${item.href}">${item.label}</a>
+@endif
+@end
+    </div>
+@end
+</aside>

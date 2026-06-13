@@ -1,0 +1,83 @@
+<script>
+    // /pt-br/docs/project-structure
+    import { DocsNav } from "../../../../components/docs-nav/index.pierrot";
+    import "../../../../lib/doc.ts";
+    import "../../../docs/project-structure/snippets.ts";
+
+    set.Title("Estrutura do projeto · pierrot");
+    set.Description("As pastas, as regras de rota e a anatomia de um arquivo .pierrot.");
+</script>
+
+<div class="docs-wrap">
+    <DocsNav />
+    <article class="docs-content doc">
+        <p class="doc-kicker">— Primeiros passos</p>
+        <h1>Estrutura do projeto</h1>
+        <p class="doc-lead">Onde os arquivos ficam, como pastas viram rotas e a anatomia comum a
+            todo <code>.pierrot</code> — página, componente ou layout.</p>
+
+        <h2>Layout de pastas</h2>
+@render html(docCode(snipTree));
+        <p>Os caminhos não são mágicos: o entry point é <code>app.entry</code> do
+            <code>settings.pierrot.json</code> (default <code>./src/main.pierrot</code>), e a
+            pasta dele vira a raiz <code>src</code> do projeto. Todo o resto é relativo a essa
+            pasta.</p>
+        <p>→ Veja <a href="/pt-br/docs/cli">configuração</a> para mudar esses caminhos.</p>
+
+        <h2>Rotas = pastas em <code>pages/</code></h2>
+        <p>Cada <code>pages/&lt;rota&gt;/index.pierrot</code> vira uma rota. O nome da pasta é o
+            caminho:</p>
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>Pasta</th><th>Rota</th></tr></thead>
+                <tbody>
+                    <tr><td><code>pages/home/index.pierrot</code></td><td>depende de <code>set.Default</code> (geralmente <code>/</code>)</td></tr>
+                    <tr><td><code>pages/about/index.pierrot</code></td><td><code>/about</code></td></tr>
+                    <tr><td><code>pages/blog/post/index.pierrot</code></td><td><code>/blog/post</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>A rota <code>/</code> aponta para a página marcada com <code>set.Default(...)</code> no
+            layout. Rotas inexistentes caem na página <code>set.Fallback(...)</code> com status
+            404.</p>
+
+        <h2>Anatomia de um arquivo <code>.pierrot</code></h2>
+        <p>Todo <code>.pierrot</code> — página, componente ou layout — tem o mesmo formato: um
+            <code>&lt;script&gt;</code> opcional seguido do template.</p>
+@render html(docCode(snipAnatomy));
+        <p>O que o parser faz com cada parte:</p>
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>No <code>&lt;script&gt;</code></th><th>Vira</th><th>Detalhe</th></tr></thead>
+                <tbody>
+                    <tr><td><code>import "x.css";</code></td><td>stylesheet</td><td>adicionado ao <code>&lt;head&gt;</code> (dev) ou ao bundle (build)</td></tr>
+                    <tr><td><code>import "x.ts";</code></td><td>chunk de script</td><td>incluído no bundle da página</td></tr>
+                    <tr><td><code>import { Nome } from "x.pierrot";</code></td><td>componente</td><td>usável como <code>&lt;Nome /&gt;</code> no template</td></tr>
+                    <tr><td><code>set.X(...)</code></td><td>metadado</td><td>title, icon, default, fallback…</td></tr>
+                    <tr><td><code>let nome: tipo;</code> (sem valor)</td><td><strong>prop</strong></td><td>declara uma prop do componente</td></tr>
+                    <tr><td>qualquer outro código</td><td>lógica</td><td>transformado TS → JS e enviado ao browser</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="doc-note">
+            <p>As linhas de <code>import</code>, <code>set.X</code> e declaração de prop são
+                <strong>removidas</strong> do script que vai para o browser — são instruções para
+                o compilador, não código de runtime.</p>
+        </div>
+
+        <h3>Os três papéis de um <code>.pierrot</code></h3>
+        <ul>
+            <li><strong>Layout</strong> (<code>main.pierrot</code>): o entry. Tem <code>&lt;Slot /&gt;</code> (onde a página é injetada) e o <code>set.X</code> global. Pode envolver a página com componentes.</li>
+            <li><strong>Página</strong> (<code>pages/*/index.pierrot</code>): o conteúdo de uma rota. Pode sobrescrever os metadados do layout.</li>
+            <li><strong>Componente</strong> (<code>components/*/index.pierrot</code>): um pedaço reutilizável, com props.</li>
+        </ul>
+
+        <h3>Exemplo real de layout</h3>
+@render html(docCode(snipLayout));
+
+        <div class="doc-pager">
+            <a class="pager-prev" href="/pt-br/docs/getting-started"><span class="pager-dir">← Anterior</span><span>Hello World</span></a>
+            <a class="pager-next" href="/pt-br/docs/templates"><span class="pager-dir">Próximo →</span><span>Sintaxe de template</span></a>
+        </div>
+    </article>
+</div>

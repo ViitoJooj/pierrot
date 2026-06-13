@@ -1,0 +1,92 @@
+<script>
+    // /docs/templates
+    import { DocsNav } from "../../../components/docs-nav/index.pierrot";
+    import "../../../lib/doc.ts";
+    import "./snippets.ts";
+
+    set.Title("Template syntax · pierrot");
+    set.Description("Interpolation, comments and the @for / @if control blocks.");
+</script>
+
+<div class="docs-wrap">
+    <DocsNav />
+    <article class="docs-content doc">
+        <p class="doc-kicker">— The .pierrot language</p>
+        <h1>Template syntax</h1>
+        <p class="doc-lead">The template is everything after the <code>&lt;script&gt;</code>.
+            Plain HTML plus a handful of directives: <code>&#36;{}</code> interpolation, comments,
+            and the <code>@for</code> / <code>@if</code> control blocks.</p>
+
+        <h2>Interpolation <code>&#36;{...}</code></h2>
+        <p>Put any JavaScript expression between <code>&#36;{</code> and <code>}</code>. The value
+            is <strong>escaped</strong> (HTML-safe) and stays reactive: when the state changes,
+            the spot is repainted.</p>
+@render html(docCode(snipInterp));
+        <ul>
+            <li><code>&#36;{name}</code> (plain identifier) becomes a <code>&lt;span data-bind="name"&gt;</code>.</li>
+            <li><code>&#36;{user.age + 10}</code> (composite expression) becomes a <code>&lt;span data-pierrot-expr&gt;</code> re-evaluated on every update.</li>
+        </ul>
+        <p>An <strong>undeclared</strong> variable becomes an empty string instead of breaking
+            the page (a <code>typeof</code> guard). Handy in components where a prop may not have
+            been passed.</p>
+        <div class="doc-note is-warn">
+            <p>Interpolation does <strong>not</strong> run in attributes <strong>outside</strong>
+                a block. Inside <code>@for</code> / <code>@if</code> it works fine — see
+                <a href="/docs/components">props in attributes</a>.</p>
+        </div>
+
+        <h2>Comments</h2>
+        <p>A line starting with <code>//</code> (at the first character, no indentation) is
+            removed from the output:</p>
+@render html(docCode(snipComment));
+        <p>An <strong>indented</strong> <code>//</code> is treated as plain text. To comment HTML
+            in the middle of markup, use a normal HTML comment <code>&lt;!-- ... --&gt;</code>
+            (which stays in the output).</p>
+
+        <h2><code>@for</code> — repetition</h2>
+@render html(docCode(snipFor));
+        <ul>
+            <li>Syntax: <code>@for &lt;var&gt; in &lt;expr&gt;</code> … <code>@end</code>.</li>
+            <li>Becomes a <code>for...of</code> in JavaScript, re-evaluated on every <code>__pierrotUpdate()</code>. If the list changes, the block re-renders.</li>
+            <li><code>&lt;expr&gt;</code> is any JS iterable (array, result of <code>.filter()</code>, etc).</li>
+        </ul>
+        <div class="doc-note">
+            <p>Each directive (<code>@for</code>, <code>@if</code>) goes on <strong>its own
+                line</strong>. The block content sits between the opening line and the
+                <code>@end</code>.</p>
+        </div>
+
+        <h2><code>@if</code> / <code>@else</code> — conditional</h2>
+@render html(docCode(snipIf));
+        <ul>
+            <li>Syntax: <code>@if &lt;expr&gt;</code> … (<code>@else</code>) … <code>@end</code> <strong>or</strong> <code>@endif</code>.</li>
+            <li><code>&lt;expr&gt;</code> is any JavaScript condition.</li>
+            <li><code>@end</code> and <code>@endif</code> are equivalent.</li>
+        </ul>
+
+        <h2>Nesting</h2>
+        <p><code>@for</code> and <code>@if</code> can be nested freely. The closing
+            <code>@end</code> counts depth, so each inner block needs its own <code>@end</code>:</p>
+@render html(docCode(snipNest));
+
+        <h2>Common errors</h2>
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>Symptom</th><th>Cause</th></tr></thead>
+                <tbody>
+                    <tr><td><code>diretiva "@for ..." sem @end/@endif</code></td><td>block not closed</td></tr>
+                    <tr><td><code>"@end" sem @for/@if correspondente</code></td><td>stray <code>@end</code> / <code>@else</code></td></tr>
+                    <tr><td><code>&#36;{expr}</code> shows up literally in an attribute</td><td>expression in an attribute outside a block — move it inside a <code>@for</code> / <code>@if</code> or use a literal prop</td></tr>
+                    <tr><td>a variable silently "disappears"</td><td>undeclared variable becomes <code>""</code> (<code>typeof</code> guard)</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>Under <code>pierrot dev</code>, these errors appear in the overlay at the corner of
+            the page. Under <code>pierrot build</code>, they abort the build.</p>
+
+        <div class="doc-pager">
+            <a class="pager-prev" href="/docs/project-structure"><span class="pager-dir">← Prev</span><span>Project structure</span></a>
+            <a class="pager-next" href="/docs/components"><span class="pager-dir">Next →</span><span>Components &amp; props</span></a>
+        </div>
+    </article>
+</div>

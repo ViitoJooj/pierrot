@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Documentação · pierrot</title>
+<meta name="description" content="Pierrot é um framework de componentes single-file compilado em Go. Leia a documentação completa.">
+<link rel="icon" href="./assets/favicon.ico">
+<link rel="stylesheet" href="/pt-br/docs/bundle.css">
+</head>
+<body>
+<header>
+    <button onclick="navigateToHome(); __pierrotUpdate()" class="logo">
+        <p class="logo-curlybraces">{</p>
+        <p>pierrot</p>
+        <p class="logo-curlybraces">}</p>
+    </button>
+
+    <div class="nav">
+<div data-pierrot-block="0" style="display:contents"></div>
+
+        <button onclick="switchLanguage(); __pierrotUpdate()" class="nav-lang"><span data-bind="headerSwitchLanguageLabel"></span></button>
+        <button class="secondary-btn" onclick="goTo(&#34;https://github.com/ViitoJooj/pierrot&#34;); __pierrotUpdate()">github ↗</button>
+    </div>
+</header>
+<div class="docs-wrap">
+    <aside class="docs-sidebar">
+<div data-pierrot-block="1" style="display:contents"></div>
+<div data-pierrot-block="2" style="display:contents"></div>
+</aside>
+    <article class="docs-content doc">
+        <p class="doc-kicker">— Referência / Visão geral</p>
+        <h1>Documentação do Pierrot</h1>
+        <p class="doc-lead">Pierrot é um framework de <strong>componentes single-file</strong>
+            compilado em <strong>Go</strong>. O CLI entende a linguagem <code>.pierrot</code>,
+            compila tudo para HTML estático e entrega ao browser um runtime de poucos kilobytes —
+            sem virtual DOM, sem <code>eval</code>, sem <code>node_modules</code>.</p>
+
+        <p>Esta é a documentação completa. Se você só quer ver algo rodando, comece pelo
+            <a href="/pt-br/docs/getting-started">Hello World em 30s</a>.</p>
+
+        <h2>O que é o Pierrot</h2>
+        <p>Você escreve a UI em arquivos <code>.pierrot</code>. Cada arquivo é um componente único
+            que junta três coisas — um <code>&lt;script&gt;</code> opcional (imports, metadados,
+            props e lógica em TypeScript) e o template (HTML mais diretivas):</p>
+
+<div data-pierrot-render="0" style="display:contents"></div>
+
+        <p>O servidor (<code>pierrot dev</code>) ou o build (<code>pierrot build</code>) lê esse
+            arquivo, resolve imports e componentes, transforma o TypeScript em JavaScript com
+            <a href="https://esbuild.github.io/">esbuild</a> e monta um documento HTML completo.
+            O browser recebe HTML pronto mais um runtime pequeno que reavalia as partes dinâmicas
+            quando um evento muda o estado.</p>
+
+        <p>Não há etapa de build de JS no seu projeto, sem <code>package.json</code>, sem virtual
+            DOM. O estado são apenas as variáveis de topo do <code>&lt;script&gt;</code>; cada
+            <code>@event</code> chama <code>__pierrotUpdate()</code> no final para repintar os
+            spans e blocos afetados.</p>
+
+        <h2>Arquitetura</h2>
+        <p>Todo o compilador vive em <code>internal/</code>. É um pipeline curto de funções puras
+            que roda <strong>por request</strong> no <code>pierrot dev</code> e <strong>uma vez
+            por página</strong> no <code>pierrot build</code>. Sem AST gigante, sem worker pool,
+            sem cache.</p>
+
+        <div class="doc-table-wrap">
+            <table>
+                <thead>
+                    <tr><th>#</th><th>Etapa</th><th>Arquivo</th><th>O que faz</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td><strong>parse</strong></td><td><code>readers/parser.go</code></td><td>Separa o <code>&lt;script&gt;</code> do template. Extrai imports de CSS/TS/componente, metadados <code>set.X</code> e props.</td></tr>
+                    <tr><td>2</td><td><strong>expansão</strong></td><td><code>workers/dev_server.go</code></td><td>Recursivo: layout → página → componentes. <code>&lt;Slot /&gt;</code> recebe a página; cada <code>&lt;Nome /&gt;</code> recebe o HTML do componente, props por instância.</td></tr>
+                    <tr><td>3</td><td><strong>template</strong></td><td><code>workers/template.go</code></td><td>Blocos <code>@for</code>/<code>@if</code> viram funções JS. <code>@render</code> vira placeholder. Comentários <code>//</code> são removidos.</td></tr>
+                    <tr><td>4</td><td><strong>bindings</strong></td><td><code>workers/dev_server.go</code></td><td><code>&#36;{var}</code> simples vira <code>&lt;span data-bind&gt;</code>. <code>@bind</code> vira <code>oninput</code>. <code>@event</code> vira <code>on&lt;evento&gt;</code> + update.</td></tr>
+                    <tr><td>5</td><td><strong>transform</strong></td><td>esbuild</td><td>Cada <code>&lt;script&gt;</code> e cada <code>import "*.ts"</code> vira um chunk TS → JS. <code>get.Dotenv("X")</code> é trocado pelo valor literal antes.</td></tr>
+                    <tr><td>6</td><td><strong>montagem</strong></td><td><code>workers/dev_server.go</code></td><td>HTML final: <code>&lt;head&gt;</code> com title/meta/links de CSS, <code>&lt;body&gt;</code> com o markup, e o runtime gerado.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>O runtime do browser</h3>
+        <p>O runtime não usa <code>eval</code>. O servidor já conhece os nomes usados em
+            <code>&#36;{...}</code> e gera um objeto <code>state</code> a partir deles. A cada
+            <code>__pierrotUpdate()</code>:</p>
+        <ul>
+            <li>spans <code>data-bind</code> recebem o valor da variável;</li>
+            <li>blocos <code>data-pierrot-block</code> (<code>@for</code>/<code>@if</code>) re-rodam sua função JS e re-renderizam;</li>
+            <li>spans <code>data-pierrot-expr</code> (expressões compostas) são reavaliados;</li>
+            <li>inputs com <code>@bind</code> recebem o valor (pulando o elemento focado);</li>
+            <li>placeholders <code>@render</code> são repreenchidos (html / markdown / iframe de preview).</li>
+        </ul>
+
+        <h3>dev vs build</h3>
+        <div class="doc-table-wrap">
+            <table>
+                <thead>
+                    <tr><th></th><th><code>pierrot dev</code></th><th><code>pierrot build</code></th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Quando compila</td><td>todo request</td><td>uma vez por página</td></tr>
+                    <tr><td>CSS</td><td>um <code>&lt;link&gt;</code> por arquivo</td><td>um <code>bundle.css</code> minificado por página</td></tr>
+                    <tr><td>Erros</td><td>overlay + live reload</td><td>derruba o build (exit ≠ 0)</td></tr>
+                    <tr><td>Live reload</td><td>sim (SSE em <code>/__pierrot/events</code>)</td><td>—</td></tr>
+                    <tr><td>Saída</td><td>em memória</td><td><code>outDir/</code> (HTML estático + assets)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>Convenções rápidas</h2>
+        <ul>
+            <li><strong>Rotas</strong> = pastas em <code>src/pages/</code>. <code>pages/about/index.pierrot</code> → rota <code>/about</code>.</li>
+            <li>A <strong>página default</strong> (<code>/</code>) e a <strong>fallback</strong> (404) são definidas no layout com <code>set.Default(...)</code> e <code>set.Fallback(...)</code>.</li>
+            <li><strong>Componentes</strong> começam com <strong>letra maiúscula</strong> (<code>&lt;Header /&gt;</code>); tags minúsculas são HTML puro.</li>
+            <li><strong>Props</strong> são declaradas no componente como <code>let nome: tipo;</code> <strong>sem valor</strong>.</li>
+            <li><strong>Assets</strong> (imagens, fontes, <code>robots.txt</code>, <code>favicon.ico</code>) ficam em <code>src/assets/</code>.</li>
+        </ul>
+
+        <div class="doc-pager">
+            <a class="pager-next" href="/pt-br/docs/getting-started"><span class="pager-dir">Próximo →</span><span>Hello World em 30s</span></a>
+        </div>
+    </article>
+</div>
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <p class="footer-logo"><span class="footer-brace">{</span> pierrot <span class="footer-brace">}</span></p>
+            <p class="footer-tagline">
+<div data-pierrot-render="1" style="display:contents"></div>
+            </p>
+            <div class="footer-diamonds"><span style="color: #FFB300">◆</span><span style="color: #C8553D">◆</span><span style="color: #B8AEA0">◆</span></div>
+        </div>
+        <div class="footer-cols">
+<div data-pierrot-block="3" style="display:contents"></div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 pierrot · MIT</span>
+        <span class="footer-made"><span data-bind="footerMadeWithText"></span></span>
+    </div>
+</footer>
+
+<script>
+var __pierrotStatus = 200;
+var get = {
+	Path: function (n) {
+		var p = location.pathname.split("/").filter(Boolean);
+		return n >= 1 && n <= p.length ? p[n - 1] : "";
+	},
+	Status: function () {
+		return String(typeof __pierrotStatus === "undefined" ? 200 : __pierrotStatus);
+	},
+};
+var client = {
+	Redirect: function (url) {
+		var t = setTimeout(function () { location.assign(url); }, 0);
+		return {
+			newTab: function () {
+				clearTimeout(t);
+				window.open(url, "_blank", "noopener");
+			},
+		};
+	},
+};
+var time = {
+	Sleep: function (n) {
+		var wait = function (ms) {
+			return new Promise(function (done) {
+				setTimeout(function () {
+					done();
+					// microtask depois da continuação do await: o estado mudado
+					// após o Sleep já está aplicado quando o update roda
+					if (typeof __pierrotUpdate === "function") Promise.resolve().then(__pierrotUpdate);
+				}, n * ms);
+			});
+		};
+		return {
+			msec: function () { return wait(1); },
+			sec: function () { return wait(1000); },
+			min: function () { return wait(60 * 1000); },
+			hr: function () { return wait(60 * 60 * 1000); },
+			day: function () { return wait(24 * 60 * 60 * 1000); },
+			week: function () { return wait(7 * 24 * 60 * 60 * 1000); },
+			month: function () { return wait(30 * 24 * 60 * 60 * 1000); },
+			year: function () { return wait(365 * 24 * 60 * 60 * 1000); },
+		};
+	},
+};
+
+document.documentElement.setAttribute("data-theme","light");
+
+const uiTranslations={en:{header:{switchLanguageLabel:"PT-BR",navigation:[{label:"Docs",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Syntax",path:"/docs/templates"},{label:"CLI",path:"/docs/cli"}]},footer:{taglineHtml:"Components in one file.<br>Compiled in Go.",madeWith:"made with pierrot, obviously \u25C6",columns:[{title:"learn",links:[{label:"hello world in 30s",path:"/docs/getting-started"},{label:"template syntax",path:"/docs/templates"},{label:"components & props",path:"/docs/components"},{label:"CLI & settings",path:"/docs/cli"}]},{title:"project",links:[{label:"github \u2197",url:"https://github.com/ViitoJooj/pierrot"},{label:"issues \u2197",url:"https://github.com/ViitoJooj/pierrot/issues"},{label:"MIT license",url:"https://github.com/ViitoJooj/pierrot/blob/main/LICENSE.md"}]}]},documentationSidebar:{brandSuffix:"docs",groups:[{title:"Getting started",items:[{label:"Overview",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Project structure",path:"/docs/project-structure"}]},{title:"The .pierrot language",items:[{label:"Template syntax",path:"/docs/templates"},{label:"Components & props",path:"/docs/components"},{label:"Reactivity",path:"/docs/reactivity"},{label:"Script API",path:"/docs/script-api"}]},{title:"Tooling",items:[{label:"CLI & configuration",path:"/docs/cli"}]}]},errorPage:{kickerPrefix:"\u2014 ERROR / ",notFoundTitleHtml:"This route <em>does not compile.</em>",notFoundDescriptionPrefix:"The page you are looking for does not exist \u2014 or has not been written yet. Heading back home in ",genericTitleHtml:"Something <em>broke.</em>",genericDescriptionPrefix:"Unexpected error. Heading back home in ",descriptionSuffix:".",backHomeLabel:"back to home \u2192",reportIssueLabel:"report an issue \u2197"}},pt:{header:{switchLanguageLabel:"EN",navigation:[{label:"Docs",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Sintaxe",path:"/docs/templates"},{label:"CLI",path:"/docs/cli"}]},footer:{taglineHtml:"Componentes em um arquivo.<br>Compilados em Go.",madeWith:"feito com pierrot, \xF3bvio \u25C6",columns:[{title:"aprenda",links:[{label:"hello world em 30s",path:"/docs/getting-started"},{label:"sintaxe de template",path:"/docs/templates"},{label:"componentes e props",path:"/docs/components"},{label:"CLI e settings",path:"/docs/cli"}]},{title:"projeto",links:[{label:"github \u2197",url:"https://github.com/ViitoJooj/pierrot"},{label:"issues \u2197",url:"https://github.com/ViitoJooj/pierrot/issues"},{label:"licen\xE7a MIT",url:"https://github.com/ViitoJooj/pierrot/blob/main/LICENSE.md"}]}]},documentationSidebar:{brandSuffix:"docs",groups:[{title:"Primeiros passos",items:[{label:"Vis\xE3o geral",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Estrutura do projeto",path:"/docs/project-structure"}]},{title:"A linguagem .pierrot",items:[{label:"Sintaxe de template",path:"/docs/templates"},{label:"Componentes e props",path:"/docs/components"},{label:"Reatividade",path:"/docs/reactivity"},{label:"Script API",path:"/docs/script-api"}]},{title:"Ferramentas",items:[{label:"CLI e configura\xE7\xE3o",path:"/docs/cli"}]}]},errorPage:{kickerPrefix:"\u2014 ERRO / ",notFoundTitleHtml:"Essa rota <em>n\xE3o compila.</em>",notFoundDescriptionPrefix:"A p\xE1gina que voc\xEA procura n\xE3o existe \u2014 ou ainda n\xE3o foi escrita. Voltando pra home em ",genericTitleHtml:"Algo <em>quebrou.</em>",genericDescriptionPrefix:"Erro inesperado. Voltando pra home em ",descriptionSuffix:".",backHomeLabel:"voltar pra home \u2192",reportIssueLabel:"reportar problema \u2197"}}};function activeLocale(){return get.Path(1)==="pt-br"?"pt":"en"}function localeBasePath(){return activeLocale()==="pt"?"/pt-br":""}function uiText(){return uiTranslations[activeLocale()]}
+
+let headerStrings=uiText().header,headerBasePath=localeBasePath(),headerNavigationLinks=headerStrings.navigation.map(item=>({label:item.label,href:headerBasePath+item.path})),headerSwitchLanguageLabel=headerStrings.switchLanguageLabel,headerOtherLocaleHref=activeLocale()==="pt"?location.pathname.replace(/^\/pt-br/,"")||"/":"/pt-br"+(location.pathname==="/"?"":location.pathname);function navigateToHome(){client.Redirect(headerBasePath+"/")}function switchLanguage(){client.Redirect(headerOtherLocaleHref)}
+
+function goTo(url){client.Redirect(url).newTab()}
+
+let footerStrings=uiText().footer,footerBasePath=localeBasePath(),footerColumns=footerStrings.columns.map(column=>({title:column.title,links:column.links.map(link=>({label:link.label,href:link.url||footerBasePath+link.path}))})),footerTaglineHtml=footerStrings.taglineHtml,footerMadeWithText=footerStrings.madeWith;
+
+function docEsc(src){return src.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}function docHl(src){const esc=docEsc(src),span=(cls,txt)=>'<span class="'+cls+'">'+txt+"</span>",re=/(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`(?:[^`\\]|\\.)*`)|(\$\{[^}\n]*\}|@\w+)|\b(let|const|var|function|return|if|else|for|of|in|import|from|new|typeof|async|await)\b|(:\s*)([A-Za-z_]\w*)|\b(\d+(?:\.\d+)?)\b|(&lt;\/?)([\w-]+)|(\/?&gt;)|([A-Za-z_]\w*)(?=\s*\()/g;return esc.replace(re,function(m,com,str,dir,kw,colon,type,num,tagp,tagn,gt,fn){return com?span("tok-comment",com):str?span("tok-string",str):dir?span("tok-directive",dir):kw?span("tok-keyword",kw):type?colon+span("tok-type",type):num?span("tok-number",num):tagn?span("tok-punct",tagp)+span("tok-tag",tagn):gt?span("tok-punct",gt):fn?span("tok-fn",fn):m})}function docCode(src){return'<pre class="doc-code"><code>'+docHl(src)+"</code></pre>"}function docCodeFile(file,src){return'<span class="doc-file">'+docEsc(file)+"</span>"+docCode(src)}
+
+const snipComponent=`<script>
+    // imports, metadata (set.X), props and TypeScript logic
+    let count: number = 0;
+
+    function increment() {
+        count++;
+    }
+<\/script>
+
+<!-- template: HTML + directives (@for, @if, @event, \${}) -->
+<h1>Clicks: \${count}</h1>
+<button @click={increment}>+1</button>`;
+
+
+let documentationSidebarStrings=uiText().documentationSidebar,documentationSidebarBasePath=localeBasePath(),documentationSidebarIsPortuguese=activeLocale()==="pt",documentationSidebarCurrentPath=location.pathname.replace(/\/+$/,"")||"/",documentationSidebarBrandSuffix=documentationSidebarStrings.brandSuffix,documentationSidebarGroups=documentationSidebarStrings.groups.map(group=>({title:group.title,items:group.items.map(item=>{const href=documentationSidebarBasePath+item.path;return{label:item.label,href,isActive:href.replace(/\/+$/,"")===documentationSidebarCurrentPath}})}));
+
+
+function __pierrotEsc(v) {
+	return String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function __pierrotMd(src) {
+	var esc = function (s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); };
+	var inline = function (s) {
+		return esc(s)
+			.replace(/\x60([^\x60]+)\x60/g, "<code>$1</code>")
+			.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+			.replace(/\*([^*]+)\*/g, "<em>$1</em>")
+			.replace(/\[([^\]]+)\]\(([^()\s]+)\)/g, '<a href="$2">$1</a>');
+	};
+	var lines = String(src).split(/\r?\n/), out = [], i = 0;
+	while (i < lines.length) {
+		var l = lines[i];
+		if (/^\x60\x60\x60/.test(l)) {
+			var buf = [];
+			for (i++; i < lines.length && !/^\x60\x60\x60/.test(lines[i]); i++) buf.push(lines[i]);
+			i++;
+			out.push("<pre><code>" + esc(buf.join("\n")) + "</code></pre>");
+			continue;
+		}
+		var h = l.match(/^(#{1,6})\s+(.*)$/);
+		if (h) { out.push("<h" + h[1].length + ">" + inline(h[2]) + "</h" + h[1].length + ">"); i++; continue; }
+		if (/^\s*[-*]\s+/.test(l)) {
+			var items = [];
+			for (; i < lines.length && /^\s*[-*]\s+/.test(lines[i]); i++) items.push("<li>" + inline(lines[i].replace(/^\s*[-*]\s+/, "")) + "</li>");
+			out.push("<ul>" + items.join("") + "</ul>");
+			continue;
+		}
+		if (/^\s*$/.test(l)) { i++; continue; }
+		var para = [];
+		for (; i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#{1,6}\s|\x60\x60\x60|\s*[-*]\s)/.test(lines[i]); i++) para.push(lines[i]);
+		out.push("<p>" + para.map(inline).join("<br>") + "</p>");
+	}
+	return out.join("\n");
+}
+var __pierrotBlocks = [
+function () {
+var __h = "";
+for (const link of (headerNavigationLinks)) {
+__h += "        <a class=\"nav-link\" href=\"" + __pierrotEsc(link.href) + "\">" + __pierrotEsc(link.label) + "</a>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+if (documentationSidebarIsPortuguese) {
+__h += "    <a class=\"docs-side-brand\" href=\"/pt-br/docs\"><span class=\"docs-side-brace\">{</span> pierrot <span class=\"docs-side-brace\">}</span> · " + __pierrotEsc(typeof documentationSidebarBrandSuffix === "undefined" ? "" : documentationSidebarBrandSuffix) + "</a>\n";
+} else {
+__h += "    <a class=\"docs-side-brand\" href=\"/docs\"><span class=\"docs-side-brace\">{</span> pierrot <span class=\"docs-side-brace\">}</span> · " + __pierrotEsc(typeof documentationSidebarBrandSuffix === "undefined" ? "" : documentationSidebarBrandSuffix) + "</a>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+for (const group of (documentationSidebarGroups)) {
+__h += "    <div class=\"docs-side-group\">\n";
+__h += "        <p class=\"docs-side-title\">" + __pierrotEsc(group.title) + "</p>\n";
+for (const item of (group.items)) {
+if (item.isActive) {
+__h += "        <a class=\"docs-side-link is-active\" href=\"" + __pierrotEsc(item.href) + "\">" + __pierrotEsc(item.label) + "</a>\n";
+} else {
+__h += "        <a class=\"docs-side-link\" href=\"" + __pierrotEsc(item.href) + "\">" + __pierrotEsc(item.label) + "</a>\n";
+}
+}
+__h += "    </div>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+for (const column of (footerColumns)) {
+__h += "            <div class=\"footer-col\">\n";
+__h += "                <p class=\"footer-col-title\">" + __pierrotEsc(column.title) + "</p>\n";
+for (const link of (column.links)) {
+__h += "                <a class=\"footer-link\" href=\"" + __pierrotEsc(link.href) + "\">" + __pierrotEsc(link.label) + "</a>\n";
+}
+__h += "            </div>\n";
+}
+return __h;
+},
+];
+var __pierrotExprs = [
+];
+var __pierrotRenders = [
+{ kind: "html", fn: function () { return (docCode(snipComponent)); } },
+{ kind: "html", fn: function () { return (typeof footerTaglineHtml === "undefined" ? "" : footerTaglineHtml); } },
+];
+var __pierrotBindVals = [
+];
+function __pierrotUpdate() {
+	const state = {
+		"headerSwitchLanguageLabel": typeof headerSwitchLanguageLabel === "undefined" ? "" : headerSwitchLanguageLabel,
+		"footerMadeWithText": typeof footerMadeWithText === "undefined" ? "" : footerMadeWithText,
+	};
+	document.querySelectorAll("[data-bind]").forEach(function (el) {
+		el.textContent = state[el.getAttribute("data-bind")];
+	});
+	__pierrotBlocks.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-block="' + i + '"]').forEach(function (el) {
+			try { el.innerHTML = fn(); } catch (e) { console.error("pierrot: bloco " + i + ":", e); }
+		});
+	});
+	__pierrotExprs.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-expr="' + i + '"]').forEach(function (el) {
+			try { el.textContent = fn(); } catch (e) { console.error("pierrot: {expr} " + i + ":", e); }
+		});
+	});
+	__pierrotBindVals.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-bindval="' + i + '"]').forEach(function (el) {
+			if (el === document.activeElement) return;
+			try { var v = fn(); el.value = v == null ? "" : v; } catch (e) {}
+		});
+	});
+	__pierrotRenders.forEach(function (r, i) {
+		document.querySelectorAll('[data-pierrot-render="' + i + '"]').forEach(function (el) {
+			try {
+				if (r.kind === "pierrot") {
+					// preview num iframe, recriado só quando o valor muda;
+					// debounce de 300ms segura recompilação durante digitação
+					var fr = el.firstChild;
+					if (!fr) {
+						fr = document.createElement("iframe");
+						fr.className = "pierrot-preview";
+						fr.setAttribute("sandbox", "allow-scripts");
+						el.appendChild(fr);
+					}
+					var v = String(r.fn());
+					if (v === el.__pierrotSrc) return;
+					var first = el.__pierrotSrc === undefined;
+					el.__pierrotSrc = v;
+					clearTimeout(el.__pierrotT);
+					el.__pierrotT = setTimeout(function () { fr.srcdoc = __pierrotCompile(v); }, first ? 0 : 300);
+					return;
+				}
+				var v = String(r.fn());
+				el.innerHTML = r.kind === "markdown" ? __pierrotMd(v) : v;
+			} catch (e) { console.error("pierrot: @render " + i + ":", e); }
+		});
+	});
+}
+__pierrotUpdate();
+
+
+</script>
+</body>
+</html>

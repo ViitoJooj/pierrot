@@ -2,51 +2,49 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>lading-page</title>
-<meta name="description" content="This is my page description">
+<title>pierrot · front-end framework in Go</title>
+<meta name="description" content="Pierrot is a single-file component framework compiled in Go.">
 <link rel="icon" href="./assets/favicon.ico">
 <link rel="stylesheet" href="/home/bundle.css">
 </head>
 <body>
 <header>
-    <button onclick="pierrotRedirect(); __pierrotUpdate()" class="logo">
+    <button onclick="navigateToHome(); __pierrotUpdate()" class="logo">
         <p class="logo-curlybraces">{</p>
         <p>pierrot</p>
         <p class="logo-curlybraces">}</p>
     </button>
 
     <div class="nav">
-        <a class="nav-link">hello, World!</a>
-        <a class="nav-link">sintaxe</a>
-        <a class="nav-link">cli</a>
-        <a class="nav-link">arquitetura</a>
+<div data-pierrot-block="0" style="display:contents"></div>
 
+        <button onclick="switchLanguage(); __pierrotUpdate()" class="nav-lang"><span data-bind="headerSwitchLanguageLabel"></span></button>
         <button class="secondary-btn" onclick="goTo(&#34;https://github.com/ViitoJooj/pierrot&#34;); __pierrotUpdate()">github ↗</button>
     </div>
 </header>
 <main>
     <div class="home-top-left-side">
-        <div class="home-badge"><span class="badge-dot"></span>v0.1 · framework de front-end em Go</div>
+        <div class="home-badge"><span class="badge-dot"></span>v0.1 · front-end framework in Go</div>
 
-        <h2 class="home-title">Componentes em um arquivo.</h2>
-        <h2 class="home-title-secondary">Compilados em Go.</h2>
+        <h2 class="home-title">Components in one file.</h2>
+        <h2 class="home-title-secondary">Compiled in Go.</h2>
 
-        <p class="home-desc">Pierrot é um framework de componentes single-file.
-            O CLI escrito em Go compila <span class="mkd-string">.pierrot</span>
-            direto para HTML; o browser recebe um runtime de poucos kilobytes,
-            sem virtual DOM, sem eval, sem npm.
+        <p class="home-desc">Pierrot is a single-file component framework.
+            The Go CLI compiles <span class="mkd-string">.pierrot</span>
+            straight to HTML; the browser gets a runtime of a few kilobytes,
+            no virtual DOM, no eval, no npm.
         </p>
 
         <div class="cli">
     <p class="command"><p class="prompt">$</p> go install github.com/pierrot/cmd/pierrot@latest</p>
     <button onclick="Click(&#34;go install github.com/pierrot/cmd/pierrot@latest&#34;); __pierrotUpdate()">copiar</button>
     
-<div data-pierrot-block="0" style="display:contents"></div>
+<div data-pierrot-block="1" style="display:contents"></div>
 </div>
 
         <div class="home-actions">
-            <a class="primary-btn" href="/docs">ler a documentação →</a>
-            <a class="ghost-btn" href="/docs">hello world em 30s</a>
+            <a class="primary-btn" href="/docs">read the documentation →</a>
+            <a class="ghost-btn" href="/docs/getting-started">hello world in 30s</a>
         </div>
     </div>
     <div class="home-top-right-side">
@@ -69,21 +67,21 @@
 </main>
 
 <div class="feature-strip">
-<div data-pierrot-block="1" style="display:contents"></div>
+<div data-pierrot-block="2" style="display:contents"></div>
 </div>
 
 <section class="why">
     <div class="why-head">
         <div>
-            <p class="why-kicker">— 01 / POR QUÊ</p>
-            <h2 class="why-title">Três coisas<br>que o Pierrot <em>não tem.</em></h2>
+            <p class="why-kicker">— 01 / WHY</p>
+            <h2 class="why-title">Three things<br>Pierrot <em>does not have.</em></h2>
         </div>
-        <p class="why-desc">Cada decisão do framework começa em remoção. O resultado é
-            um stack que cabe na cabeça em uma tarde: um binário Go, um arquivo por
-            componente, um runtime que cabe em poucos kilobytes.</p>
+        <p class="why-desc">Every framework decision starts with removal. The result is
+            a stack that fits in your head in an afternoon: one Go binary, one file per
+            component, a runtime that fits in a few kilobytes.</p>
     </div>
     <div class="why-cards">
-<div data-pierrot-block="2" style="display:contents"></div>
+<div data-pierrot-block="3" style="display:contents"></div>
     </div>
 </section>
 
@@ -93,14 +91,14 @@
         <div class="qs-head">
             <div>
                 <p class="qs-kicker">— 02 / QUICKSTART</p>
-                <h2 class="qs-title">Do zero ao<br>localhost <em>em 30 segundos.</em></h2>
+                <h2 class="qs-title">From zero to<br>localhost <em>in 30 seconds.</em></h2>
             </div>
-            <p class="qs-desc">Sem template repo no GitHub, sem
-                <span class="qs-chip">create-pierrot-app</span>. Um binário, três
-                comandos. Salvou o arquivo, o browser recarrega.</p>
+            <p class="qs-desc">No GitHub template repo, no
+                <span class="qs-chip">create-pierrot-app</span>. One binary, three
+                commands. Save the file, the browser reloads.</p>
         </div>
         <div class="qs-cards">
-<div data-pierrot-block="3" style="display:contents"></div>
+<div data-pierrot-block="4" style="display:contents"></div>
         </div>
     </div>
 </section>
@@ -108,20 +106,20 @@
 <section class="arch">
     <div class="arch-head">
         <div>
-            <p class="arch-kicker">— 05 / ARQUITETURA</p>
-            <h2 class="arch-title">O que acontece<br>entre <em>.pierrot</em> e <em class="arch-html">&lt;html&gt;</em>.</h2>
+            <p class="arch-kicker">— 05 / ARCHITECTURE</p>
+            <h2 class="arch-title">What happens<br>between <em>.pierrot</em> and <em class="arch-html">&lt;html&gt;</em>.</h2>
         </div>
-        <p class="arch-desc">Um pipeline curto, todo em Go. Cada etapa é um arquivo no
-            <span class="arch-chip">internal/</span>. Sem AST gigante, sem worker pool,
-            sem cache — funções puras que rodam por request no dev e uma vez no build.</p>
+        <p class="arch-desc">A short pipeline, all in Go. Each step is a file under
+            <span class="arch-chip">internal/</span>. No giant AST, no worker pool,
+            no cache — pure functions that run per request in dev and once at build.</p>
     </div>
     <div class="arch-panel">
         <div class="arch-steps">
-<div data-pierrot-block="4" style="display:contents"></div>
+<div data-pierrot-block="5" style="display:contents"></div>
         </div>
         <div class="arch-out">
-            <span class="arch-out-label">SAÍDA ↳</span>
-<div data-pierrot-block="5" style="display:contents"></div>
+            <span class="arch-out-label">OUTPUT ↳</span>
+<div data-pierrot-block="6" style="display:contents"></div>
         </div>
     </div>
 </section>
@@ -129,13 +127,13 @@
 <section class="cta">
     <div class="cta-box">
         <div class="cta-decor"><span style="color: #FFB300">◆</span><span style="color: #C8553D">◆</span><span style="color: #B8AEA0">◆</span></div>
-        <p class="cta-kicker">— V0.1 DISPONÍVEL</p>
-        <h2 class="cta-title">Web em Go.<br><em>Em um arquivo.</em></h2>
-        <p class="cta-desc">Instale o binário, rode <span class="cta-chip">pierrot init</span>
-            e tenha um projeto rodando antes do café terminar.</p>
+        <p class="cta-kicker">— V0.1 AVAILABLE</p>
+        <h2 class="cta-title">Web in Go.<br><em>In one file.</em></h2>
+        <p class="cta-desc">Install the binary, run <span class="cta-chip">pierrot init</span>
+            and have a project running before your coffee is done.</p>
         <div class="cta-actions">
             <a class="cta-primary" href="https://github.com/ViitoJooj/pierrot">github.com/pierrot ↗</a>
-            <a class="cta-ghost" href="/docs">documentação completa</a>
+            <a class="cta-ghost" href="/docs">full documentation</a>
         </div>
     </div>
 </section>
@@ -143,16 +141,18 @@
     <div class="footer-inner">
         <div class="footer-brand">
             <p class="footer-logo"><span class="footer-brace">{</span> pierrot <span class="footer-brace">}</span></p>
-            <p class="footer-tagline">Componentes em um arquivo.<br>Compilados em Go.</p>
+            <p class="footer-tagline">
+<div data-pierrot-render="2" style="display:contents"></div>
+            </p>
             <div class="footer-diamonds"><span style="color: #FFB300">◆</span><span style="color: #C8553D">◆</span><span style="color: #B8AEA0">◆</span></div>
         </div>
         <div class="footer-cols">
-<div data-pierrot-block="6" style="display:contents"></div>
+<div data-pierrot-block="7" style="display:contents"></div>
         </div>
     </div>
     <div class="footer-bottom">
         <span>© 2026 pierrot · MIT</span>
-        <span class="footer-made">feito com pierrot, óbvio ◆</span>
+        <span class="footer-made"><span data-bind="footerMadeWithText"></span></span>
     </div>
 </footer>
 
@@ -205,11 +205,13 @@ var time = {
 
 document.documentElement.setAttribute("data-theme","light");
 
-function pierrotRedirect(){window.location.href="/"}
+const uiTranslations={en:{header:{switchLanguageLabel:"PT-BR",navigation:[{label:"Docs",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Syntax",path:"/docs/templates"},{label:"CLI",path:"/docs/cli"}]},footer:{taglineHtml:"Components in one file.<br>Compiled in Go.",madeWith:"made with pierrot, obviously \u25C6",columns:[{title:"learn",links:[{label:"hello world in 30s",path:"/docs/getting-started"},{label:"template syntax",path:"/docs/templates"},{label:"components & props",path:"/docs/components"},{label:"CLI & settings",path:"/docs/cli"}]},{title:"project",links:[{label:"github \u2197",url:"https://github.com/ViitoJooj/pierrot"},{label:"issues \u2197",url:"https://github.com/ViitoJooj/pierrot/issues"},{label:"MIT license",url:"https://github.com/ViitoJooj/pierrot/blob/main/LICENSE.md"}]}]},documentationSidebar:{brandSuffix:"docs",groups:[{title:"Getting started",items:[{label:"Overview",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Project structure",path:"/docs/project-structure"}]},{title:"The .pierrot language",items:[{label:"Template syntax",path:"/docs/templates"},{label:"Components & props",path:"/docs/components"},{label:"Reactivity",path:"/docs/reactivity"},{label:"Script API",path:"/docs/script-api"}]},{title:"Tooling",items:[{label:"CLI & configuration",path:"/docs/cli"}]}]},errorPage:{kickerPrefix:"\u2014 ERROR / ",notFoundTitleHtml:"This route <em>does not compile.</em>",notFoundDescriptionPrefix:"The page you are looking for does not exist \u2014 or has not been written yet. Heading back home in ",genericTitleHtml:"Something <em>broke.</em>",genericDescriptionPrefix:"Unexpected error. Heading back home in ",descriptionSuffix:".",backHomeLabel:"back to home \u2192",reportIssueLabel:"report an issue \u2197"}},pt:{header:{switchLanguageLabel:"EN",navigation:[{label:"Docs",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Sintaxe",path:"/docs/templates"},{label:"CLI",path:"/docs/cli"}]},footer:{taglineHtml:"Componentes em um arquivo.<br>Compilados em Go.",madeWith:"feito com pierrot, \xF3bvio \u25C6",columns:[{title:"aprenda",links:[{label:"hello world em 30s",path:"/docs/getting-started"},{label:"sintaxe de template",path:"/docs/templates"},{label:"componentes e props",path:"/docs/components"},{label:"CLI e settings",path:"/docs/cli"}]},{title:"projeto",links:[{label:"github \u2197",url:"https://github.com/ViitoJooj/pierrot"},{label:"issues \u2197",url:"https://github.com/ViitoJooj/pierrot/issues"},{label:"licen\xE7a MIT",url:"https://github.com/ViitoJooj/pierrot/blob/main/LICENSE.md"}]}]},documentationSidebar:{brandSuffix:"docs",groups:[{title:"Primeiros passos",items:[{label:"Vis\xE3o geral",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Estrutura do projeto",path:"/docs/project-structure"}]},{title:"A linguagem .pierrot",items:[{label:"Sintaxe de template",path:"/docs/templates"},{label:"Componentes e props",path:"/docs/components"},{label:"Reatividade",path:"/docs/reactivity"},{label:"Script API",path:"/docs/script-api"}]},{title:"Ferramentas",items:[{label:"CLI e configura\xE7\xE3o",path:"/docs/cli"}]}]},errorPage:{kickerPrefix:"\u2014 ERRO / ",notFoundTitleHtml:"Essa rota <em>n\xE3o compila.</em>",notFoundDescriptionPrefix:"A p\xE1gina que voc\xEA procura n\xE3o existe \u2014 ou ainda n\xE3o foi escrita. Voltando pra home em ",genericTitleHtml:"Algo <em>quebrou.</em>",genericDescriptionPrefix:"Erro inesperado. Voltando pra home em ",descriptionSuffix:".",backHomeLabel:"voltar pra home \u2192",reportIssueLabel:"reportar problema \u2197"}}};function activeLocale(){return get.Path(1)==="pt-br"?"pt":"en"}function localeBasePath(){return activeLocale()==="pt"?"/pt-br":""}function uiText(){return uiTranslations[activeLocale()]}
+
+let headerStrings=uiText().header,headerBasePath=localeBasePath(),headerNavigationLinks=headerStrings.navigation.map(item=>({label:item.label,href:headerBasePath+item.path})),headerSwitchLanguageLabel=headerStrings.switchLanguageLabel,headerOtherLocaleHref=activeLocale()==="pt"?location.pathname.replace(/^\/pt-br/,"")||"/":"/pt-br"+(location.pathname==="/"?"":location.pathname);function navigateToHome(){client.Redirect(headerBasePath+"/")}function switchLanguage(){client.Redirect(headerOtherLocaleHref)}
 
 function goTo(url){client.Redirect(url).newTab()}
 
-let cols=[{title:"aprenda",links:[{label:"hello world em 30s",href:"/docs"},{label:"sintaxe de template",href:"/docs"},{label:"componentes e props",href:"/docs"},{label:"CLI e settings",href:"/docs"}]},{title:"projeto",links:[{label:"github \u2197",href:"https://github.com/ViitoJooj/pierrot"},{label:"issues \u2197",href:"https://github.com/ViitoJooj/pierrot/issues"},{label:"licen\xE7a MIT",href:"https://github.com/ViitoJooj/pierrot"}]}];
+let footerStrings=uiText().footer,footerBasePath=localeBasePath(),footerColumns=footerStrings.columns.map(column=>({title:column.title,links:column.links.map(link=>({label:link.label,href:link.url||footerBasePath+link.path}))})),footerTaglineHtml=footerStrings.taglineHtml,footerMadeWithText=footerStrings.madeWith;
 
 let code=`<script>
 import "./style.css";
@@ -220,8 +222,8 @@ function increment() {
  }
  <\/script>
 
-<h1>Cliques: \${count}</h1>
-<button @click={increment}>+1</button>`,strip=[{label:"sem node_modules",color:"#FFB300"},{label:"sem virtual DOM",color:"#C8553D"},{label:"sem eval",color:"#1A1410"},{label:"live reload por SSE",color:"#FFB300"},{label:"overlay de erros",color:"#C8553D"},{label:"TypeScript via esbuild",color:"#1A1410"}],cards=[{n:"01",color:"#FFB300",title:"Sem node_modules.",desc:"Um \xFAnico bin\xE1rio Go. Sem package-lock, sem pasta gigante, sem npm install de quatro minutos. Voc\xEA baixa o pierrot e pronto.",note:"go install \xB7 ~12 MB"},{n:"02",color:"#C8553D",title:"Sem virtual DOM.",desc:"O servidor j\xE1 sabe o HTML. O browser s\xF3 preenche spans com data-bind e re-roda blocos @for/@if ap\xF3s cada evento. Runtime gerado, sem eval.",note:"runtime \xB7 ~3 KB gzip"},{n:"03",color:"#1A1410",title:"Single-file.",desc:"Script, template, imports e metadados no mesmo .pierrot. Componente, p\xE1gina ou layout \u2014 todos seguem a mesma anatomia simples.",note:"<script> + template"}],steps=[{n:"1",tag:"init",title:"Crie um projeto",cmd:"pierrot init meuapp",desc:"Scaffold m\xEDnimo: settings.pierrot.json, main.pierrot com layout global e uma p\xE1gina home pronta."},{n:"2",tag:"dev",title:"Rode o servidor",cmd:"cd meuapp && pierrot dev",desc:"http://localhost:3000 com live reload por SSE. Cada request recompila \u2014 sem cache, sem hot module replacement quebrado."},{n:"3",tag:"ship",title:"Site est\xE1tico",cmd:"pierrot build",desc:"Gera HTML + bundle.css por p\xE1gina no outDir. JS e CSS minificados. Pode jogar em qualquer CDN."}],pipeline=[{n:"1",title:"parse",file:"parser.go",desc:"Separa <script> do HTML; extrai imports CSS/TS/componente e metadados set.X."},{n:"2",title:"expans\xE3o",file:"dev_server.go",desc:"Recursivo: layout \u2192 p\xE1gina \u2192 componentes. <Slot /> recebe a p\xE1gina; <Nome /> recebe o HTML do filho."},{n:"3",title:"template",file:"template.go",desc:"Blocos @for/@if viram fun\xE7\xF5es JS. ${expr} comp\xF5e com __pierrotEsc(). @evento vira onclick nativo."},{n:"4",title:"bindings",file:"dev_server.go",desc:"${var} simples vira <span data-bind>. @evento ganha __pierrotUpdate() ap\xF3s o handler."},{n:"5",title:"transform",file:"esbuild",desc:"TS \u2192 JS por chunk. Erro de transform vai pro overlay no dev, derruba o build em produ\xE7\xE3o."},{n:"6",title:"montagem",file:"dev_server.go",desc:"HTML final: <head> com title/meta/links + <body> com markup + runtime est\xE1tico sem eval."}],outputs=[{label:"index.html",color:"#FFB300"},{label:"bundle.css",color:"#C8553D"},{label:"runtime.js",color:"#F5F0E4"}];
+<h1>Clicks: \${count}</h1>
+<button @click={increment}>+1</button>`,strip=[{label:"no node_modules",color:"#FFB300"},{label:"no virtual DOM",color:"#C8553D"},{label:"no eval",color:"#1A1410"},{label:"live reload over SSE",color:"#FFB300"},{label:"error overlay",color:"#C8553D"},{label:"TypeScript via esbuild",color:"#1A1410"}],cards=[{n:"01",color:"#FFB300",title:"No node_modules.",desc:"A single Go binary. No package-lock, no giant folder, no four-minute npm install. You download pierrot and you are done.",note:"go install \xB7 ~12 MB"},{n:"02",color:"#C8553D",title:"No virtual DOM.",desc:"The server already knows the HTML. The browser only fills data-bind spans and re-runs @for/@if blocks after each event. Generated runtime, no eval.",note:"runtime \xB7 ~3 KB gzip"},{n:"03",color:"#1A1410",title:"Single-file.",desc:"Script, template, imports and metadata in the same .pierrot. Component, page or layout \u2014 all share the same simple anatomy.",note:"<script> + template"}],steps=[{n:"1",tag:"init",title:"Create a project",cmd:"pierrot init myapp",desc:"Minimal scaffold: settings.pierrot.json, main.pierrot with the global layout and a ready-made home page."},{n:"2",tag:"dev",title:"Run the server",cmd:"cd myapp && pierrot dev",desc:"http://localhost:3000 with live reload over SSE. Every request recompiles \u2014 no cache, no broken hot module replacement."},{n:"3",tag:"ship",title:"Static site",cmd:"pierrot build",desc:"Generates HTML + bundle.css per page in the outDir. Minified JS and CSS. Drop it on any CDN."}],pipeline=[{n:"1",title:"parse",file:"parser.go",desc:"Splits <script> from HTML; extracts CSS/TS/component imports and set.X metadata."},{n:"2",title:"expansion",file:"dev_server.go",desc:"Recursive: layout \u2192 page \u2192 components. <Slot /> receives the page; <Name /> receives the child HTML."},{n:"3",title:"template",file:"template.go",desc:"@for/@if blocks become JS functions. ${expr} composes with __pierrotEsc(). @event becomes a native onclick."},{n:"4",title:"bindings",file:"dev_server.go",desc:"Plain ${var} becomes <span data-bind>. @event gains __pierrotUpdate() after the handler."},{n:"5",title:"transform",file:"esbuild",desc:"TS \u2192 JS per chunk. A transform error hits the overlay in dev, aborts the build in production."},{n:"6",title:"assembly",file:"dev_server.go",desc:"Final HTML: <head> with title/meta/links + <body> with markup + static runtime, no eval."}],outputs=[{label:"index.html",color:"#FFB300"},{label:"bundle.css",color:"#C8553D"},{label:"runtime.js",color:"#F5F0E4"}];
 
 let animation=!1;async function Click(cmd){navigator.clipboard.writeText(cmd),animation=!0,await time.Sleep(800).msec(),animation=!1}
 
@@ -312,6 +314,13 @@ function __pierrotMd(src) {
 var __pierrotBlocks = [
 function () {
 var __h = "";
+for (const link of (headerNavigationLinks)) {
+__h += "        <a class=\"nav-link\" href=\"" + __pierrotEsc(link.href) + "\">" + __pierrotEsc(link.label) + "</a>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
 if (animation == true) {
 __h += "        <div class=\"stars\">\r\n";
 __h += "            <span class=\"star\">✦</span>\r\n";
@@ -376,11 +385,11 @@ return __h;
 },
 function () {
 var __h = "";
-for (const col of (cols)) {
+for (const column of (footerColumns)) {
 __h += "            <div class=\"footer-col\">\n";
-__h += "                <p class=\"footer-col-title\">" + __pierrotEsc(col.title) + "</p>\n";
-for (const l of (col.links)) {
-__h += "                <a class=\"footer-link\" href=\"" + __pierrotEsc(l.href) + "\">" + __pierrotEsc(l.label) + "</a>\n";
+__h += "                <p class=\"footer-col-title\">" + __pierrotEsc(column.title) + "</p>\n";
+for (const link of (column.links)) {
+__h += "                <a class=\"footer-link\" href=\"" + __pierrotEsc(link.href) + "\">" + __pierrotEsc(link.label) + "</a>\n";
 }
 __h += "            </div>\n";
 }
@@ -393,12 +402,15 @@ function () { return ((code).split("\n").length); },
 var __pierrotRenders = [
 { kind: "html", fn: function () { return (hl((code))); } },
 { kind: "pierrot", fn: function () { return ((code)); } },
+{ kind: "html", fn: function () { return (typeof footerTaglineHtml === "undefined" ? "" : footerTaglineHtml); } },
 ];
 var __pierrotBindVals = [
 function () { return ((code)); },
 ];
 function __pierrotUpdate() {
 	const state = {
+		"headerSwitchLanguageLabel": typeof headerSwitchLanguageLabel === "undefined" ? "" : headerSwitchLanguageLabel,
+		"footerMadeWithText": typeof footerMadeWithText === "undefined" ? "" : footerMadeWithText,
 	};
 	document.querySelectorAll("[data-bind]").forEach(function (el) {
 		el.textContent = state[el.getAttribute("data-bind")];

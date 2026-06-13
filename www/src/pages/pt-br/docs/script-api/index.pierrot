@@ -1,0 +1,105 @@
+<script>
+    // /pt-br/docs/script-api
+    import { DocsNav } from "../../../../components/docs-nav/index.pierrot";
+    import "../../../../lib/doc.ts";
+    import "../../../docs/script-api/snippets.ts";
+
+    set.Title("Script API · pierrot");
+    set.Description("Os helpers set, get, client e time disponíveis no script de um .pierrot, mais .env.");
+</script>
+
+<div class="docs-wrap">
+    <DocsNav />
+    <article class="docs-content doc">
+        <p class="doc-kicker">— A linguagem .pierrot</p>
+        <h1>Script API</h1>
+        <p class="doc-lead">Dentro do <code>&lt;script&gt;</code> de qualquer <code>.pierrot</code>
+            você ganha, além de TypeScript puro, quatro objetos do framework: <code>set</code>
+            (metadados, em tempo de compilação), <code>get</code>, <code>client</code> e
+            <code>time</code> (runtime no browser). Mais acesso às variáveis do <code>.env</code>.</p>
+
+        <h2><code>set</code> — metadados</h2>
+        <p><code>set.X(...)</code> configura a página. Faz sentido no <strong>layout</strong>
+            (<code>main.pierrot</code>) e nas <strong>páginas</strong> — uma página pode
+            sobrescrever o que o layout definiu. As chamadas são resolvidas em compilação e
+            removidas do script.</p>
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>Chamada</th><th>Efeito</th></tr></thead>
+                <tbody>
+                    <tr><td><code>set.Title("...")</code></td><td><code>&lt;title&gt;</code></td></tr>
+                    <tr><td><code>set.Description("...")</code></td><td><code>&lt;meta name="description"&gt;</code></td></tr>
+                    <tr><td><code>set.Charset("...")</code></td><td><code>&lt;meta charset&gt;</code> (default <code>UTF-8</code>)</td></tr>
+                    <tr><td><code>set.Icon("./assets/favicon.ico")</code></td><td><code>&lt;link rel="icon"&gt;</code></td></tr>
+                    <tr><td><code>set.Robots("./assets/robots.txt")</code></td><td>arquivo servido em <code>/robots.txt</code></td></tr>
+                    <tr><td><code>set.Default(Componente)</code></td><td>página da rota <code>/</code></td></tr>
+                    <tr><td><code>set.Fallback(Componente)</code></td><td>página servida em rotas inexistentes (404)</td></tr>
+                </tbody>
+            </table>
+        </div>
+@render html(docCode(snipSet));
+        <div class="doc-note">
+            <p><code>set.Default</code> e <code>set.Fallback</code> recebem um
+                <strong>componente importado</strong>, e a pasta dele (relativa a
+                <code>pages/</code>) vira a rota. O import precisa apontar para dentro de
+                <code>pages/</code>.</p>
+        </div>
+
+        <h2><code>get</code> — info do request</h2>
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>Chamada</th><th>Retorna</th></tr></thead>
+                <tbody>
+                    <tr><td><code>get.Path(n)</code></td><td>o n-ésimo segmento do pathname, <strong>1-based</strong>. <code>/about/team</code> → <code>get.Path(1) == "about"</code>. Fora do range: <code>""</code>.</td></tr>
+                    <tr><td><code>get.Status()</code></td><td>status HTTP como string: <code>"200"</code>, <code>"404"</code>.</td></tr>
+                    <tr><td><code>get.Dotenv("NOME")</code></td><td>valor de uma variável do <code>.env</code> (veja abaixo).</td></tr>
+                </tbody>
+            </table>
+        </div>
+@render html(docCode(snipStatus));
+
+        <h2><code>client</code> — navegação</h2>
+@render html(docCode(snipClient));
+        <ul>
+            <li><code>client.Redirect(url)</code> — navega para <code>url</code>.</li>
+            <li><code>client.Redirect(url).newTab()</code> — abre em nova aba em vez de navegar.</li>
+        </ul>
+
+        <h2><code>time</code> — espera assíncrona</h2>
+        <p><code>time.Sleep(n)</code> retorna uma <code>Promise</code> que resolve após
+            <code>n</code> unidades. Escolha a unidade encadeando:</p>
+@render html(docCode(snipTime));
+        <p>Unidades disponíveis: <code>.msec()</code>, <code>.sec()</code>, <code>.min()</code>,
+            <code>.hr()</code>, <code>.day()</code>, <code>.week()</code>, <code>.month()</code>,
+            <code>.year()</code>.</p>
+        <div class="doc-note">
+            <p>O compilador injeta o <code>await</code> e torna a função <code>async</code>
+                automaticamente quando vê <code>time.Sleep(...)</code>. Depois que o código após o
+                <code>await</code> roda, um <code>__pierrotUpdate()</code> dispara — então estado
+                mudado pós-sleep já está na tela.</p>
+        </div>
+
+        <h2>Variáveis de ambiente (<code>.env</code>)</h2>
+        <p>Habilite no <code>settings.pierrot.json</code>:</p>
+@render html(docCode(snipEnvJson));
+        <p>Leia com <code>get.Dotenv("NOME")</code>:</p>
+@render html(docCode(snipEnvRead));
+        <p>Como funciona, e os limites:</p>
+        <ul>
+            <li>A substituição acontece <strong>no servidor</strong>, em compilação: <code>get.Dotenv("API_URL")</code> vira o valor literal antes do bundle. Não existe em runtime.</li>
+            <li><strong>Só as variáveis referenciadas</strong> terminam no HTML — o resto do <code>.env</code> nunca chega ao browser.</li>
+            <li>O argumento precisa ser uma <strong>string literal entre aspas duplas</strong>. Um nome dinâmico é erro — a substituição é textual.</li>
+            <li>Uma variável ausente do <code>.env</code>, ou dotenv desabilitado, vira <code>""</code> + um erro no overlay/build.</li>
+        </ul>
+        <div class="doc-note is-warn">
+            <p>⚠️ Como o valor é embutido no HTML enviado ao browser, <strong>não</strong>
+                coloque segredos (chaves de API privadas, senhas) em variáveis lidas por
+                <code>get.Dotenv</code>. Trate tudo que passa por ele como público.</p>
+        </div>
+
+        <div class="doc-pager">
+            <a class="pager-prev" href="/pt-br/docs/reactivity"><span class="pager-dir">← Anterior</span><span>Reatividade</span></a>
+            <a class="pager-next" href="/pt-br/docs/cli"><span class="pager-dir">Próximo →</span><span>CLI &amp; configuração</span></a>
+        </div>
+    </article>
+</div>

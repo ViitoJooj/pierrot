@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sintaxe de template · pierrot</title>
+<meta name="description" content="Interpolação, comentários e os blocos de controle @for / @if.">
+<link rel="icon" href="./assets/favicon.ico">
+<link rel="stylesheet" href="/pt-br/docs/templates/bundle.css">
+</head>
+<body>
+<header>
+    <button onclick="navigateToHome(); __pierrotUpdate()" class="logo">
+        <p class="logo-curlybraces">{</p>
+        <p>pierrot</p>
+        <p class="logo-curlybraces">}</p>
+    </button>
+
+    <div class="nav">
+<div data-pierrot-block="0" style="display:contents"></div>
+
+        <button onclick="switchLanguage(); __pierrotUpdate()" class="nav-lang"><span data-bind="headerSwitchLanguageLabel"></span></button>
+        <button class="secondary-btn" onclick="goTo(&#34;https://github.com/ViitoJooj/pierrot&#34;); __pierrotUpdate()">github ↗</button>
+    </div>
+</header>
+<div class="docs-wrap">
+    <aside class="docs-sidebar">
+<div data-pierrot-block="1" style="display:contents"></div>
+<div data-pierrot-block="2" style="display:contents"></div>
+</aside>
+    <article class="docs-content doc">
+        <p class="doc-kicker">— A linguagem .pierrot</p>
+        <h1>Sintaxe de template</h1>
+        <p class="doc-lead">O template é tudo depois do <code>&lt;script&gt;</code>. HTML puro mais
+            um punhado de diretivas: interpolação <code>&#36;{}</code>, comentários e os blocos de
+            controle <code>@for</code> / <code>@if</code>.</p>
+
+        <h2>Interpolação <code>&#36;{...}</code></h2>
+        <p>Coloque qualquer expressão JavaScript entre <code>&#36;{</code> e <code>}</code>. O valor
+            é <strong>escapado</strong> (HTML-safe) e continua reativo: quando o estado muda, o
+            ponto é repintado.</p>
+<div data-pierrot-render="0" style="display:contents"></div>
+        <ul>
+            <li><code>&#36;{name}</code> (identificador simples) vira <code>&lt;span data-bind="name"&gt;</code>.</li>
+            <li><code>&#36;{user.age + 10}</code> (expressão composta) vira <code>&lt;span data-pierrot-expr&gt;</code> reavaliado a cada update.</li>
+        </ul>
+        <p>Uma variável <strong>não declarada</strong> vira string vazia em vez de quebrar a
+            página (um guard de <code>typeof</code>). Útil em componentes onde uma prop pode não
+            ter sido passada.</p>
+        <div class="doc-note is-warn">
+            <p>A interpolação <strong>não</strong> roda em atributos <strong>fora</strong> de um
+                bloco. Dentro de <code>@for</code> / <code>@if</code> funciona normal — veja
+                <a href="/pt-br/docs/components">props em atributos</a>.</p>
+        </div>
+
+        <h2>Comentários</h2>
+        <p>Uma linha começando com <code>//</code> (no primeiro caractere, sem indentação) é
+            removida da saída:</p>
+<div data-pierrot-render="1" style="display:contents"></div>
+        <p>Um <code>//</code> <strong>indentado</strong> é tratado como texto. Para comentar HTML
+            no meio do markup, use um comentário HTML normal <code>&lt;!-- ... --&gt;</code> (que
+            permanece na saída).</p>
+
+        <h2><code>@for</code> — repetição</h2>
+<div data-pierrot-render="2" style="display:contents"></div>
+        <ul>
+            <li>Sintaxe: <code>@for &lt;var&gt; in &lt;expr&gt;</code> … <code>@end</code>.</li>
+            <li>Vira um <code>for...of</code> em JavaScript, reavaliado a cada <code>__pierrotUpdate()</code>. Se a lista muda, o bloco re-renderiza.</li>
+            <li><code>&lt;expr&gt;</code> é qualquer iterável JS (array, resultado de <code>.filter()</code>, etc).</li>
+        </ul>
+        <div class="doc-note">
+            <p>Cada diretiva (<code>@for</code>, <code>@if</code>) fica em <strong>sua própria
+                linha</strong>. O conteúdo do bloco fica entre a linha de abertura e o
+                <code>@end</code>.</p>
+        </div>
+
+        <h2><code>@if</code> / <code>@else</code> — condicional</h2>
+<div data-pierrot-render="3" style="display:contents"></div>
+        <ul>
+            <li>Sintaxe: <code>@if &lt;expr&gt;</code> … (<code>@else</code>) … <code>@end</code> <strong>ou</strong> <code>@endif</code>.</li>
+            <li><code>&lt;expr&gt;</code> é qualquer condição JavaScript.</li>
+            <li><code>@end</code> e <code>@endif</code> são equivalentes.</li>
+        </ul>
+
+        <h2>Aninhamento</h2>
+        <p><code>@for</code> e <code>@if</code> podem ser aninhados livremente. O <code>@end</code>
+            de fechamento conta profundidade, então cada bloco interno precisa do seu próprio
+            <code>@end</code>:</p>
+<div data-pierrot-render="4" style="display:contents"></div>
+
+        <h2>Erros comuns</h2>
+        <div class="doc-table-wrap">
+            <table>
+                <thead><tr><th>Sintoma</th><th>Causa</th></tr></thead>
+                <tbody>
+                    <tr><td><code>diretiva "@for ..." sem @end/@endif</code></td><td>bloco não fechado</td></tr>
+                    <tr><td><code>"@end" sem @for/@if correspondente</code></td><td><code>@end</code> / <code>@else</code> solto</td></tr>
+                    <tr><td><code>&#36;{expr}</code> aparece literal num atributo</td><td>expressão num atributo fora de bloco — mova para dentro de um <code>@for</code> / <code>@if</code> ou use uma prop literal</td></tr>
+                    <tr><td>uma variável "some" silenciosamente</td><td>variável não declarada vira <code>""</code> (guard de <code>typeof</code>)</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>No <code>pierrot dev</code> esses erros aparecem no overlay no canto da página. No
+            <code>pierrot build</code>, eles derrubam o build.</p>
+
+        <div class="doc-pager">
+            <a class="pager-prev" href="/pt-br/docs/project-structure"><span class="pager-dir">← Anterior</span><span>Estrutura do projeto</span></a>
+            <a class="pager-next" href="/pt-br/docs/components"><span class="pager-dir">Próximo →</span><span>Componentes &amp; props</span></a>
+        </div>
+    </article>
+</div>
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <p class="footer-logo"><span class="footer-brace">{</span> pierrot <span class="footer-brace">}</span></p>
+            <p class="footer-tagline">
+<div data-pierrot-render="5" style="display:contents"></div>
+            </p>
+            <div class="footer-diamonds"><span style="color: #FFB300">◆</span><span style="color: #C8553D">◆</span><span style="color: #B8AEA0">◆</span></div>
+        </div>
+        <div class="footer-cols">
+<div data-pierrot-block="3" style="display:contents"></div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 pierrot · MIT</span>
+        <span class="footer-made"><span data-bind="footerMadeWithText"></span></span>
+    </div>
+</footer>
+
+<script>
+var __pierrotStatus = 200;
+var get = {
+	Path: function (n) {
+		var p = location.pathname.split("/").filter(Boolean);
+		return n >= 1 && n <= p.length ? p[n - 1] : "";
+	},
+	Status: function () {
+		return String(typeof __pierrotStatus === "undefined" ? 200 : __pierrotStatus);
+	},
+};
+var client = {
+	Redirect: function (url) {
+		var t = setTimeout(function () { location.assign(url); }, 0);
+		return {
+			newTab: function () {
+				clearTimeout(t);
+				window.open(url, "_blank", "noopener");
+			},
+		};
+	},
+};
+var time = {
+	Sleep: function (n) {
+		var wait = function (ms) {
+			return new Promise(function (done) {
+				setTimeout(function () {
+					done();
+					// microtask depois da continuação do await: o estado mudado
+					// após o Sleep já está aplicado quando o update roda
+					if (typeof __pierrotUpdate === "function") Promise.resolve().then(__pierrotUpdate);
+				}, n * ms);
+			});
+		};
+		return {
+			msec: function () { return wait(1); },
+			sec: function () { return wait(1000); },
+			min: function () { return wait(60 * 1000); },
+			hr: function () { return wait(60 * 60 * 1000); },
+			day: function () { return wait(24 * 60 * 60 * 1000); },
+			week: function () { return wait(7 * 24 * 60 * 60 * 1000); },
+			month: function () { return wait(30 * 24 * 60 * 60 * 1000); },
+			year: function () { return wait(365 * 24 * 60 * 60 * 1000); },
+		};
+	},
+};
+
+document.documentElement.setAttribute("data-theme","light");
+
+const uiTranslations={en:{header:{switchLanguageLabel:"PT-BR",navigation:[{label:"Docs",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Syntax",path:"/docs/templates"},{label:"CLI",path:"/docs/cli"}]},footer:{taglineHtml:"Components in one file.<br>Compiled in Go.",madeWith:"made with pierrot, obviously \u25C6",columns:[{title:"learn",links:[{label:"hello world in 30s",path:"/docs/getting-started"},{label:"template syntax",path:"/docs/templates"},{label:"components & props",path:"/docs/components"},{label:"CLI & settings",path:"/docs/cli"}]},{title:"project",links:[{label:"github \u2197",url:"https://github.com/ViitoJooj/pierrot"},{label:"issues \u2197",url:"https://github.com/ViitoJooj/pierrot/issues"},{label:"MIT license",url:"https://github.com/ViitoJooj/pierrot/blob/main/LICENSE.md"}]}]},documentationSidebar:{brandSuffix:"docs",groups:[{title:"Getting started",items:[{label:"Overview",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Project structure",path:"/docs/project-structure"}]},{title:"The .pierrot language",items:[{label:"Template syntax",path:"/docs/templates"},{label:"Components & props",path:"/docs/components"},{label:"Reactivity",path:"/docs/reactivity"},{label:"Script API",path:"/docs/script-api"}]},{title:"Tooling",items:[{label:"CLI & configuration",path:"/docs/cli"}]}]},errorPage:{kickerPrefix:"\u2014 ERROR / ",notFoundTitleHtml:"This route <em>does not compile.</em>",notFoundDescriptionPrefix:"The page you are looking for does not exist \u2014 or has not been written yet. Heading back home in ",genericTitleHtml:"Something <em>broke.</em>",genericDescriptionPrefix:"Unexpected error. Heading back home in ",descriptionSuffix:".",backHomeLabel:"back to home \u2192",reportIssueLabel:"report an issue \u2197"}},pt:{header:{switchLanguageLabel:"EN",navigation:[{label:"Docs",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Sintaxe",path:"/docs/templates"},{label:"CLI",path:"/docs/cli"}]},footer:{taglineHtml:"Componentes em um arquivo.<br>Compilados em Go.",madeWith:"feito com pierrot, \xF3bvio \u25C6",columns:[{title:"aprenda",links:[{label:"hello world em 30s",path:"/docs/getting-started"},{label:"sintaxe de template",path:"/docs/templates"},{label:"componentes e props",path:"/docs/components"},{label:"CLI e settings",path:"/docs/cli"}]},{title:"projeto",links:[{label:"github \u2197",url:"https://github.com/ViitoJooj/pierrot"},{label:"issues \u2197",url:"https://github.com/ViitoJooj/pierrot/issues"},{label:"licen\xE7a MIT",url:"https://github.com/ViitoJooj/pierrot/blob/main/LICENSE.md"}]}]},documentationSidebar:{brandSuffix:"docs",groups:[{title:"Primeiros passos",items:[{label:"Vis\xE3o geral",path:"/docs"},{label:"Hello World",path:"/docs/getting-started"},{label:"Estrutura do projeto",path:"/docs/project-structure"}]},{title:"A linguagem .pierrot",items:[{label:"Sintaxe de template",path:"/docs/templates"},{label:"Componentes e props",path:"/docs/components"},{label:"Reatividade",path:"/docs/reactivity"},{label:"Script API",path:"/docs/script-api"}]},{title:"Ferramentas",items:[{label:"CLI e configura\xE7\xE3o",path:"/docs/cli"}]}]},errorPage:{kickerPrefix:"\u2014 ERRO / ",notFoundTitleHtml:"Essa rota <em>n\xE3o compila.</em>",notFoundDescriptionPrefix:"A p\xE1gina que voc\xEA procura n\xE3o existe \u2014 ou ainda n\xE3o foi escrita. Voltando pra home em ",genericTitleHtml:"Algo <em>quebrou.</em>",genericDescriptionPrefix:"Erro inesperado. Voltando pra home em ",descriptionSuffix:".",backHomeLabel:"voltar pra home \u2192",reportIssueLabel:"reportar problema \u2197"}}};function activeLocale(){return get.Path(1)==="pt-br"?"pt":"en"}function localeBasePath(){return activeLocale()==="pt"?"/pt-br":""}function uiText(){return uiTranslations[activeLocale()]}
+
+let headerStrings=uiText().header,headerBasePath=localeBasePath(),headerNavigationLinks=headerStrings.navigation.map(item=>({label:item.label,href:headerBasePath+item.path})),headerSwitchLanguageLabel=headerStrings.switchLanguageLabel,headerOtherLocaleHref=activeLocale()==="pt"?location.pathname.replace(/^\/pt-br/,"")||"/":"/pt-br"+(location.pathname==="/"?"":location.pathname);function navigateToHome(){client.Redirect(headerBasePath+"/")}function switchLanguage(){client.Redirect(headerOtherLocaleHref)}
+
+function goTo(url){client.Redirect(url).newTab()}
+
+let footerStrings=uiText().footer,footerBasePath=localeBasePath(),footerColumns=footerStrings.columns.map(column=>({title:column.title,links:column.links.map(link=>({label:link.label,href:link.url||footerBasePath+link.path}))})),footerTaglineHtml=footerStrings.taglineHtml,footerMadeWithText=footerStrings.madeWith;
+
+function docEsc(src){return src.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}function docHl(src){const esc=docEsc(src),span=(cls,txt)=>'<span class="'+cls+'">'+txt+"</span>",re=/(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`(?:[^`\\]|\\.)*`)|(\$\{[^}\n]*\}|@\w+)|\b(let|const|var|function|return|if|else|for|of|in|import|from|new|typeof|async|await)\b|(:\s*)([A-Za-z_]\w*)|\b(\d+(?:\.\d+)?)\b|(&lt;\/?)([\w-]+)|(\/?&gt;)|([A-Za-z_]\w*)(?=\s*\()/g;return esc.replace(re,function(m,com,str,dir,kw,colon,type,num,tagp,tagn,gt,fn){return com?span("tok-comment",com):str?span("tok-string",str):dir?span("tok-directive",dir):kw?span("tok-keyword",kw):type?colon+span("tok-type",type):num?span("tok-number",num):tagn?span("tok-punct",tagp)+span("tok-tag",tagn):gt?span("tok-punct",gt):fn?span("tok-fn",fn):m})}function docCode(src){return'<pre class="doc-code"><code>'+docHl(src)+"</code></pre>"}function docCodeFile(file,src){return'<span class="doc-file">'+docEsc(file)+"</span>"+docCode(src)}
+
+const snipInterp=`<script>
+    let name: string = "world";
+    let user = { age: 22 };
+<\/script>
+
+<h1>Hello, \${name}!</h1>
+<p>Age: \${user.age}</p>
+<p>In 10 years: \${user.age + 10}</p>`,snipComment=`// this comment is gone from the final HTML
+<p>visible</p>`,snipFor=`<script>
+    let items = [
+        { label: "no node_modules", color: "#FFB300" },
+        { label: "no virtual DOM", color: "#C8553D" },
+        { label: "no eval", color: "#1A1410" },
+    ];
+<\/script>
+
+<ul>
+@for item in items
+    <li style="color: \${item.color}">\${item.label}</li>
+@end
+</ul>`,snipIf=`<script>
+    let status: string = get.Status();
+<\/script>
+
+@if status == "404"
+    <h1>404 \u2014 not found</h1>
+    <p>That route doesn't exist.</p>
+@else
+    <h1>Error \${status}</h1>
+    <p>Something broke.</p>
+@endif`,snipNest=`@for col in columns
+    <div class="col">
+        <h3>\${col.title}</h3>
+@for link in col.links
+        <a href="\${link.href}">\${link.label}</a>
+@end
+    </div>
+@end`;
+
+
+let documentationSidebarStrings=uiText().documentationSidebar,documentationSidebarBasePath=localeBasePath(),documentationSidebarIsPortuguese=activeLocale()==="pt",documentationSidebarCurrentPath=location.pathname.replace(/\/+$/,"")||"/",documentationSidebarBrandSuffix=documentationSidebarStrings.brandSuffix,documentationSidebarGroups=documentationSidebarStrings.groups.map(group=>({title:group.title,items:group.items.map(item=>{const href=documentationSidebarBasePath+item.path;return{label:item.label,href,isActive:href.replace(/\/+$/,"")===documentationSidebarCurrentPath}})}));
+
+
+function __pierrotEsc(v) {
+	return String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function __pierrotMd(src) {
+	var esc = function (s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); };
+	var inline = function (s) {
+		return esc(s)
+			.replace(/\x60([^\x60]+)\x60/g, "<code>$1</code>")
+			.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+			.replace(/\*([^*]+)\*/g, "<em>$1</em>")
+			.replace(/\[([^\]]+)\]\(([^()\s]+)\)/g, '<a href="$2">$1</a>');
+	};
+	var lines = String(src).split(/\r?\n/), out = [], i = 0;
+	while (i < lines.length) {
+		var l = lines[i];
+		if (/^\x60\x60\x60/.test(l)) {
+			var buf = [];
+			for (i++; i < lines.length && !/^\x60\x60\x60/.test(lines[i]); i++) buf.push(lines[i]);
+			i++;
+			out.push("<pre><code>" + esc(buf.join("\n")) + "</code></pre>");
+			continue;
+		}
+		var h = l.match(/^(#{1,6})\s+(.*)$/);
+		if (h) { out.push("<h" + h[1].length + ">" + inline(h[2]) + "</h" + h[1].length + ">"); i++; continue; }
+		if (/^\s*[-*]\s+/.test(l)) {
+			var items = [];
+			for (; i < lines.length && /^\s*[-*]\s+/.test(lines[i]); i++) items.push("<li>" + inline(lines[i].replace(/^\s*[-*]\s+/, "")) + "</li>");
+			out.push("<ul>" + items.join("") + "</ul>");
+			continue;
+		}
+		if (/^\s*$/.test(l)) { i++; continue; }
+		var para = [];
+		for (; i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#{1,6}\s|\x60\x60\x60|\s*[-*]\s)/.test(lines[i]); i++) para.push(lines[i]);
+		out.push("<p>" + para.map(inline).join("<br>") + "</p>");
+	}
+	return out.join("\n");
+}
+var __pierrotBlocks = [
+function () {
+var __h = "";
+for (const link of (headerNavigationLinks)) {
+__h += "        <a class=\"nav-link\" href=\"" + __pierrotEsc(link.href) + "\">" + __pierrotEsc(link.label) + "</a>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+if (documentationSidebarIsPortuguese) {
+__h += "    <a class=\"docs-side-brand\" href=\"/pt-br/docs\"><span class=\"docs-side-brace\">{</span> pierrot <span class=\"docs-side-brace\">}</span> · " + __pierrotEsc(typeof documentationSidebarBrandSuffix === "undefined" ? "" : documentationSidebarBrandSuffix) + "</a>\n";
+} else {
+__h += "    <a class=\"docs-side-brand\" href=\"/docs\"><span class=\"docs-side-brace\">{</span> pierrot <span class=\"docs-side-brace\">}</span> · " + __pierrotEsc(typeof documentationSidebarBrandSuffix === "undefined" ? "" : documentationSidebarBrandSuffix) + "</a>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+for (const group of (documentationSidebarGroups)) {
+__h += "    <div class=\"docs-side-group\">\n";
+__h += "        <p class=\"docs-side-title\">" + __pierrotEsc(group.title) + "</p>\n";
+for (const item of (group.items)) {
+if (item.isActive) {
+__h += "        <a class=\"docs-side-link is-active\" href=\"" + __pierrotEsc(item.href) + "\">" + __pierrotEsc(item.label) + "</a>\n";
+} else {
+__h += "        <a class=\"docs-side-link\" href=\"" + __pierrotEsc(item.href) + "\">" + __pierrotEsc(item.label) + "</a>\n";
+}
+}
+__h += "    </div>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+for (const column of (footerColumns)) {
+__h += "            <div class=\"footer-col\">\n";
+__h += "                <p class=\"footer-col-title\">" + __pierrotEsc(column.title) + "</p>\n";
+for (const link of (column.links)) {
+__h += "                <a class=\"footer-link\" href=\"" + __pierrotEsc(link.href) + "\">" + __pierrotEsc(link.label) + "</a>\n";
+}
+__h += "            </div>\n";
+}
+return __h;
+},
+];
+var __pierrotExprs = [
+];
+var __pierrotRenders = [
+{ kind: "html", fn: function () { return (docCode(snipInterp)); } },
+{ kind: "html", fn: function () { return (docCode(snipComment)); } },
+{ kind: "html", fn: function () { return (docCode(snipFor)); } },
+{ kind: "html", fn: function () { return (docCode(snipIf)); } },
+{ kind: "html", fn: function () { return (docCode(snipNest)); } },
+{ kind: "html", fn: function () { return (typeof footerTaglineHtml === "undefined" ? "" : footerTaglineHtml); } },
+];
+var __pierrotBindVals = [
+];
+function __pierrotUpdate() {
+	const state = {
+		"headerSwitchLanguageLabel": typeof headerSwitchLanguageLabel === "undefined" ? "" : headerSwitchLanguageLabel,
+		"footerMadeWithText": typeof footerMadeWithText === "undefined" ? "" : footerMadeWithText,
+	};
+	document.querySelectorAll("[data-bind]").forEach(function (el) {
+		el.textContent = state[el.getAttribute("data-bind")];
+	});
+	__pierrotBlocks.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-block="' + i + '"]').forEach(function (el) {
+			try { el.innerHTML = fn(); } catch (e) { console.error("pierrot: bloco " + i + ":", e); }
+		});
+	});
+	__pierrotExprs.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-expr="' + i + '"]').forEach(function (el) {
+			try { el.textContent = fn(); } catch (e) { console.error("pierrot: {expr} " + i + ":", e); }
+		});
+	});
+	__pierrotBindVals.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-bindval="' + i + '"]').forEach(function (el) {
+			if (el === document.activeElement) return;
+			try { var v = fn(); el.value = v == null ? "" : v; } catch (e) {}
+		});
+	});
+	__pierrotRenders.forEach(function (r, i) {
+		document.querySelectorAll('[data-pierrot-render="' + i + '"]').forEach(function (el) {
+			try {
+				if (r.kind === "pierrot") {
+					// preview num iframe, recriado só quando o valor muda;
+					// debounce de 300ms segura recompilação durante digitação
+					var fr = el.firstChild;
+					if (!fr) {
+						fr = document.createElement("iframe");
+						fr.className = "pierrot-preview";
+						fr.setAttribute("sandbox", "allow-scripts");
+						el.appendChild(fr);
+					}
+					var v = String(r.fn());
+					if (v === el.__pierrotSrc) return;
+					var first = el.__pierrotSrc === undefined;
+					el.__pierrotSrc = v;
+					clearTimeout(el.__pierrotT);
+					el.__pierrotT = setTimeout(function () { fr.srcdoc = __pierrotCompile(v); }, first ? 0 : 300);
+					return;
+				}
+				var v = String(r.fn());
+				el.innerHTML = r.kind === "markdown" ? __pierrotMd(v) : v;
+			} catch (e) { console.error("pierrot: @render " + i + ":", e); }
+		});
+	});
+}
+__pierrotUpdate();
+
+
+</script>
+</body>
+</html>
