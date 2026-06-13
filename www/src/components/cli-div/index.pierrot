@@ -1,0 +1,27 @@
+<script>
+    import "./styles.css";
+
+    let command: string;
+    let animation: boolean = false;
+
+    async function Click(cmd: string) {
+        navigator.clipboard.writeText(cmd);
+        animation = true;
+        await time.Sleep(800).msec();
+        animation = false;
+    }
+</script>
+
+<div class="cli">
+    <p class="command"><p class="prompt">$</p> {command}</p>
+    <button @click={Click(command)}>copiar</button>
+    
+    @if animation == true
+        <div class="stars">
+            <span class="star">✦</span>
+            <span class="star">✦</span>
+            <span class="star">✦</span>
+            <span class="star">✦</span>
+        </div>
+    @endif
+</div>

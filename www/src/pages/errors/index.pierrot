@@ -18,11 +18,23 @@
     }
 </script>
 
+<main class="error-page">
+    <div class="error-decor"><span style="color: #FFB300">◆</span><span style="color: #C8553D">◆</span><span style="color: #1A1410">◆</span></div>
 @if status == "404"
-    <h1>404 Not Found</h1>
-    <p>The page you are looking for does not exist.</p>
-    <p>Returning in ${count} seconds...</p>
+    <p class="error-kicker">— ERRO / 404</p>
+    <h1 class="error-code">404</h1>
+    <h2 class="error-title">Essa rota <em>não compila.</em></h2>
+    <p class="error-desc">A página que você procura não existe — ou ainda não foi
+        escrita. Voltando pra home em <span class="error-count">${count}s</span>.</p>
 @else
-    <h1>Error</h1>
-    <p>An unexpected error has occurred.</p>
+    <p class="error-kicker">— ERRO / ${status}</p>
+    <h1 class="error-code">${status}</h1>
+    <h2 class="error-title">Algo <em>quebrou.</em></h2>
+    <p class="error-desc">Erro inesperado. Voltando pra home em
+        <span class="error-count">${count}s</span>.</p>
 @endif
+    <div class="error-actions">
+        <a class="error-primary" href="/">voltar pra home →</a>
+        <a class="error-ghost" href="https://github.com/ViitoJooj/pierrot/issues">reportar problema ↗</a>
+    </div>
+</main>

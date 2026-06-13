@@ -1,0 +1,38 @@
+@import "../../globals.css";
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    height: 3.5rem;
+    border-bottom: 1px solid var(--primary-border-color);
+}
+
+.logo {
+    display: flex;
+    gap: 0.3rem;
+    font-size: 1.5rem;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+
+    .logo-curlybraces {
+        color: var(--primary-accent-color);
+    }
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-family: "JetBrains Mono", monospace;
+    color: var(--secondary-font-color);
+
+    .nav-link {
+        text-decoration: none;
+        color: var(--primary-font-color);
+        transition: color 0.3s ease;
+        cursor: pointer;
+    }
+}

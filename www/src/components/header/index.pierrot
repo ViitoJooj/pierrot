@@ -1,0 +1,24 @@
+<script>
+    import "./styles.css";
+    import "./script.ts";
+
+    import { ButtonSecondary } from "../buttons/btn-secondary/index.pierrot";
+
+</script>
+
+<header>
+    <button @click={pierrotRedirect} class="logo">
+        <p class="logo-curlybraces">{</p>
+        <p>pierrot</p>
+        <p class="logo-curlybraces">}</p>
+    </button>
+
+    <div class="nav">
+        <a class="nav-link">hello, World!</a>
+        <a class="nav-link">sintaxe</a>
+        <a class="nav-link">cli</a>
+        <a class="nav-link">arquitetura</a>
+
+        <ButtonSecondary url="https://github.com/ViitoJooj/pierrot" children="github ↗"/>
+    </div>
+</header>

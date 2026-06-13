@@ -1,49 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
 * {
     padding: 0;
     margin: 0;
-    font-family: Inter, sans-serif;
+    background-color: var(--primary-bg-color);
+    font-family: 'Inter', sans-serif;
 }
 
 :root[data-theme="dark"] {
-    --primary-bg-color: ;
-    --secondary-bg-color: ;
-    --thirdary-bg-color: ;
+    --primary-bg-color: #1A1410;
+    --secondary-bg-color: #241D17;
+    --thirdary-bg-color: #0E0A07;
 
-    --primary-accent-color: ;
-    --secondary-accent-color: ;
-    --thirdary-accent-color: ;
+    --primary-accent-color: #FFB300;
+    --secondary-accent-color: #C8553D;
+    --thirdary-accent-color: #B57E00;
 
-    --primary-border-color: ;
-    --secondary-border-color: ;
-    --thirdary-border-color: ;
+    --primary-border-color: rgba(245, 240, 228, 0.08);
+    --secondary-border-color: rgba(245, 240, 228, 0.16);
+    --thirdary-border-color: rgba(245, 240, 228, 0.04);
 
-    --primary-font-color: ;
-    --secondary-font-color: ;
-    --thirdary-font-color: ;
+    --primary-font-color: #F5F0E4;
+    --secondary-font-color: #B8AEA0;
+    --thirdary-font-color: #8B8175;
 
-    --border-radius-sml: ;
-    --border-radius-med: ;
-    --border-radius-lrg: ;
+    --border-radius-sml: 6px;
+    --border-radius-med: 10px;
+    --border-radius-lrg: 14px;
 }
 
 :root[data-theme="light"] {
-    --primary-bg-color: ;
-    --secondary-bg-color: ;
-    --thirdary-bg-color: ;
+    --primary-bg-color: #F5F0E4;
+    --secondary-bg-color: #EBE3D2;
+    --thirdary-bg-color: #FBF7EC;
 
-    --primary-accent-color: ;
-    --secondary-accent-color: ;
-    --thirdary-accent-color: ;
+    --primary-accent-color: #FFB300;
+    --secondary-accent-color: #C8553D;
+    --thirdary-accent-color: #B57E00;
 
-    --primary-border-color: ;
-    --secondary-border-color: ;
-    --thirdary-border-color: ;
+    --primary-border-color: rgba(26, 20, 16, 0.08);
+    --secondary-border-color: rgba(26, 20, 16, 0.16);
+    --thirdary-border-color: rgba(26, 20, 16, 0.04);
 
-    --primary-font-color: ;
-    --secondary-font-color: ;
-    --thirdary-font-color: ;
+    --primary-font-color: #1A1410;
+    --secondary-font-color: #3D3530;
+    --thirdary-font-color: #5C5147;
 
-    --border-radius-sml: ;
-    --border-radius-med: ;
-    --border-radius-lrg: ;
+    --border-radius-sml: 6px;
+    --border-radius-med: 10px;
+    --border-radius-lrg: 14px;
 }

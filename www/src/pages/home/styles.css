@@ -1,3 +1,632 @@
-body {
-    background-color: white;
+@import "../../globals.css";
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    min-height: calc(100vh - 3.5rem - 1px);
+}
+
+
+.home-top-left-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1.2rem;
+}
+
+.home-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid var(--primary-border-color);
+    border-radius: 999px;
+    background-color: var(--secondary-bg-color);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--secondary-font-color);
+}
+
+.home-badge .badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--primary-accent-color);
+}
+
+.home-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.primary-btn,
+.ghost-btn {
+    padding: 0.7rem 1.3rem;
+    border-radius: 999px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.primary-btn {
+    background-color: #1A1410;
+    color: #F5F0E4;
+}
+
+.ghost-btn {
+    background-color: transparent;
+    border: 1px solid var(--secondary-border-color);
+    color: var(--secondary-font-color);
+}
+
+.home-title,
+.home-title-secondary {
+    font-family: 'Instrument Serif', serif;
+    font-size: 72px;
+    font-weight: 400;
+    line-height: 1.05;
+    color: var(--primary-font-color);
+}
+
+.home-title-secondary {
+    color: var(--secondary-font-color);
+}
+
+.home-desc {
+    max-width: 540px;
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--secondary-font-color);
+}
+
+.mkd-string {
+    padding: 0.1rem;
+    background: #EBE3D2;
+    border-radius: var(--border-radius-sml);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+}
+
+/* ---------- strip de features ---------- */
+
+.feature-strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2.5rem;
+    padding: 0.8rem 1rem;
+    background-color: var(--secondary-bg-color);
+    border-top: 1px solid var(--primary-border-color);
+    border-bottom: 1px solid var(--primary-border-color);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--secondary-font-color);
+}
+
+.feature-strip * {
+    background-color: transparent;
+}
+
+.strip-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.strip-diamond {
+    font-size: 10px;
+}
+
+/* ---------- seção por quê ---------- */
+
+.why {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 7rem 2rem;
+}
+
+.why-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 3rem;
+}
+
+.why-kicker {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--thirdary-font-color);
+    margin-bottom: 1.2rem;
+}
+
+.why-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 56px;
+    font-weight: 400;
+    line-height: 1.08;
+    color: var(--primary-font-color);
+}
+
+.why-title em {
+    color: var(--secondary-font-color);
+}
+
+.why-desc {
+    max-width: 480px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--secondary-font-color);
+}
+
+.why-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 4rem;
+}
+
+.why-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem 1.8rem;
+    background-color: var(--thirdary-bg-color);
+    border: 1px solid var(--primary-border-color);
+    border-radius: var(--border-radius-lrg);
+}
+
+.why-card * {
+    background-color: transparent;
+}
+
+.why-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--thirdary-font-color);
+}
+
+.why-card-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--primary-font-color);
+}
+
+.why-card-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--secondary-font-color);
+}
+
+.why-note {
+    margin-top: auto;
+    padding-top: 1rem;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--thirdary-font-color);
+}
+
+/* ---------- seção quickstart (escura) ---------- */
+
+/* o * do globals pinta todo elemento com o bg claro; aqui o fundo é escuro,
+   então a seção zera os filhos e pinta o próprio fundo */
+.quickstart,
+.quickstart * {
+    background-color: transparent;
+}
+
+.quickstart {
+    position: relative;
+    background-color: #1A1410;
+}
+
+.qs-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 7rem 2rem;
+}
+
+.qs-decor {
+    position: absolute;
+    top: 2.5rem;
+    right: 3rem;
+    display: flex;
+    gap: 0.6rem;
+    font-size: 12px;
+}
+
+.qs-kicker {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: #8B8175;
+    margin-bottom: 1.2rem;
+}
+
+.qs-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 3rem;
+}
+
+.qs-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 56px;
+    font-weight: 400;
+    line-height: 1.08;
+    color: #F5F0E4;
+}
+
+.qs-title em {
+    color: #FFB300;
+}
+
+.qs-desc {
+    max-width: 480px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #B8AEA0;
+}
+
+.qs-chip {
+    padding: 0.1rem 0.4rem;
+    background-color: #241D17;
+    border: 1px solid rgba(245, 240, 228, 0.16);
+    border-radius: var(--border-radius-sml);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85em;
+}
+
+.qs-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 4rem;
+}
+
+.qs-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 2rem 1.8rem;
+    background-color: #241D17;
+    border: 1px solid rgba(245, 240, 228, 0.08);
+    border-radius: var(--border-radius-lrg);
+}
+
+.qs-card-top {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.qs-num {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px;
+    color: #FFB300;
+}
+
+.qs-line {
+    flex: 1;
+    height: 1px;
+    background-color: rgba(245, 240, 228, 0.16);
+}
+
+.qs-tag {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: #8B8175;
+}
+
+.qs-card-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: #F5F0E4;
+}
+
+.qs-cmd {
+    padding: 0.8rem 1rem;
+    background-color: #0E0A07;
+    border-radius: var(--border-radius-med);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    color: #F5F0E4;
+    white-space: nowrap;
+    overflow-x: auto;
+}
+
+.qs-prompt {
+    color: #FFB300;
+}
+
+.qs-card-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #B8AEA0;
+}
+
+/* ---------- seção arquitetura ---------- */
+
+.arch {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 7rem 2rem;
+}
+
+.arch-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 3rem;
+}
+
+.arch-kicker {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--thirdary-font-color);
+    margin-bottom: 1.2rem;
+}
+
+.arch-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 56px;
+    font-weight: 400;
+    line-height: 1.08;
+    color: var(--primary-font-color);
+}
+
+.arch-title em {
+    color: var(--secondary-font-color);
+}
+
+.arch-title .arch-html {
+    color: var(--thirdary-accent-color);
+}
+
+.arch-desc {
+    max-width: 480px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--secondary-font-color);
+}
+
+.arch-chip {
+    padding: 0.1rem 0.4rem;
+    background-color: var(--secondary-bg-color);
+    border-radius: var(--border-radius-sml);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85em;
+}
+
+.arch-panel,
+.arch-panel * {
+    background-color: transparent;
+}
+
+.arch-panel {
+    margin-top: 4rem;
+    padding: 2.5rem;
+    background-color: var(--thirdary-bg-color);
+    border: 1px solid var(--primary-border-color);
+    border-radius: var(--border-radius-lrg);
+}
+
+.arch-steps {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+}
+
+.arch-step-top {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--thirdary-font-color);
+}
+
+.arch-step-line {
+    flex: 1;
+    height: 1px;
+    background-color: var(--secondary-border-color);
+}
+
+.arch-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1rem;
+    border: 1px solid var(--primary-border-color);
+    border-radius: var(--border-radius-med);
+}
+
+.arch-card-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 19px;
+    font-weight: 400;
+    color: var(--primary-font-color);
+}
+
+.arch-file {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--thirdary-accent-color);
+}
+
+.arch-card-desc {
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--secondary-font-color);
+}
+
+.arch-out {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px dashed var(--secondary-border-color);
+}
+
+.arch-out-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--thirdary-font-color);
+}
+
+.arch-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 1rem;
+    background-color: #1A1410;
+    border-radius: 999px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: #F5F0E4;
+}
+
+.pill-diamond {
+    font-size: 10px;
+}
+
+/* ---------- CTA final (escuro) ---------- */
+
+.cta {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 2rem 7rem;
+}
+
+.cta-box,
+.cta-box * {
+    background-color: transparent;
+}
+
+.cta-box {
+    position: relative;
+    padding: 5rem 4rem;
+    background-color: #0E0A07;
+    border-radius: 20px;
+}
+
+.cta-decor {
+    position: absolute;
+    top: 2rem;
+    right: 2.5rem;
+    display: flex;
+    gap: 0.6rem;
+    font-size: 13px;
+}
+
+.cta-kicker {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: #FFB300;
+    margin-bottom: 1.2rem;
+}
+
+.cta-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 64px;
+    font-weight: 400;
+    line-height: 1.08;
+    color: #F5F0E4;
+}
+
+.cta-title em {
+    color: #B8AEA0;
+}
+
+.cta-desc {
+    margin-top: 1.5rem;
+    max-width: 520px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #B8AEA0;
+}
+
+.cta-chip {
+    padding: 0.1rem 0.4rem;
+    background-color: #241D17;
+    border: 1px solid rgba(245, 240, 228, 0.16);
+    border-radius: var(--border-radius-sml);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85em;
+    color: #F5F0E4;
+}
+
+.cta-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.5rem;
+}
+
+.cta-primary,
+.cta-ghost {
+    padding: 0.7rem 1.3rem;
+    border-radius: 999px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.cta-primary {
+    background-color: #FFB300;
+    color: #1A1410;
+}
+
+.cta-ghost {
+    border: 1px solid rgba(245, 240, 228, 0.16);
+    color: #F5F0E4;
+}
+
+@media (max-width: 980px) {
+    .why-head,
+    .qs-head,
+    .arch-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .why-cards,
+    .qs-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .arch-steps {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .arch-out {
+        flex-wrap: wrap;
+    }
+
+    .cta-box {
+        padding: 3rem 2rem;
+    }
+}
+
+@media (max-width: 1100px) and (min-width: 981px) {
+    .arch-steps {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }

@@ -1,0 +1,12 @@
+<script>
+    import "./styles.css";
+
+    let children: string;
+    let url: string;
+
+    function goTo(url: string) {
+        client.Redirect(url).newTab();
+    }
+</script>
+
+<button class="secondary-btn" @click={goTo(url)}>{children}</button>

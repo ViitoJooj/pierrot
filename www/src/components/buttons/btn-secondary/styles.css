@@ -1,0 +1,15 @@
+@import "../../../globals.css";
+
+.secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1px solid var(--primary-font-color);
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--primary-font-color);
+    font-weight: 500;
+    cursor: pointer;
+}
+

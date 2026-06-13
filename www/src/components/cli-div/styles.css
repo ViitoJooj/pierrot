@@ -1,0 +1,81 @@
+@import ".././../globals.css";
+
+.cli {
+    display: flex;
+    position: relative;
+    gap: 0.5rem;
+    background: #1a1410;
+    padding: 0.7rem;
+    border-radius: var(--border-radius-med);
+    color: white;
+    align-items: center;
+}
+
+.prompt {
+    background-color: transparent;
+    color: var(--primary-accent-color);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.command {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--primary-font-color);
+}
+
+button {
+    background-color: transparent;
+    border: none;
+    color: var(--thirdary-font-color);
+    cursor: pointer;
+}
+
+.stars {
+    position: absolute;
+    right: 0.1px;
+    margin-top: -0.7rem;
+    display: flex;
+}
+
+.star {
+    position: absolute;
+    font-size: 1rem;
+    color: #ffb300;
+    background-color: transparent;
+    animation: sparkle 0.8s ease-out forwards;
+}
+
+.star:nth-child(1) {
+    transform: translate(0, 0);
+}
+
+.star:nth-child(2) {
+    transform: translate(10px, -5px);
+    animation-delay: .1s;
+}
+
+.star:nth-child(3) {
+    transform: translate(-10px, -5px);
+    animation-delay: .15s;
+}
+
+.star:nth-child(4) {
+    transform: translate(0, -15px);
+    animation-delay: .2s;
+}
+
+@keyframes sparkle {
+    from {
+        opacity: 1;
+        scale: 0;
+    }
+
+    50% {
+        scale: 1.4;
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+        scale: 0;
+    }
+}

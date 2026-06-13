@@ -1,0 +1,47 @@
+<script>
+    import "./styles.css";
+
+    let cols = [
+        {
+            title: "aprenda",
+            links: [
+                { label: "hello world em 30s", href: "/docs" },
+                { label: "sintaxe de template", href: "/docs" },
+                { label: "componentes e props", href: "/docs" },
+                { label: "CLI e settings", href: "/docs" },
+            ],
+        },
+        {
+            title: "projeto",
+            links: [
+                { label: "github ↗", href: "https://github.com/ViitoJooj/pierrot" },
+                { label: "issues ↗", href: "https://github.com/ViitoJooj/pierrot/issues" },
+                { label: "licença MIT", href: "https://github.com/ViitoJooj/pierrot" },
+            ],
+        },
+    ];
+</script>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <p class="footer-logo"><span class="footer-brace">{</span> pierrot <span class="footer-brace">}</span></p>
+            <p class="footer-tagline">Componentes em um arquivo.<br>Compilados em Go.</p>
+            <div class="footer-diamonds"><span style="color: #FFB300">◆</span><span style="color: #C8553D">◆</span><span style="color: #B8AEA0">◆</span></div>
+        </div>
+        <div class="footer-cols">
+@for col in cols
+            <div class="footer-col">
+                <p class="footer-col-title">${col.title}</p>
+@for l in col.links
+                <a class="footer-link" href="${l.href}">${l.label}</a>
+@end
+            </div>
+@end
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 pierrot · MIT</span>
+        <span class="footer-made">feito com pierrot, óbvio ◆</span>
+    </div>
+</footer>

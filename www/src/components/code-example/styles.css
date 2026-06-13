@@ -1,0 +1,139 @@
+.code-example {
+    width: 660px;
+    border: 1px solid var(--secondary-border-color);
+    border-radius: var(--border-radius-lrg);
+    overflow: hidden;
+    background-color: var(--thirdary-bg-color);
+    box-shadow: 0 18px 40px rgba(26, 20, 16, 0.10);
+}
+
+.code-example * {
+    background-color: transparent;
+}
+
+.code-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background-color: var(--secondary-bg-color);
+    border-bottom: 1px solid var(--primary-border-color);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--thirdary-font-color);
+}
+
+.code-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--primary-accent-color);
+}
+
+.code-meta {
+    margin-left: auto;
+}
+
+.code-editor {
+    position: relative;
+    height: 260px;
+}
+
+/* textarea e o <pre> do highlight precisam de métrica de fonte idêntica —
+   qualquer diferença desalinha o texto colorido do caret */
+.code-editor textarea,
+.code-highlight .hl-pre {
+    box-sizing: border-box;
+    padding: 1rem;
+    margin: 0;
+    border: none;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre;
+    tab-size: 4;
+}
+
+.code-editor textarea {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    resize: none;
+    outline: none;
+    overflow: auto;
+    /* o texto visível é o do highlight atrás; aqui só o caret */
+    color: transparent;
+    caret-color: var(--primary-font-color);
+}
+
+.code-editor textarea::selection {
+    background-color: rgba(255, 179, 0, 0.25);
+}
+
+.code-highlight {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+    color: var(--primary-font-color);
+}
+
+/* paleta estilo IDE light */
+.tok-keyword {
+    color: #C8553D;
+    font-weight: 600;
+}
+
+.tok-string {
+    color: #2E7D32;
+}
+
+.tok-directive {
+    color: #B57E00;
+    font-weight: 600;
+}
+
+.tok-type {
+    color: #267F99;
+    font-style: italic;
+}
+
+.tok-number {
+    color: #1750EB;
+}
+
+.tok-fn {
+    color: #6F42C1;
+}
+
+.tok-tag {
+    color: #800000;
+}
+
+.tok-punct {
+    color: var(--thirdary-font-color);
+}
+
+.tok-comment {
+    color: var(--thirdary-font-color);
+    font-style: italic;
+}
+
+.code-preview-label {
+    padding: 0.5rem 1rem;
+    border-top: 1px dashed var(--secondary-border-color);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--thirdary-font-color);
+}
+
+.pierrot-preview {
+    display: block;
+    width: 100%;
+    height: 150px;
+    border: none;
+}

@@ -1,0 +1,54 @@
+<script>
+    import "./styles.css";
+
+    let code: string;
+    let file: string;
+
+    // tokenizador em cima do texto escapado: comentário, string, ${}/@diretiva,
+    // keyword, tipo após ":", número, tag, nome de função, pontuação de tag.
+    // Sai embrulhado num <pre> próprio: o whitespace do template em volta do
+    // placeholder não vira linha fantasma no highlight
+    function hl(src: string): string {
+        const esc = src.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const span = (cls: string, txt: string) => '<span class="' + cls + '">' + txt + "</span>";
+        const re = /(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(\$\{[^}\n]*\}|@\w+)|\b(let|const|var|function|return|if|else|for|of|in|import|from|new|typeof|async|await)\b|(:\s*)([A-Za-z_]\w*)|\b(\d+(?:\.\d+)?)\b|(&lt;\/?)([\w-]+)|(\/?&gt;)|([A-Za-z_]\w*)(?=\s*\()/g;
+        const body = esc.replace(re, function (m, com, str, dir, kw, colon, type, num, tagp, tagn, gt, fn) {
+            if (com) return span("tok-comment", com);
+            if (str) return span("tok-string", str);
+            if (dir) return span("tok-directive", dir);
+            if (kw) return span("tok-keyword", kw);
+            if (type) return colon + span("tok-type", type);
+            if (num) return span("tok-number", num);
+            if (tagn) return span("tok-punct", tagp) + span("tok-tag", tagn);
+            if (gt) return span("tok-punct", gt);
+            if (fn) return span("tok-fn", fn);
+            return m;
+        });
+        return '<pre class="hl-pre">' + body + "</pre>";
+    }
+
+    function syncScroll() {
+        const ta = document.querySelector(".code-editor textarea");
+        const hlEl = document.querySelector(".code-editor .code-highlight");
+        if (ta && hlEl) {
+            hlEl.scrollTop = ta.scrollTop;
+            hlEl.scrollLeft = ta.scrollLeft;
+        }
+    }
+</script>
+
+<div class="code-example">
+    <div class="code-titlebar">
+        <span class="code-dot"></span>
+        <span class="code-path">{file}</span>
+        <span class="code-meta">{code.split("\n").length} linhas · 1 arquivo</span>
+    </div>
+    <div class="code-editor">
+        <div class="code-highlight" aria-hidden="true">
+            @render html(hl(code));
+        </div>
+        <textarea @bind={code} @scroll={syncScroll} wrap="off" spellcheck="false"></textarea>
+    </div>
+    <div class="code-preview-label">↳ PREVIEW · LOCALHOST:3000</div>
+    @render pierrot(code);
+</div>

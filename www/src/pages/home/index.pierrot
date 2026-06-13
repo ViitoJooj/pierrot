@@ -1,11 +1,233 @@
 <script>
     import "./styles.css";
-    import "./script.ts";
+    import { CliComponent } from "../../components/cli-div/index.pierrot";
+    import { CodeExample } from "../../components/code-example/index.pierrot";
 
-    function Click() {
-        let count: number = sum();
-    }
+    let code: string = '<script>\nimport "./style.css";\nlet count: number = 0;\n \nfunction increment() {\n    count++;\n }\n <\/script>\n\n<h1>Cliques: ${count}</h1>\n<button @click={increment}>+1</button>';
+
+    let strip = [
+        { label: "sem node_modules", color: "#FFB300" },
+        { label: "sem virtual DOM", color: "#C8553D" },
+        { label: "sem eval", color: "#1A1410" },
+        { label: "live reload por SSE", color: "#FFB300" },
+        { label: "overlay de erros", color: "#C8553D" },
+        { label: "TypeScript via esbuild", color: "#1A1410" },
+    ];
+
+    let cards = [
+        {
+            n: "01",
+            color: "#FFB300",
+            title: "Sem node_modules.",
+            desc: "Um único binário Go. Sem package-lock, sem pasta gigante, sem npm install de quatro minutos. Você baixa o pierrot e pronto.",
+            note: "go install · ~12 MB",
+        },
+        {
+            n: "02",
+            color: "#C8553D",
+            title: "Sem virtual DOM.",
+            desc: "O servidor já sabe o HTML. O browser só preenche spans com data-bind e re-roda blocos @for/@if após cada evento. Runtime gerado, sem eval.",
+            note: "runtime · ~3 KB gzip",
+        },
+        {
+            n: "03",
+            color: "#1A1410",
+            title: "Single-file.",
+            desc: "Script, template, imports e metadados no mesmo .pierrot. Componente, página ou layout — todos seguem a mesma anatomia simples.",
+            note: "<script> + template",
+        },
+    ];
+
+    let steps = [
+        {
+            n: "1",
+            tag: "init",
+            title: "Crie um projeto",
+            cmd: "pierrot init meuapp",
+            desc: "Scaffold mínimo: settings.pierrot.json, main.pierrot com layout global e uma página home pronta.",
+        },
+        {
+            n: "2",
+            tag: "dev",
+            title: "Rode o servidor",
+            cmd: "cd meuapp && pierrot dev",
+            desc: "http://localhost:3000 com live reload por SSE. Cada request recompila — sem cache, sem hot module replacement quebrado.",
+        },
+        {
+            n: "3",
+            tag: "ship",
+            title: "Site estático",
+            cmd: "pierrot build",
+            desc: "Gera HTML + bundle.css por página no outDir. JS e CSS minificados. Pode jogar em qualquer CDN.",
+        },
+    ];
+
+    let pipeline = [
+        {
+            n: "1",
+            title: "parse",
+            file: "parser.go",
+            desc: "Separa <script> do HTML; extrai imports CSS/TS/componente e metadados set.X.",
+        },
+        {
+            n: "2",
+            title: "expansão",
+            file: "dev_server.go",
+            desc: "Recursivo: layout → página → componentes. <Slot /> recebe a página; <Nome /> recebe o HTML do filho.",
+        },
+        {
+            n: "3",
+            title: "template",
+            file: "template.go",
+            desc: "Blocos @for/@if viram funções JS. ${expr} compõe com __pierrotEsc(). @evento vira onclick nativo.",
+        },
+        {
+            n: "4",
+            title: "bindings",
+            file: "dev_server.go",
+            desc: "${var} simples vira <span data-bind>. @evento ganha __pierrotUpdate() após o handler.",
+        },
+        {
+            n: "5",
+            title: "transform",
+            file: "esbuild",
+            desc: "TS → JS por chunk. Erro de transform vai pro overlay no dev, derruba o build em produção.",
+        },
+        {
+            n: "6",
+            title: "montagem",
+            file: "dev_server.go",
+            desc: "HTML final: <head> com title/meta/links + <body> com markup + runtime estático sem eval.",
+        },
+    ];
+
+    let outputs = [
+        { label: "index.html", color: "#FFB300" },
+        { label: "bundle.css", color: "#C8553D" },
+        { label: "runtime.js", color: "#F5F0E4" },
+    ];
 </script>
 
-<p>${count}</p>
-<button @click={Click}>Click me</button>
+<main>
+    <div class="home-top-left-side">
+        <div class="home-badge"><span class="badge-dot"></span>v0.1 · framework de front-end em Go</div>
+
+        <h2 class="home-title">Componentes em um arquivo.</h2>
+        <h2 class="home-title-secondary">Compilados em Go.</h2>
+
+        <p class="home-desc">Pierrot é um framework de componentes single-file.
+            O CLI escrito em Go compila <span class="mkd-string">.pierrot</span>
+            direto para HTML; o browser recebe um runtime de poucos kilobytes,
+            sem virtual DOM, sem eval, sem npm.
+        </p>
+
+        <CliComponent command="go install github.com/pierrot/cmd/pierrot@latest" />
+
+        <div class="home-actions">
+            <a class="primary-btn" href="/docs">ler a documentação →</a>
+            <a class="ghost-btn" href="/docs">hello world em 30s</a>
+        </div>
+    </div>
+    <div class="home-top-right-side">
+        <CodeExample code={code} file="src/pages/home/index.pierrot" />
+    </div>
+</main>
+
+<div class="feature-strip">
+@for f in strip
+    <span class="strip-item"><span class="strip-diamond" style="color: ${f.color}">◆</span>${f.label}</span>
+@end
+</div>
+
+<section class="why">
+    <div class="why-head">
+        <div>
+            <p class="why-kicker">— 01 / POR QUÊ</p>
+            <h2 class="why-title">Três coisas<br>que o Pierrot <em>não tem.</em></h2>
+        </div>
+        <p class="why-desc">Cada decisão do framework começa em remoção. O resultado é
+            um stack que cabe na cabeça em uma tarde: um binário Go, um arquivo por
+            componente, um runtime que cabe em poucos kilobytes.</p>
+    </div>
+    <div class="why-cards">
+@for c in cards
+        <div class="why-card">
+            <div class="why-card-top"><span class="why-num">— ${c.n}</span><span class="why-diamond" style="color: ${c.color}">◆</span></div>
+            <h3 class="why-card-title">${c.title}</h3>
+            <p class="why-card-desc">${c.desc}</p>
+            <span class="why-note">${c.note}</span>
+        </div>
+@end
+    </div>
+</section>
+
+<section class="quickstart">
+    <div class="qs-inner">
+        <div class="qs-decor"><span style="color: #FFB300">◆</span><span style="color: #B8AEA0">◆</span><span style="color: #C8553D">◆</span></div>
+        <div class="qs-head">
+            <div>
+                <p class="qs-kicker">— 02 / QUICKSTART</p>
+                <h2 class="qs-title">Do zero ao<br>localhost <em>em 30 segundos.</em></h2>
+            </div>
+            <p class="qs-desc">Sem template repo no GitHub, sem
+                <span class="qs-chip">create-pierrot-app</span>. Um binário, três
+                comandos. Salvou o arquivo, o browser recarrega.</p>
+        </div>
+        <div class="qs-cards">
+@for s in steps
+            <div class="qs-card">
+                <div class="qs-card-top"><span class="qs-num">${s.n}</span><span class="qs-line"></span><span class="qs-tag">${s.tag}</span></div>
+                <h3 class="qs-card-title">${s.title}</h3>
+                <div class="qs-cmd"><span class="qs-prompt">$</span> ${s.cmd}</div>
+                <p class="qs-card-desc">${s.desc}</p>
+            </div>
+@end
+        </div>
+    </div>
+</section>
+
+<section class="arch">
+    <div class="arch-head">
+        <div>
+            <p class="arch-kicker">— 05 / ARQUITETURA</p>
+            <h2 class="arch-title">O que acontece<br>entre <em>.pierrot</em> e <em class="arch-html">&lt;html&gt;</em>.</h2>
+        </div>
+        <p class="arch-desc">Um pipeline curto, todo em Go. Cada etapa é um arquivo no
+            <span class="arch-chip">internal/</span>. Sem AST gigante, sem worker pool,
+            sem cache — funções puras que rodam por request no dev e uma vez no build.</p>
+    </div>
+    <div class="arch-panel">
+        <div class="arch-steps">
+@for p in pipeline
+            <div class="arch-step">
+                <div class="arch-step-top"><span class="arch-step-n">${p.n}</span><span class="arch-step-line"></span></div>
+                <div class="arch-card">
+                    <h3 class="arch-card-title">${p.title}</h3>
+                    <span class="arch-file">${p.file}</span>
+                    <p class="arch-card-desc">${p.desc}</p>
+                </div>
+            </div>
+@end
+        </div>
+        <div class="arch-out">
+            <span class="arch-out-label">SAÍDA ↳</span>
+@for o in outputs
+            <span class="arch-pill"><span class="pill-diamond" style="color: ${o.color}">◆</span>${o.label}</span>
+@end
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="cta-box">
+        <div class="cta-decor"><span style="color: #FFB300">◆</span><span style="color: #C8553D">◆</span><span style="color: #B8AEA0">◆</span></div>
+        <p class="cta-kicker">— V0.1 DISPONÍVEL</p>
+        <h2 class="cta-title">Web em Go.<br><em>Em um arquivo.</em></h2>
+        <p class="cta-desc">Instale o binário, rode <span class="cta-chip">pierrot init</span>
+            e tenha um projeto rodando antes do café terminar.</p>
+        <div class="cta-actions">
+            <a class="cta-primary" href="https://github.com/ViitoJooj/pierrot">github.com/pierrot ↗</a>
+            <a class="cta-ghost" href="/docs">documentação completa</a>
+        </div>
+    </div>
+</section>

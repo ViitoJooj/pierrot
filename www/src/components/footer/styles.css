@@ -1,0 +1,104 @@
+/* o * do globals pinta tudo com o bg claro; o footer é escuro sempre */
+.site-footer,
+.site-footer * {
+    background-color: transparent;
+}
+
+.site-footer {
+    background-color: #1A1410;
+    border-top: 1px solid rgba(245, 240, 228, 0.08);
+}
+
+.footer-inner {
+    display: flex;
+    justify-content: space-between;
+    gap: 3rem;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 4rem 2rem 3rem;
+}
+
+.footer-logo {
+    display: flex;
+    gap: 0.4rem;
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.8rem;
+    color: #F5F0E4;
+}
+
+.footer-brace {
+    color: #FFB300;
+}
+
+.footer-tagline {
+    margin-top: 0.8rem;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #B8AEA0;
+}
+
+.footer-diamonds {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 1.4rem;
+    font-size: 11px;
+}
+
+.footer-cols {
+    display: flex;
+    gap: 5rem;
+}
+
+.footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.footer-col-title {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8B8175;
+    margin-bottom: 0.4rem;
+}
+
+.footer-link {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    color: #B8AEA0;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    color: #FFB300;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.2rem 2rem;
+    border-top: 1px solid rgba(245, 240, 228, 0.08);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: #8B8175;
+}
+
+.footer-made {
+    color: #B57E00;
+}
+
+@media (max-width: 720px) {
+    .footer-inner {
+        flex-direction: column;
+    }
+
+    .footer-cols {
+        gap: 3rem;
+    }
+}
