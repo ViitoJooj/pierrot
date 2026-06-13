@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>lading-page</title>
+<meta name="description" content="This is my page description">
+<link rel="icon" href="./assets/favicon.ico">
+<link rel="stylesheet" href="/home/bundle.css">
+</head>
+<body>
+<header>
+    <button onclick="pierrotRedirect(); __pierrotUpdate()" class="logo">
+        <p class="logo-curlybraces">{</p>
+        <p>pierrot</p>
+        <p class="logo-curlybraces">}</p>
+    </button>
+
+    <div class="nav">
+        <a class="nav-link">hello, World!</a>
+        <a class="nav-link">sintaxe</a>
+        <a class="nav-link">cli</a>
+        <a class="nav-link">arquitetura</a>
+
+        <button class="secondary-btn" onclick="goTo(&#34;https://github.com/ViitoJooj/pierrot&#34;); __pierrotUpdate()">github ↗</button>
+    </div>
+</header>
+<main>
+    <div class="home-top-left-side">
+        <div class="home-badge"><span class="badge-dot"></span>v0.1 · framework de front-end em Go</div>
+
+        <h2 class="home-title">Componentes em um arquivo.</h2>
+        <h2 class="home-title-secondary">Compilados em Go.</h2>
+
+        <p class="home-desc">Pierrot é um framework de componentes single-file.
+            O CLI escrito em Go compila <span class="mkd-string">.pierrot</span>
+            direto para HTML; o browser recebe um runtime de poucos kilobytes,
+            sem virtual DOM, sem eval, sem npm.
+        </p>
+
+        <div class="cli">
+    <p class="command"><p class="prompt">$</p> go install github.com/pierrot/cmd/pierrot@latest</p>
+    <button onclick="Click(&#34;go install github.com/pierrot/cmd/pierrot@latest&#34;); __pierrotUpdate()">copiar</button>
+    
+<div data-pierrot-block="0" style="display:contents"></div>
+</div>
+
+        <div class="home-actions">
+            <a class="primary-btn" href="/docs">ler a documentação →</a>
+            <a class="ghost-btn" href="/docs">hello world em 30s</a>
+        </div>
+    </div>
+    <div class="home-top-right-side">
+        <div class="code-example">
+    <div class="code-titlebar">
+        <span class="code-dot"></span>
+        <span class="code-path">src/pages/home/index.pierrot</span>
+        <span class="code-meta"><span data-pierrot-expr="0"></span> linhas · 1 arquivo</span>
+    </div>
+    <div class="code-editor">
+        <div class="code-highlight" aria-hidden="true">
+<div data-pierrot-render="0" style="display:contents"></div>
+        </div>
+        <textarea oninput="(code) = this.value; __pierrotUpdate()" data-pierrot-bindval="0" onscroll="syncScroll(); __pierrotUpdate()" wrap="off" spellcheck="false"></textarea>
+    </div>
+    <div class="code-preview-label">↳ PREVIEW · LOCALHOST:3000</div>
+<div data-pierrot-render="1" style="display:contents"></div>
+</div>
+    </div>
+</main>
+
+<div class="feature-strip">
+<div data-pierrot-block="1" style="display:contents"></div>
+</div>
+
+<section class="why">
+    <div class="why-head">
+        <div>
+            <p class="why-kicker">— 01 / POR QUÊ</p>
+            <h2 class="why-title">Três coisas<br>que o Pierrot <em>não tem.</em></h2>
+        </div>
+        <p class="why-desc">Cada decisão do framework começa em remoção. O resultado é
+            um stack que cabe na cabeça em uma tarde: um binário Go, um arquivo por
+            componente, um runtime que cabe em poucos kilobytes.</p>
+    </div>
+    <div class="why-cards">
+<div data-pierrot-block="2" style="display:contents"></div>
+    </div>
+</section>
+
+<section class="quickstart">
+    <div class="qs-inner">
+        <div class="qs-decor"><span style="color: #FFB300">◆</span><span style="color: #B8AEA0">◆</span><span style="color: #C8553D">◆</span></div>
+        <div class="qs-head">
+            <div>
+                <p class="qs-kicker">— 02 / QUICKSTART</p>
+                <h2 class="qs-title">Do zero ao<br>localhost <em>em 30 segundos.</em></h2>
+            </div>
+            <p class="qs-desc">Sem template repo no GitHub, sem
+                <span class="qs-chip">create-pierrot-app</span>. Um binário, três
+                comandos. Salvou o arquivo, o browser recarrega.</p>
+        </div>
+        <div class="qs-cards">
+<div data-pierrot-block="3" style="display:contents"></div>
+        </div>
+    </div>
+</section>
+
+<section class="arch">
+    <div class="arch-head">
+        <div>
+            <p class="arch-kicker">— 05 / ARQUITETURA</p>
+            <h2 class="arch-title">O que acontece<br>entre <em>.pierrot</em> e <em class="arch-html">&lt;html&gt;</em>.</h2>
+        </div>
+        <p class="arch-desc">Um pipeline curto, todo em Go. Cada etapa é um arquivo no
+            <span class="arch-chip">internal/</span>. Sem AST gigante, sem worker pool,
+            sem cache — funções puras que rodam por request no dev e uma vez no build.</p>
+    </div>
+    <div class="arch-panel">
+        <div class="arch-steps">
+<div data-pierrot-block="4" style="display:contents"></div>
+        </div>
+        <div class="arch-out">
+            <span class="arch-out-label">SAÍDA ↳</span>
+<div data-pierrot-block="5" style="display:contents"></div>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="cta-box">
+        <div class="cta-decor"><span style="color: #FFB300">◆</span><span style="color: #C8553D">◆</span><span style="color: #B8AEA0">◆</span></div>
+        <p class="cta-kicker">— V0.1 DISPONÍVEL</p>
+        <h2 class="cta-title">Web em Go.<br><em>Em um arquivo.</em></h2>
+        <p class="cta-desc">Instale o binário, rode <span class="cta-chip">pierrot init</span>
+            e tenha um projeto rodando antes do café terminar.</p>
+        <div class="cta-actions">
+            <a class="cta-primary" href="https://github.com/ViitoJooj/pierrot">github.com/pierrot ↗</a>
+            <a class="cta-ghost" href="/docs">documentação completa</a>
+        </div>
+    </div>
+</section>
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <p class="footer-logo"><span class="footer-brace">{</span> pierrot <span class="footer-brace">}</span></p>
+            <p class="footer-tagline">Componentes em um arquivo.<br>Compilados em Go.</p>
+            <div class="footer-diamonds"><span style="color: #FFB300">◆</span><span style="color: #C8553D">◆</span><span style="color: #B8AEA0">◆</span></div>
+        </div>
+        <div class="footer-cols">
+<div data-pierrot-block="6" style="display:contents"></div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 pierrot · MIT</span>
+        <span class="footer-made">feito com pierrot, óbvio ◆</span>
+    </div>
+</footer>
+
+<script>
+var __pierrotStatus = 200;
+var get = {
+	Path: function (n) {
+		var p = location.pathname.split("/").filter(Boolean);
+		return n >= 1 && n <= p.length ? p[n - 1] : "";
+	},
+	Status: function () {
+		return String(typeof __pierrotStatus === "undefined" ? 200 : __pierrotStatus);
+	},
+};
+var client = {
+	Redirect: function (url) {
+		var t = setTimeout(function () { location.assign(url); }, 0);
+		return {
+			newTab: function () {
+				clearTimeout(t);
+				window.open(url, "_blank", "noopener");
+			},
+		};
+	},
+};
+var time = {
+	Sleep: function (n) {
+		var wait = function (ms) {
+			return new Promise(function (done) {
+				setTimeout(function () {
+					done();
+					// microtask depois da continuação do await: o estado mudado
+					// após o Sleep já está aplicado quando o update roda
+					if (typeof __pierrotUpdate === "function") Promise.resolve().then(__pierrotUpdate);
+				}, n * ms);
+			});
+		};
+		return {
+			msec: function () { return wait(1); },
+			sec: function () { return wait(1000); },
+			min: function () { return wait(60 * 1000); },
+			hr: function () { return wait(60 * 60 * 1000); },
+			day: function () { return wait(24 * 60 * 60 * 1000); },
+			week: function () { return wait(7 * 24 * 60 * 60 * 1000); },
+			month: function () { return wait(30 * 24 * 60 * 60 * 1000); },
+			year: function () { return wait(365 * 24 * 60 * 60 * 1000); },
+		};
+	},
+};
+
+document.documentElement.setAttribute("data-theme","light");
+
+function pierrotRedirect(){window.location.href="/"}
+
+function goTo(url){client.Redirect(url).newTab()}
+
+let cols=[{title:"aprenda",links:[{label:"hello world em 30s",href:"/docs"},{label:"sintaxe de template",href:"/docs"},{label:"componentes e props",href:"/docs"},{label:"CLI e settings",href:"/docs"}]},{title:"projeto",links:[{label:"github \u2197",href:"https://github.com/ViitoJooj/pierrot"},{label:"issues \u2197",href:"https://github.com/ViitoJooj/pierrot/issues"},{label:"licen\xE7a MIT",href:"https://github.com/ViitoJooj/pierrot"}]}];
+
+let code=`<script>
+import "./style.css";
+let count: number = 0;
+ 
+function increment() {
+    count++;
+ }
+ <\/script>
+
+<h1>Cliques: \${count}</h1>
+<button @click={increment}>+1</button>`,strip=[{label:"sem node_modules",color:"#FFB300"},{label:"sem virtual DOM",color:"#C8553D"},{label:"sem eval",color:"#1A1410"},{label:"live reload por SSE",color:"#FFB300"},{label:"overlay de erros",color:"#C8553D"},{label:"TypeScript via esbuild",color:"#1A1410"}],cards=[{n:"01",color:"#FFB300",title:"Sem node_modules.",desc:"Um \xFAnico bin\xE1rio Go. Sem package-lock, sem pasta gigante, sem npm install de quatro minutos. Voc\xEA baixa o pierrot e pronto.",note:"go install \xB7 ~12 MB"},{n:"02",color:"#C8553D",title:"Sem virtual DOM.",desc:"O servidor j\xE1 sabe o HTML. O browser s\xF3 preenche spans com data-bind e re-roda blocos @for/@if ap\xF3s cada evento. Runtime gerado, sem eval.",note:"runtime \xB7 ~3 KB gzip"},{n:"03",color:"#1A1410",title:"Single-file.",desc:"Script, template, imports e metadados no mesmo .pierrot. Componente, p\xE1gina ou layout \u2014 todos seguem a mesma anatomia simples.",note:"<script> + template"}],steps=[{n:"1",tag:"init",title:"Crie um projeto",cmd:"pierrot init meuapp",desc:"Scaffold m\xEDnimo: settings.pierrot.json, main.pierrot com layout global e uma p\xE1gina home pronta."},{n:"2",tag:"dev",title:"Rode o servidor",cmd:"cd meuapp && pierrot dev",desc:"http://localhost:3000 com live reload por SSE. Cada request recompila \u2014 sem cache, sem hot module replacement quebrado."},{n:"3",tag:"ship",title:"Site est\xE1tico",cmd:"pierrot build",desc:"Gera HTML + bundle.css por p\xE1gina no outDir. JS e CSS minificados. Pode jogar em qualquer CDN."}],pipeline=[{n:"1",title:"parse",file:"parser.go",desc:"Separa <script> do HTML; extrai imports CSS/TS/componente e metadados set.X."},{n:"2",title:"expans\xE3o",file:"dev_server.go",desc:"Recursivo: layout \u2192 p\xE1gina \u2192 componentes. <Slot /> recebe a p\xE1gina; <Nome /> recebe o HTML do filho."},{n:"3",title:"template",file:"template.go",desc:"Blocos @for/@if viram fun\xE7\xF5es JS. ${expr} comp\xF5e com __pierrotEsc(). @evento vira onclick nativo."},{n:"4",title:"bindings",file:"dev_server.go",desc:"${var} simples vira <span data-bind>. @evento ganha __pierrotUpdate() ap\xF3s o handler."},{n:"5",title:"transform",file:"esbuild",desc:"TS \u2192 JS por chunk. Erro de transform vai pro overlay no dev, derruba o build em produ\xE7\xE3o."},{n:"6",title:"montagem",file:"dev_server.go",desc:"HTML final: <head> com title/meta/links + <body> com markup + runtime est\xE1tico sem eval."}],outputs=[{label:"index.html",color:"#FFB300"},{label:"bundle.css",color:"#C8553D"},{label:"runtime.js",color:"#F5F0E4"}];
+
+let animation=!1;async function Click(cmd){navigator.clipboard.writeText(cmd),animation=!0,await time.Sleep(800).msec(),animation=!1}
+
+function hl(src){const esc=src.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"),span=(cls,txt)=>'<span class="'+cls+'">'+txt+"</span>",re=/(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(\$\{[^}\n]*\}|@\w+)|\b(let|const|var|function|return|if|else|for|of|in|import|from|new|typeof|async|await)\b|(:\s*)([A-Za-z_]\w*)|\b(\d+(?:\.\d+)?)\b|(&lt;\/?)([\w-]+)|(\/?&gt;)|([A-Za-z_]\w*)(?=\s*\()/g;return'<pre class="hl-pre">'+esc.replace(re,function(m,com,str,dir,kw,colon,type,num,tagp,tagn,gt,fn){return com?span("tok-comment",com):str?span("tok-string",str):dir?span("tok-directive",dir):kw?span("tok-keyword",kw):type?colon+span("tok-type",type):num?span("tok-number",num):tagn?span("tok-punct",tagp)+span("tok-tag",tagn):gt?span("tok-punct",gt):fn?span("tok-fn",fn):m})+"</pre>"}function syncScroll(){const ta=document.querySelector(".code-editor textarea"),hlEl=document.querySelector(".code-editor .code-highlight");ta&&hlEl&&(hlEl.scrollTop=ta.scrollTop,hlEl.scrollLeft=ta.scrollLeft)}
+
+
+function __pierrotCompile(src) {
+	var esc = function (s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); };
+	var m = String(src).match(/<script>([\s\S]*?)<\/script>/i);
+	var script = m ? m[1] : "";
+	var tpl = m ? String(src).replace(m[0], "") : String(src);
+	script = script.replace(/^\s*import\s+.*$/gm, "");
+	// anotação de tipo em let/const/var some; o resto do TS não é suportado
+	script = script.replace(/^(\s*(?:let|const|var)\s+\w+)\s*:\s*[^=;\n]+(?=[=;])/gm, "$1");
+	var events = function (l) {
+		return l.replace(/@(\w+)=\{(\w+)(?:\(([^(){}\n]*)\))?\}/g, function (_, ev, fn, args) {
+			return "on" + ev + '="' + fn + "(" + esc(args || "") + '); __update()"';
+		});
+	};
+	var body = 'var __h = "";\n';
+	var lines = tpl.split(/\r?\n/);
+	var interp = /\$\{([^{}\n]+)\}/g;
+	for (var i = 0; i < lines.length; i++) {
+		var l = lines[i], mm;
+		if (/^\/\//.test(l)) continue;
+		if ((mm = l.match(/^\s*@for\s+(\w+)\s+in\s+(.+?)\s*$/))) { body += "for (const " + mm[1] + " of (" + mm[2] + ")) {\n"; continue; }
+		if ((mm = l.match(/^\s*@if\s+(.+?)\s*$/))) { body += "if (" + mm[1] + ") {\n"; continue; }
+		if (/^\s*@else\s*$/.test(l)) { body += "} else {\n"; continue; }
+		if (/^\s*@(?:end|endif)\s*$/.test(l)) { body += "}\n"; continue; }
+		if (!l.trim()) continue;
+		l = events(l);
+		var part = "__h += ", last = 0, mt;
+		interp.lastIndex = 0;
+		while ((mt = interp.exec(l))) {
+			part += JSON.stringify(l.slice(last, mt.index)) + " + __esc(" + mt[1] + ") + ";
+			last = mt.index + mt[0].length;
+		}
+		part += JSON.stringify(l.slice(last) + "\n") + ";\n";
+		body += part;
+	}
+	body += "return __h;";
+	var js = 'function __esc(v){return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}\n'
+		+ script
+		+ "\nfunction __render() {\n" + body + "\n}\n"
+		+ "function __update(){try{document.getElementById('app').innerHTML=__render()}catch(e){document.getElementById('app').innerHTML=\"<pre style='color:#e5484d;white-space:pre-wrap'>\"+__esc(e)+\"</pre>\"}}\n__update();";
+	// "</script" dentro das strings geradas fecharia o <script> do documento;
+	// só essa sequência — "</" solto aparece em regex legítima (ex. /</g)
+	js = js.replace(/<\/script/gi, "<\\/script");
+	return '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:system-ui;margin:14px;color:#1a1410}h1,h2{font-family:Georgia,serif;font-weight:400;margin:0 0 10px}button{font-family:ui-monospace,Consolas,monospace;font-size:13px;padding:5px 16px;border:none;border-radius:8px;background:#1a1410;color:#f5f0e4;cursor:pointer}</style></head><body><div id="app"></div><script>' + js + '<\/script></body></html>';
+}
+function __pierrotEsc(v) {
+	return String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function __pierrotMd(src) {
+	var esc = function (s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); };
+	var inline = function (s) {
+		return esc(s)
+			.replace(/\x60([^\x60]+)\x60/g, "<code>$1</code>")
+			.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+			.replace(/\*([^*]+)\*/g, "<em>$1</em>")
+			.replace(/\[([^\]]+)\]\(([^()\s]+)\)/g, '<a href="$2">$1</a>');
+	};
+	var lines = String(src).split(/\r?\n/), out = [], i = 0;
+	while (i < lines.length) {
+		var l = lines[i];
+		if (/^\x60\x60\x60/.test(l)) {
+			var buf = [];
+			for (i++; i < lines.length && !/^\x60\x60\x60/.test(lines[i]); i++) buf.push(lines[i]);
+			i++;
+			out.push("<pre><code>" + esc(buf.join("\n")) + "</code></pre>");
+			continue;
+		}
+		var h = l.match(/^(#{1,6})\s+(.*)$/);
+		if (h) { out.push("<h" + h[1].length + ">" + inline(h[2]) + "</h" + h[1].length + ">"); i++; continue; }
+		if (/^\s*[-*]\s+/.test(l)) {
+			var items = [];
+			for (; i < lines.length && /^\s*[-*]\s+/.test(lines[i]); i++) items.push("<li>" + inline(lines[i].replace(/^\s*[-*]\s+/, "")) + "</li>");
+			out.push("<ul>" + items.join("") + "</ul>");
+			continue;
+		}
+		if (/^\s*$/.test(l)) { i++; continue; }
+		var para = [];
+		for (; i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#{1,6}\s|\x60\x60\x60|\s*[-*]\s)/.test(lines[i]); i++) para.push(lines[i]);
+		out.push("<p>" + para.map(inline).join("<br>") + "</p>");
+	}
+	return out.join("\n");
+}
+var __pierrotBlocks = [
+function () {
+var __h = "";
+if (animation == true) {
+__h += "        <div class=\"stars\">\r\n";
+__h += "            <span class=\"star\">✦</span>\r\n";
+__h += "            <span class=\"star\">✦</span>\r\n";
+__h += "            <span class=\"star\">✦</span>\r\n";
+__h += "            <span class=\"star\">✦</span>\r\n";
+__h += "        </div>\r\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+for (const f of (strip)) {
+__h += "    <span class=\"strip-item\"><span class=\"strip-diamond\" style=\"color: " + __pierrotEsc(f.color) + "\">◆</span>" + __pierrotEsc(f.label) + "</span>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+for (const c of (cards)) {
+__h += "        <div class=\"why-card\">\n";
+__h += "            <div class=\"why-card-top\"><span class=\"why-num\">— " + __pierrotEsc(c.n) + "</span><span class=\"why-diamond\" style=\"color: " + __pierrotEsc(c.color) + "\">◆</span></div>\n";
+__h += "            <h3 class=\"why-card-title\">" + __pierrotEsc(c.title) + "</h3>\n";
+__h += "            <p class=\"why-card-desc\">" + __pierrotEsc(c.desc) + "</p>\n";
+__h += "            <span class=\"why-note\">" + __pierrotEsc(c.note) + "</span>\n";
+__h += "        </div>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+for (const s of (steps)) {
+__h += "            <div class=\"qs-card\">\n";
+__h += "                <div class=\"qs-card-top\"><span class=\"qs-num\">" + __pierrotEsc(s.n) + "</span><span class=\"qs-line\"></span><span class=\"qs-tag\">" + __pierrotEsc(s.tag) + "</span></div>\n";
+__h += "                <h3 class=\"qs-card-title\">" + __pierrotEsc(s.title) + "</h3>\n";
+__h += "                <div class=\"qs-cmd\"><span class=\"qs-prompt\">$</span> " + __pierrotEsc(s.cmd) + "</div>\n";
+__h += "                <p class=\"qs-card-desc\">" + __pierrotEsc(s.desc) + "</p>\n";
+__h += "            </div>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+for (const p of (pipeline)) {
+__h += "            <div class=\"arch-step\">\n";
+__h += "                <div class=\"arch-step-top\"><span class=\"arch-step-n\">" + __pierrotEsc(p.n) + "</span><span class=\"arch-step-line\"></span></div>\n";
+__h += "                <div class=\"arch-card\">\n";
+__h += "                    <h3 class=\"arch-card-title\">" + __pierrotEsc(p.title) + "</h3>\n";
+__h += "                    <span class=\"arch-file\">" + __pierrotEsc(p.file) + "</span>\n";
+__h += "                    <p class=\"arch-card-desc\">" + __pierrotEsc(p.desc) + "</p>\n";
+__h += "                </div>\n";
+__h += "            </div>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+for (const o of (outputs)) {
+__h += "            <span class=\"arch-pill\"><span class=\"pill-diamond\" style=\"color: " + __pierrotEsc(o.color) + "\">◆</span>" + __pierrotEsc(o.label) + "</span>\n";
+}
+return __h;
+},
+function () {
+var __h = "";
+for (const col of (cols)) {
+__h += "            <div class=\"footer-col\">\n";
+__h += "                <p class=\"footer-col-title\">" + __pierrotEsc(col.title) + "</p>\n";
+for (const l of (col.links)) {
+__h += "                <a class=\"footer-link\" href=\"" + __pierrotEsc(l.href) + "\">" + __pierrotEsc(l.label) + "</a>\n";
+}
+__h += "            </div>\n";
+}
+return __h;
+},
+];
+var __pierrotExprs = [
+function () { return ((code).split("\n").length); },
+];
+var __pierrotRenders = [
+{ kind: "html", fn: function () { return (hl((code))); } },
+{ kind: "pierrot", fn: function () { return ((code)); } },
+];
+var __pierrotBindVals = [
+function () { return ((code)); },
+];
+function __pierrotUpdate() {
+	const state = {
+	};
+	document.querySelectorAll("[data-bind]").forEach(function (el) {
+		el.textContent = state[el.getAttribute("data-bind")];
+	});
+	__pierrotBlocks.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-block="' + i + '"]').forEach(function (el) {
+			try { el.innerHTML = fn(); } catch (e) { console.error("pierrot: bloco " + i + ":", e); }
+		});
+	});
+	__pierrotExprs.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-expr="' + i + '"]').forEach(function (el) {
+			try { el.textContent = fn(); } catch (e) { console.error("pierrot: {expr} " + i + ":", e); }
+		});
+	});
+	__pierrotBindVals.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-bindval="' + i + '"]').forEach(function (el) {
+			if (el === document.activeElement) return;
+			try { var v = fn(); el.value = v == null ? "" : v; } catch (e) {}
+		});
+	});
+	__pierrotRenders.forEach(function (r, i) {
+		document.querySelectorAll('[data-pierrot-render="' + i + '"]').forEach(function (el) {
+			try {
+				if (r.kind === "pierrot") {
+					// preview num iframe, recriado só quando o valor muda;
+					// debounce de 300ms segura recompilação durante digitação
+					var fr = el.firstChild;
+					if (!fr) {
+						fr = document.createElement("iframe");
+						fr.className = "pierrot-preview";
+						fr.setAttribute("sandbox", "allow-scripts");
+						el.appendChild(fr);
+					}
+					var v = String(r.fn());
+					if (v === el.__pierrotSrc) return;
+					var first = el.__pierrotSrc === undefined;
+					el.__pierrotSrc = v;
+					clearTimeout(el.__pierrotT);
+					el.__pierrotT = setTimeout(function () { fr.srcdoc = __pierrotCompile(v); }, first ? 0 : 300);
+					return;
+				}
+				var v = String(r.fn());
+				el.innerHTML = r.kind === "markdown" ? __pierrotMd(v) : v;
+			} catch (e) { console.error("pierrot: @render " + i + ":", e); }
+		});
+	});
+}
+__pierrotUpdate();
+
+
+</script>
+</body>
+</html>
