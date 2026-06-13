@@ -10,7 +10,9 @@ else
 	RM       = rm -f "$(BINARY)"
 endif
 
-.PHONY: install build test clean
+WWW_DIR := www
+
+.PHONY: install build web test clean
 
 # compila e instala o binário em ~/.pierrot/bin (precisa estar no PATH)
 install:
@@ -20,6 +22,10 @@ install:
 
 build:
 	go build ./...
+
+# gera o site estático em www/build (usado no deploy da Vercel)
+web:
+	cd $(WWW_DIR) && go run ../cmd build
 
 test:
 	go test ./...
