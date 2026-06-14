@@ -53,7 +53,7 @@ template. **Components start with an uppercase letter**; the name in
     import { CliComponent } from "../../components/cli-div/index.pierrot";
 </script>
 
-<CliComponent command="go install github.com/pierrot/cmd/pierrot@latest" />
+<CliComponent command="go install github.com/ViitoJooj/pierrot/cmd/pierrot@latest" />
 ```
 
 Rules:

@@ -27,7 +27,7 @@ Pierrot is a JavaScript-free framework built in Golang. It functions as a compil
 
 ## how install ?
 ```bash
-go install github.com/pierrot/cmd/pierrot@latest
+go install github.com/ViitoJooj/pierrot/cmd/pierrot@latest
 ```
 This command will install the Pierrot binary in ~/.pierrot/bin/pierrot.exe. After installation, you will be able to use the Pierrot command-line commands, shown in the example below.
 

@@ -7,7 +7,7 @@
 ### Via `go install`
 
 ```bash
-go install github.com/pierrot/cmd/pierrot@latest
+go install github.com/ViitoJooj/pierrot/cmd/pierrot@latest
 ```
 
 The binary lands in `~/.pierrot/bin/pierrot` (`pierrot.exe` on Windows).

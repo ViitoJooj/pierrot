@@ -39,7 +39,7 @@ covers your question, open a new issue with as much context as you can.
 
 A good bug report is reproducible. Before filing, please:
 
-- Make sure you're on the latest version (`go install github.com/pierrot/cmd/pierrot@latest`
+- Make sure you're on the latest version (`go install github.com/ViitoJooj/pierrot/cmd/pierrot@latest`
   or the latest [release](https://github.com/ViitoJooj/pierrot/releases/)).
 - Confirm it's a bug, not a usage question (the [docs](./docs/arquitetura.md) may
   cover it).
@@ -97,8 +97,8 @@ The `Makefile` targets:
 You can also run the CLI directly without installing:
 
 ```bash
-go run ./cmd dev      # from inside a project folder
-go run ./cmd build
+go run ./cmd/pierrot dev      # from inside a project folder
+go run ./cmd/pierrot build
 ```
 
 ### Trying changes against the demo site
@@ -108,8 +108,8 @@ your changes end to end:
 
 ```bash
 cd www
-go run ../cmd dev     # http://localhost:3000, live reload
-go run ../cmd build   # writes static output to www/build
+go run ../cmd/pierrot dev     # http://localhost:3000, live reload
+go run ../cmd/pierrot build   # writes static output to www/build
 ```
 
 ## Project layout
