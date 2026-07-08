@@ -1,0 +1,50 @@
+{
+    "name": "Bobo da Corte",
+    "type": "dark",
+    "colors": {},
+    "tokenColors": [
+        {
+            "name": "Diretivas e keywords Pierrot — verde",
+            "scope": [
+                "keyword.control.pierrot",
+                "support.class.pierrot",
+                "support.function.pierrot",
+                "variable.other.readwrite.pierrot",
+                "keyword.control.ts",
+                "keyword.control.import.ts",
+                "keyword.control.export.ts"
+            ],
+            "settings": {
+                "foreground": "#4CD137",
+                "fontStyle": "bold"
+            }
+        },
+        {
+            "name": "Strings e atributos — amarelo",
+            "scope": [
+                "string.quoted.double.html",
+                "string.quoted.single.html",
+                "string.quoted.single.ts",
+                "string.quoted.double.ts",
+                "entity.other.attribute-name.html"
+            ],
+            "settings": {
+                "foreground": "#FBC531"
+            }
+        },
+        {
+            "name": "Tags, componentes e interpolação — vermelho",
+            "scope": [
+                "entity.name.tag.html",
+                "support.class.component.pierrot",
+                "entity.name.function.pierrot",
+                "punctuation.section.embedded.begin.pierrot",
+                "punctuation.section.embedded.end.pierrot"
+            ],
+            "settings": {
+                "foreground": "#E84118",
+                "fontStyle": "bold"
+            }
+        }
+    ]
+}

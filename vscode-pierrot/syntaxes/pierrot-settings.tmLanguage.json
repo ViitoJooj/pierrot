@@ -1,0 +1,6 @@
+{
+    "scopeName": "source.pierrot-settings",
+    "patterns": [
+        { "include": "source.json" }
+    ]
+}

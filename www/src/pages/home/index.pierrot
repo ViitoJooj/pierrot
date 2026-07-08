@@ -1,0 +1,11 @@
+<script>
+    import "./styles.css";
+
+</script>
+
+<main>
+    <h1>Welcome to Pierrot! 🃏</h1>
+    <p>
+        This is the default home page of your Pierrot project. You can edit this page by modifying the <code>src/pages/home/index.pierrot</code> file.
+    </p>
+</main>

@@ -1,0 +1,41 @@
+package pages
+
+const ErrorPierrot = `<script>
+    import "./styles.css";
+
+    let status = get.Status();
+    let count: number = 30;
+    
+
+    function timeToHome(): void {
+        while (count > 0) {
+            time.Sleep(1).sec();
+            count--;
+        }
+        client.Redirect("/");
+        return;
+    }
+
+    function redirectToHome(): void {
+        client.Redirect("/");
+        return;
+    }
+
+    timeToHome();
+    set.Title("Pierrot - 404");
+</script>
+
+<main>
+@if status == 404
+    <p class="error-code">- error / 404</p>
+
+    <h1>404</h1>
+    <h2>This route does not compile</h2>
+    <p class="error-message">
+        The page you are looking for does not exist, or has not been written yet.
+        Heading back home in <span class="count">${count}s</span>
+    </p>
+
+    <button @click={redirectToHome}>back to home -></button>
+@endif
+</main>`

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Pierrot - 404</title>
+<meta name="description" content="This is my page description">
+<link rel="icon" href="./assets/favicon.ico">
+<link rel="stylesheet" href="/errors/bundle.css">
+</head>
+<body>
+<main>
+<div data-pierrot-block="0" style="display:contents"></div>
+</main>
+
+<script>
+var __pierrotStatus = 404;
+var get = {
+	Path: function (n) {
+		var p = location.pathname.split("/").filter(Boolean);
+		return n >= 1 && n <= p.length ? p[n - 1] : "";
+	},
+	Status: function () {
+		return String(typeof __pierrotStatus === "undefined" ? 200 : __pierrotStatus);
+	},
+};
+var client = {
+	Redirect: function (url) {
+		var t = setTimeout(function () { location.assign(url); }, 0);
+		return {
+			newTab: function () {
+				clearTimeout(t);
+				window.open(url, "_blank", "noopener");
+			},
+		};
+	},
+};
+var time = {
+	Sleep: function (n) {
+		var wait = function (ms) {
+			return new Promise(function (done) {
+				setTimeout(function () {
+					done();
+					// microtask depois da continuação do await: o estado mudado
+					// após o Sleep já está aplicado quando o update roda
+					if (typeof __pierrotUpdate === "function") Promise.resolve().then(__pierrotUpdate);
+				}, n * ms);
+			});
+		};
+		return {
+			msec: function () { return wait(1); },
+			sec: function () { return wait(1000); },
+			min: function () { return wait(60 * 1000); },
+			hr: function () { return wait(60 * 60 * 1000); },
+			day: function () { return wait(24 * 60 * 60 * 1000); },
+			week: function () { return wait(7 * 24 * 60 * 60 * 1000); },
+			month: function () { return wait(30 * 24 * 60 * 60 * 1000); },
+			year: function () { return wait(365 * 24 * 60 * 60 * 1000); },
+		};
+	},
+};
+document.documentElement.setAttribute("data-theme","light");
+
+let status=get.Status(),count=30;async function timeToHome(){for(;count>0;)await time.Sleep(1).sec(),count--;client.Redirect("/")}async function redirectToHome(){client.Redirect("/")}timeToHome();
+
+function __pierrotEsc(v) {
+	return String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+var __pierrotBlocks = [
+function () {
+var __h = "";
+if (status == 404) {
+__h += "    <p class=\"error-code\">- error / 404</p>\n\n    <h1>404</h1>\n    <h2>This route does not compile</h2>\n    <p class=\"error-message\">\n        The page you are looking for does not exist, or has not been written yet.\n        Heading back home in <span class=\"count\">" + __pierrotEsc(typeof count === "undefined" ? "" : count) + "s</span>\n    </p>\n\n    <button onclick=\"redirectToHome(); __pierrotUpdate()\">back to home -></button>\n";
+}
+return __h;
+},
+];
+var __pierrotExprs = [
+];
+var __pierrotBindVals = [
+];
+function __pierrotUpdate() {
+	const state = {
+	};
+	document.querySelectorAll("[data-bind]").forEach(function (el) {
+		el.textContent = state[el.getAttribute("data-bind")];
+	});
+	__pierrotBlocks.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-block="' + i + '"]').forEach(function (el) {
+			try { el.innerHTML = fn(); } catch (e) { console.error("pierrot: bloco " + i + ":", e); }
+		});
+	});
+	__pierrotExprs.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-expr="' + i + '"]').forEach(function (el) {
+			try { el.textContent = fn(); } catch (e) { console.error("pierrot: {expr} " + i + ":", e); }
+		});
+	});
+	__pierrotBindVals.forEach(function (fn, i) {
+		document.querySelectorAll('[data-pierrot-bindval="' + i + '"]').forEach(function (el) {
+			if (el === document.activeElement) return;
+			try { var v = fn(); el.value = v == null ? "" : v; } catch (e) {}
+		});
+	});
+}
+__pierrotUpdate();
+</script>
+</body>
+</html>

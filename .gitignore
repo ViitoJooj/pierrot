@@ -1,0 +1,10 @@
+pierrot.exe
+.env
+tmp/
+dist/
+build/
+node_modules/
+.claude
+!www/build
+pierrot
+*.exe

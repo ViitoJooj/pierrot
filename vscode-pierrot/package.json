@@ -1,0 +1,66 @@
+{
+    "name": "pierrot-lang",
+    "displayName": "Pierrot",
+    "description": "Syntax highlighting, tema, snippets e autocomplete para arquivos .pierrot",
+    "publisher": "pierrot",
+    "version": "0.0.8",
+    "engines": {
+        "vscode": "^1.80.0"
+    },
+    "main": "./extension.js",
+    "activationEvents": [
+        "onLanguage:pierrot"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "pierrot",
+                "aliases": ["Pierrot", "pierrot"],
+                "extensions": [".pierrot"],
+                "configuration": "./language-configuration.json",
+                "icon": {
+                    "light": "./icons/pierrot-light.svg",
+                    "dark": "./icons/pierrot.svg"
+                }
+            },
+            {
+                "id": "pierrot-settings",
+                "aliases": ["Pierrot Settings"],
+                "filenames": ["settings.pierrot.json"],
+                "icon": {
+                    "light": "./icons/pierrot-settings.svg",
+                    "dark": "./icons/pierrot-settings.svg"
+                }
+            }
+        ],
+        "grammars": [
+            {
+                "language": "pierrot",
+                "scopeName": "source.pierrot",
+                "path": "./syntaxes/pierrot.tmLanguage.json",
+                "embeddedLanguages": {
+                    "source.ts": "typescript",
+                    "text.html.basic": "html"
+                }
+            },
+            {
+                "language": "pierrot-settings",
+                "scopeName": "source.pierrot-settings",
+                "path": "./syntaxes/pierrot-settings.tmLanguage.json"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "pierrot",
+                "path": "./snippets/pierrot.json"
+            }
+        ],
+        "themes": [
+            {
+                "label": "Bobo da Corte",
+                "uiTheme": "vs-dark",
+                "path": "./themes/bobo-da-corte-color-theme.json"
+            }
+        ]
+    }
+}
